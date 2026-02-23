@@ -5,12 +5,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        night: '#070B14',
-        ink: '#B7C2D9',
-        accent: '#7C9BFF',
+        night: '#0B0618',
+        ink: '#D8CCE8',
+        accent: '#D4AF37',
       },
       boxShadow: {
-        glow: '0 0 0 1px rgba(124,155,255,0.2), 0 8px 30px rgba(5,10,25,0.5)',
+        glow: '0 0 0 1px rgba(212,175,55,0.25), 0 12px 30px rgba(17,8,34,0.65)',
       },
     },
   },

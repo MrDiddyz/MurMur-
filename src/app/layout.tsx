@@ -5,15 +5,14 @@ import { Footer } from '@/components/footer';
 import { AnalyticsPlaceholder } from '@/components/analytics-placeholder';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://murmur-constellation.example.com'),
-  title: 'MURMUR : A Learning Constellation',
-  description:
-    'Skreddersydde læringsmoduler for selskaper og individer. Strategisk, kreativt og operativt designet for varig effekt.',
+  metadataBase: new URL('https://dj-core.example.com'),
+  title: 'DJ Core - AI Music Studio',
+  description: 'Lag DJ tracks med opptil 5000 bokstaver prompt, velg instrumental-modus og bygg unike låtutkast.',
   openGraph: {
-    title: 'MURMUR : A Learning Constellation',
-    description: 'Tailored modules for companies, individuals, and non-clinical wellbeing support.',
-    url: 'https://murmur-constellation.example.com',
-    siteName: 'MURMUR',
+    title: 'DJ Core - AI Music Studio',
+    description: 'Create tracks from your own words with BPM, mood, and instrumental controls.',
+    url: 'https://dj-core.example.com',
+    siteName: 'DJ Core',
     type: 'website',
   },
   alternates: { canonical: '/' },

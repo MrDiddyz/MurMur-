@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  safelist: ['border-accent/35', 'text-accent', 'shadow-glow', 'bg-night', 'text-ink'],
   theme: {
     extend: {
       colors: {

@@ -37,6 +37,15 @@ class ListenerTests(unittest.TestCase):
         parsed = listener._parse_json_object('Result:\n```json\n{"ok": true}\n```')
         self.assertEqual(parsed, {'ok': True})
 
+
+    def test_parse_json_object_with_multiple_objects_returns_first_valid_dict(self):
+        parsed = listener._parse_json_object('prefix {"ok": true, "a": 1} middle {"ok": false}')
+        self.assertEqual(parsed, {'ok': True, 'a': 1})
+
+    def test_parse_json_object_ignores_non_object_json_values(self):
+        parsed = listener._parse_json_object('prefix [1,2,3] then {"ok": true}')
+        self.assertEqual(parsed, {'ok': True})
+
     def test_load_prompt_fallback_when_missing(self):
         with TemporaryDirectory() as td:
             missing = str(Path(td) / 'does-not-exist.txt')

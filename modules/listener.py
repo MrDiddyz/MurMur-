@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -51,13 +50,15 @@ def run_listener(user_text: str, *, client: Optional[Any] = None) -> Dict[str, A
     if parsed is not None:
         return parsed
 
-    return {"ok": False, "raw": raw, "niche": niche}
+    decoder = json.JSONDecoder()
+    for start_index, char in enumerate(raw):
+        if char != '{':
+            continue
 
-
-def _load_listener_prompt(path: str = "prompts/listener.txt") -> str:
-    prompt_path = Path(path)
-    if prompt_path.exists():
-        return prompt_path.read_text(encoding="utf-8")
+        try:
+            parsed, _ = decoder.raw_decode(raw[start_index:])
+        except json.JSONDecodeError:
+            continue
     return DEFAULT_LISTENER_PROMPT
 
 

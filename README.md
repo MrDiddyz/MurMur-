@@ -54,3 +54,20 @@ Wellbeing pages are explicitly non-clinical and non-diagnostic.
 - No medical advice, diagnosis, or treatment is offered.
 - Crisis guidance directs users to local emergency services and helplines.
 - Disclaimer appears in wellbeing and legal pages.
+
+## Modular realtime-learning backend (MurMur core)
+The Python orchestrator now runs a modular AI loop with persistent learning and logging:
+- `modules/listener.py`: extracts intent/signals with deterministic rule-based parsing.
+- `modules/spectre.py`: drives Spectre mode planning for a niche side-income workflow.
+- `modules/synthesizer.py`: composes end-user response in selected tone.
+- `modules/memory.py`: updates runtime state and appends JSONL logs for each interaction.
+
+Generated runtime files:
+- `modules/runtime-state.json`
+- `modules/runtime-log.jsonl`
+
+API endpoint for live mapping/state:
+- `GET /state`
+
+
+Default response tone in API is now `knivskarp` for concise execution-focused output.

@@ -1,4 +1,4 @@
-# MURMUR : A Learning Constellation
+python music_ai_studio.py#
 
 Production-ready marketing website for MURMUR, built with Next.js (App Router), TypeScript, and Tailwind CSS.
 

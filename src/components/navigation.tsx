@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { MurmurCubeMark } from '@/components/murmur-cube-mark';
 
 const links = [
   ['Studio', '/'],
@@ -12,8 +13,9 @@ export function Navigation() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-night/80 backdrop-blur-lg">
       <div className="container-shell flex h-16 items-center justify-between">
-        <Link href="/" className="text-sm font-semibold tracking-[0.2em] text-white">
-          DJ CORE
+        <Link href="/" className="flex items-center gap-3 text-sm font-semibold tracking-[0.14em] text-white">
+          <MurmurCubeMark size="sm" />
+          MURMUR CUBE
         </Link>
         <nav className="hidden gap-6 text-sm text-ink md:flex">
           {links.map(([label, href]) => (

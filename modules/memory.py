@@ -21,7 +21,7 @@ class RuntimeState:
 
 DEFAULT_STATE = RuntimeState(
     interactions=0,
-    niche="micro-saas for local businesses",
+    niche="AI-video i dyre- og menneskebaserte redningshistorier",
     top_goals=[],
     top_obstacles=[],
 )

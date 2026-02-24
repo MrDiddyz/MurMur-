@@ -69,5 +69,5 @@ If env vars are not set, the app uses an animated gradient fallback automaticall
 
 
 ## Studio and Modules structure
-- `/studio`: dedicated music studio page with the psychedelic equalizer.
+- `/studio`: dedicated music studio page with the psychedelic equalizer and innebygd generator (BPM/intensitet + live visualizer).
 - `/modules`: dedicated module vault where each module can be unlocked individually before opening details.

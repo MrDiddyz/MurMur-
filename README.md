@@ -60,8 +60,14 @@ Wellbeing pages are explicitly non-clinical and non-diagnostic.
 To enable the moving background video, set:
 - `NEXT_PUBLIC_MURMUR_BG_VIDEO` (e.g. `/media/murmur-sister.mp4`)
 - `NEXT_PUBLIC_MURMUR_BG_POSTER` (e.g. `/media/murmur-sister-poster.jpg`)
+- `NEXT_PUBLIC_MURMUR_BG_IMAGE` (e.g. `/media/murmur-emblem.png`) for pulsing emblem background
 
 Place files in `public/media/` (or another public path) and the app will load them.
 If env vars are not set, the app uses an animated gradient fallback automatically.
 
 - `NEXT_PUBLIC_MURMUR_AUDIO_SRC` (e.g. `/media/murmur-theme.mp3`) to drive the psychedelic equalizer with real music.
+
+
+## Studio and Modules structure
+- `/studio`: dedicated music studio page with the psychedelic equalizer.
+- `/modules`: dedicated module vault where each module can be unlocked individually before opening details.

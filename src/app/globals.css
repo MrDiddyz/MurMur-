@@ -138,3 +138,42 @@ a {
     filter: hue-rotate(24deg) saturate(1.2);
   }
 }
+
+.murmur-bg-image {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: min(56vw, 680px);
+  background-repeat: no-repeat;
+  opacity: 0.28;
+  animation: murmurImagePulse 6s ease-in-out infinite;
+}
+
+@keyframes murmurImagePulse {
+  0%,
+  100% {
+    transform: scale(0.97);
+    filter: brightness(0.78) saturate(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.05) saturate(1.2);
+  }
+}
+
+.module-folder {
+  position: relative;
+}
+
+.module-folder::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  width: 84px;
+  height: 14px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid rgba(212, 175, 55, 0.38);
+  border-bottom: none;
+  background: linear-gradient(180deg, rgba(212, 175, 55, 0.24), rgba(212, 175, 55, 0.06));
+}

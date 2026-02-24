@@ -3,6 +3,7 @@ import { MurmurCubeMark } from '@/components/murmur-cube-mark';
 
 const links = [
   ['Hjem', '/'],
+  ['Studio', '/studio'],
   ['Løsninger', '/solutions/companies'],
   ['Moduler', '/modules'],
   ['Wellbeing', '/wellbeing'],

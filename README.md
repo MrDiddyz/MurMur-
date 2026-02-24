@@ -9,6 +9,18 @@ Production-ready marketing website for MURMUR, built with Next.js (App Router), 
 - Server Actions for contact form handling
 - SEO metadata + sitemap + robots
 
+
+## Nix development shell
+If you use Nix, this repo now includes a `flake.nix` for a reproducible dev environment.
+
+```bash
+nix develop
+```
+
+The shell provides:
+- Node.js 20
+- Python 3.10
+
 ## Run locally
 ```bash
 npm install

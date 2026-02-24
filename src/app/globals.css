@@ -121,3 +121,20 @@ a {
     animation: none;
   }
 }
+
+.equalizer-bar {
+  width: 100%;
+  max-width: 28px;
+  border-radius: 999px 999px 8px 8px;
+  box-shadow: 0 0 20px rgba(216, 89, 255, 0.35);
+  animation: equalizerShimmer 1.3s ease-in-out infinite alternate;
+}
+
+@keyframes equalizerShimmer {
+  0% {
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  100% {
+    filter: hue-rotate(24deg) saturate(1.2);
+  }
+}

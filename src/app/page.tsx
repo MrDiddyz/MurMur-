@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { modules } from '@/data/modules';
 import { ModuleCard } from '@/components/module-card';
+import { PsychedelicEqualizer } from '@/components/psychedelic-equalizer';
 
 const pillars = [
   ['Orientation', 'Forstå hvor dere er, hva som blokkerer fremdrift, og hva som faktisk gir effekt.'],
@@ -26,6 +27,10 @@ export default function HomePage() {
             Get a module recommendation
           </Link>
         </div>
+      </section>
+
+      <section>
+        <PsychedelicEqualizer />
       </section>
 
       <section className="grid gap-6 md:grid-cols-3">

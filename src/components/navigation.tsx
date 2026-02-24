@@ -2,8 +2,10 @@ import Link from 'next/link';
 import { MurmurCubeMark } from '@/components/murmur-cube-mark';
 
 const links = [
-  ['Studio', '/'],
-  ['Templates', '/modules'],
+  ['Hjem', '/'],
+  ['Løsninger', '/solutions/companies'],
+  ['Moduler', '/modules'],
+  ['Wellbeing', '/wellbeing'],
   ['Priser', '/pricing'],
   ['Om', '/about'],
   ['Kontakt', '/contact'],
@@ -28,7 +30,7 @@ export function Navigation() {
           href="/contact"
           className="rounded-full border border-accent/60 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-accent/20"
         >
-          Start prosjekt
+          Book call
         </Link>
       </div>
     </header>

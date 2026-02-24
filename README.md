@@ -63,3 +63,5 @@ To enable the moving background video, set:
 
 Place files in `public/media/` (or another public path) and the app will load them.
 If env vars are not set, the app uses an animated gradient fallback automatically.
+
+- `NEXT_PUBLIC_MURMUR_AUDIO_SRC` (e.g. `/media/murmur-theme.mp3`) to drive the psychedelic equalizer with real music.

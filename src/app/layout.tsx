@@ -3,6 +3,7 @@ import './globals.css';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { AnalyticsPlaceholder } from '@/components/analytics-placeholder';
+import { MurmurBackgroundVideo } from '@/components/murmur-background-video';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://dj-core.example.com'),
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="no">
       <body>
+        <MurmurBackgroundVideo />
         <Navigation />
         <main className="container-shell pt-16">{children}</main>
         <Footer />

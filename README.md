@@ -54,3 +54,12 @@ Wellbeing pages are explicitly non-clinical and non-diagnostic.
 - No medical advice, diagnosis, or treatment is offered.
 - Crisis guidance directs users to local emergency services and helplines.
 - Disclaimer appears in wellbeing and legal pages.
+
+
+## MurMur moving background media
+To enable the moving background video, set:
+- `NEXT_PUBLIC_MURMUR_BG_VIDEO` (e.g. `/media/murmur-sister.mp4`)
+- `NEXT_PUBLIC_MURMUR_BG_POSTER` (e.g. `/media/murmur-sister-poster.jpg`)
+
+Place files in `public/media/` (or another public path) and the app will load them.
+If env vars are not set, the app uses an animated gradient fallback automatically.

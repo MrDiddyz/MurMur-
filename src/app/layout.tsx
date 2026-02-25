@@ -4,6 +4,7 @@ import './globals.css';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { AnalyticsPlaceholder } from '@/components/analytics-placeholder';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://murmur-constellation.example.com'),
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <main className="container-shell pt-16">{children}</main>
         <Footer />
         <AnalyticsPlaceholder />
+        <SpeedInsights />
       </body>
     </html>
   );

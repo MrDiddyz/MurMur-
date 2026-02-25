@@ -1,182 +1,211 @@
+export const WARCRAFT_LOGS_CONNECTOR_ID = 'warcraftlogs_v1' as const;
+export const WARCRAFT_LOGS_PROVIDER = 'WarcraftLogs' as const;
+export const WARCRAFT_LOGS_GAME = 'WorldOfWarcraft' as const;
+
+export const WOW_SESSION_CONTEXTS = ['raid', 'dungeon', 'pvp', 'open_world'] as const;
+export type WowSessionContext = (typeof WOW_SESSION_CONTEXTS)[number];
+
+export type WowSource = {
+  connector_id: string;
+  game: string;
+  provider: string;
+  version: string;
+};
+
+export type WowActor = {
+  user_id: string;
+  character_id: string;
+  display_name: string;
+  region: string;
+  realm: string;
+};
+
+export type WowSession = {
+  session_id: string;
+  platform: string;
+  context: string;
+};
+
+export type WowConsent = {
+  scopes: string[];
+  granted_at: string;
+};
+
+export type WowSessionStartedPayload = {
+  context: WowSessionContext;
+};
+
+export type WowCombatMetricPayload = {
+  window_sec: number;
+  dps?: number;
+  hps?: number;
+  deaths?: number;
+};
+
 export type WowSessionStartedEvent = {
   id: string;
   type: 'session.started';
   ts: string;
-  source: {
-    connector_id: string;
-    game: string;
-    provider: string;
-    version: string;
-  };
-  actor: {
-    user_id: string;
-    character_id: string;
-    display_name: string;
-    region: string;
-    realm: string;
-  };
-  session: {
-    session_id: string;
-    platform: string;
-    context: string;
-  };
-  consent: {
-    scopes: string[];
-    granted_at: string;
-  };
-  payload: {
-    encounter: string | null;
-    data: Record<string, unknown>;
-  };
+  source: WowSource;
+  actor: WowActor;
+  session: WowSession;
+  consent: WowConsent;
+  payload: WowSessionStartedPayload;
 };
 
-const toScalar = (value: string): unknown => {
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return '';
-  }
-  if (trimmed === 'null') {
-    return null;
-  }
-  if (trimmed === '{}') {
-    return {};
-  }
-  if (trimmed === '[]') {
-    return [];
-  }
-  if (trimmed === 'true') {
-    return true;
-  }
-  if (trimmed === 'false') {
-    return false;
-  }
-  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
-    return trimmed.slice(1, -1);
-  }
-
-  const numeric = Number(trimmed);
-  if (!Number.isNaN(numeric) && trimmed === String(numeric)) {
-    return numeric;
-  }
-
-  return trimmed;
+export type WowCombatMetricEvent = {
+  id: string;
+  type: 'combat.metric';
+  ts: string;
+  source: WowSource;
+  actor: WowActor;
+  session: WowSession;
+  consent: WowConsent;
+  payload: WowCombatMetricPayload;
 };
 
-type Container = Record<string, unknown> | unknown[];
+const isObject = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
 
-type StackEntry = {
-  indent: number;
-  key?: string;
-  container: Container;
-};
-
-const ensureObject = (value: unknown): Record<string, unknown> => {
-  if (!value || Array.isArray(value) || typeof value !== 'object') {
-    return {};
+const asObject = (value: unknown, fieldName: string): Record<string, unknown> => {
+  if (!isObject(value)) {
+    throw new Error(`Expected ${fieldName} to be an object`);
   }
-  return value as Record<string, unknown>;
-};
-
-const parseLooseYaml = (input: string): Record<string, unknown> => {
-  const lines = input.split(/\r?\n/).filter((line) => line.trim().length > 0);
-  const root: Record<string, unknown> = {};
-  const stack: StackEntry[] = [{ indent: -1, container: root }];
-
-  for (let lineIndex = 0; lineIndex < lines.length; lineIndex += 1) {
-    const rawLine = lines[lineIndex];
-    const indent = rawLine.search(/\S|$/);
-    const line = rawLine.trim();
-
-    while (stack.length > 1 && indent <= stack[stack.length - 1].indent) {
-      stack.pop();
-    }
-
-    const parent = stack[stack.length - 1];
-
-    if (line.startsWith('- ')) {
-      const itemValue = line.slice(2).trim();
-      if (!Array.isArray(parent.container)) {
-        if (!parent.key || !stack[stack.length - 2]) {
-          throw new Error('Invalid list placement in event payload');
-        }
-        const grandParent = ensureObject(stack[stack.length - 2].container);
-        const forcedArray: unknown[] = [];
-        grandParent[parent.key] = forcedArray;
-        parent.container = forcedArray;
-      }
-      (parent.container as unknown[]).push(toScalar(itemValue));
-      continue;
-    }
-
-    const separatorIndex = line.indexOf(':');
-    if (separatorIndex < 0) {
-      continue;
-    }
-
-    const key = line.slice(0, separatorIndex).trim();
-    const valuePart = line.slice(separatorIndex + 1).trim();
-
-    const parentObject = ensureObject(parent.container);
-
-    if (!valuePart) {
-      const nextNonEmpty = lines.slice(lineIndex + 1).find((candidate) => candidate.trim().length > 0);
-      const nextIsList = Boolean(nextNonEmpty?.trim().startsWith('- '));
-      const nextContainer: Container = nextIsList ? [] : {};
-      parentObject[key] = nextContainer;
-      stack.push({ indent, key, container: nextContainer });
-      continue;
-    }
-
-    parentObject[key] = toScalar(valuePart);
-  }
-
-  return root;
+  return value;
 };
 
 const asString = (value: unknown, fieldName: string): string => {
-  if (typeof value !== 'string' || value.length === 0) {
+  if (typeof value !== 'string' || value.trim().length === 0) {
     throw new Error(`Expected ${fieldName} to be a non-empty string`);
   }
   return value;
 };
 
-export const parseWowSessionStartedEvent = (rawEvent: string): WowSessionStartedEvent => {
-  const parsed = parseLooseYaml(rawEvent);
-  const source = ensureObject(parsed.source);
-  const actor = ensureObject(parsed.actor);
-  const session = ensureObject(parsed.session);
-  const consent = ensureObject(parsed.consent);
-  const payload = ensureObject(parsed.payload);
+const asStringArray = (value: unknown, fieldName: string): string[] => {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string')) {
+    throw new Error(`Expected ${fieldName} to be a string array`);
+  }
+  return value;
+};
+
+const asNumber = (value: unknown, fieldName: string): number => {
+  if (typeof value !== 'number' || Number.isNaN(value)) {
+    throw new Error(`Expected ${fieldName} to be a valid number`);
+  }
+  return value;
+};
+
+const asOptionalNumber = (value: unknown, fieldName: string): number | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+  return asNumber(value, fieldName);
+};
+
+const asSessionContext = (value: unknown, fieldName: string): WowSessionContext => {
+  const context = asString(value, fieldName);
+  if (!WOW_SESSION_CONTEXTS.includes(context as WowSessionContext)) {
+    throw new Error(`Expected ${fieldName} to be one of: ${WOW_SESSION_CONTEXTS.join(', ')}`);
+  }
+  return context as WowSessionContext;
+};
+
+const parseRawEvent = (rawEvent: string | unknown): Record<string, unknown> => {
+  if (typeof rawEvent === 'string') {
+    try {
+      const parsed: unknown = JSON.parse(rawEvent);
+      return asObject(parsed, 'event');
+    } catch {
+      throw new Error('Expected event input to be valid JSON');
+    }
+  }
+
+  return asObject(rawEvent, 'event');
+};
+
+const parseSource = (value: unknown): WowSource => {
+  const source = asObject(value, 'source');
+  return {
+    connector_id: asString(source.connector_id, 'source.connector_id'),
+    game: asString(source.game, 'source.game'),
+    provider: asString(source.provider, 'source.provider'),
+    version: asString(source.version, 'source.version'),
+  };
+};
+
+const parseActor = (value: unknown): WowActor => {
+  const actor = asObject(value, 'actor');
+  return {
+    user_id: asString(actor.user_id, 'actor.user_id'),
+    character_id: asString(actor.character_id, 'actor.character_id'),
+    display_name: asString(actor.display_name, 'actor.display_name'),
+    region: asString(actor.region, 'actor.region'),
+    realm: asString(actor.realm, 'actor.realm'),
+  };
+};
+
+const parseSession = (value: unknown): WowSession => {
+  const session = asObject(value, 'session');
+  return {
+    session_id: asString(session.session_id, 'session.session_id'),
+    platform: asString(session.platform, 'session.platform'),
+    context: asString(session.context, 'session.context'),
+  };
+};
+
+const parseConsent = (value: unknown): WowConsent => {
+  const consent = asObject(value, 'consent');
+  return {
+    scopes: asStringArray(consent.scopes, 'consent.scopes'),
+    granted_at: asString(consent.granted_at, 'consent.granted_at'),
+  };
+};
+
+export const parseWowSessionStartedEvent = (rawEvent: string | unknown): WowSessionStartedEvent => {
+  const event = parseRawEvent(rawEvent);
+
+  if (event.type !== 'session.started') {
+    throw new Error('Expected event.type to be session.started');
+  }
+
+  const payload = asObject(event.payload, 'payload');
 
   return {
-    id: asString(parsed.id, 'id'),
-    type: asString(parsed.type, 'type') as WowSessionStartedEvent['type'],
-    ts: asString(parsed.ts, 'ts'),
-    source: {
-      connector_id: asString(source.connector_id, 'source.connector_id'),
-      game: asString(source.game, 'source.game'),
-      provider: asString(source.provider, 'source.provider'),
-      version: asString(source.version, 'source.version'),
-    },
-    actor: {
-      user_id: asString(actor.user_id, 'actor.user_id'),
-      character_id: asString(actor.character_id, 'actor.character_id'),
-      display_name: asString(actor.display_name, 'actor.display_name'),
-      region: asString(actor.region, 'actor.region'),
-      realm: asString(actor.realm, 'actor.realm'),
-    },
-    session: {
-      session_id: asString(session.session_id, 'session.session_id'),
-      platform: asString(session.platform, 'session.platform'),
-      context: asString(session.context, 'session.context'),
-    },
-    consent: {
-      scopes: Array.isArray(consent.scopes) ? consent.scopes.map((entry) => asString(entry, 'consent.scopes[]')) : [],
-      granted_at: asString(consent.granted_at, 'consent.granted_at'),
-    },
+    id: asString(event.id, 'id'),
+    type: 'session.started',
+    ts: asString(event.ts, 'ts'),
+    source: parseSource(event.source),
+    actor: parseActor(event.actor),
+    session: parseSession(event.session),
+    consent: parseConsent(event.consent),
     payload: {
-      encounter: payload.encounter === null ? null : typeof payload.encounter === 'string' ? payload.encounter : null,
-      data: ensureObject(payload.data),
+      context: asSessionContext(payload.context, 'payload.context'),
+    },
+  };
+};
+
+export const parseWowCombatMetricEvent = (rawEvent: string | unknown): WowCombatMetricEvent => {
+  const event = parseRawEvent(rawEvent);
+
+  if (event.type !== 'combat.metric') {
+    throw new Error('Expected event.type to be combat.metric');
+  }
+
+  const payload = asObject(event.payload, 'payload');
+
+  return {
+    id: asString(event.id, 'id'),
+    type: 'combat.metric',
+    ts: asString(event.ts, 'ts'),
+    source: parseSource(event.source),
+    actor: parseActor(event.actor),
+    session: parseSession(event.session),
+    consent: parseConsent(event.consent),
+    payload: {
+      window_sec: asNumber(payload.window_sec, 'payload.window_sec'),
+      dps: asOptionalNumber(payload.dps, 'payload.dps'),
+      hps: asOptionalNumber(payload.hps, 'payload.hps'),
+      deaths: asOptionalNumber(payload.deaths, 'payload.deaths'),
     },
   };
 };

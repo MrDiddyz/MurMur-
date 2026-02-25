@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Cyber Network</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { margin: 0; height: 100%; background: #030711; color: #dbe6ff; font-family: Inter, system-ui, sans-serif; }
+    #app { height: 100%; position: relative; }
+    #hud {
+      position: absolute; top: 10px; left: 10px; z-index: 10;
+      background: rgba(13, 20, 44, 0.7); border: 1px solid #233661;
+      border-radius: 8px; padding: 8px 10px; font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="hud">MurMur 3D Network · drag to rotate</div>
+  </div>
+
+  <script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+    import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+    const app = document.getElementById('app');
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    app.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x030711);
+
+    const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 2, 8);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+
+    scene.add(new THREE.AmbientLight(0x6f8fff, 0.5));
+    const pointLight = new THREE.PointLight(0x4af3ff, 1.2, 30);
+    pointLight.position.set(4, 6, 5);
+    scene.add(pointLight);
+
+    const nodes = [];
+    const nodeGeo = new THREE.SphereGeometry(0.12, 18, 18);
+    const nodeMat = new THREE.MeshStandardMaterial({ color: 0x4af3ff, emissive: 0x0c3f58, metalness: 0.3, roughness: 0.4 });
+
+    for (let i = 0; i < 28; i++) {
+      const node = new THREE.Mesh(nodeGeo, nodeMat);
+      const r = 2.2 + Math.random() * 2.2;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * Math.PI;
+      node.position.set(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.cos(phi),
+        r * Math.sin(phi) * Math.sin(theta)
+      );
+      nodes.push(node);
+      scene.add(node);
+    }
+
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x2f66d0, transparent: true, opacity: 0.6 });
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      const b = nodes[(i * 7 + 3) % nodes.length];
+      const points = [a.position, b.position];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      scene.add(new THREE.Line(geo, lineMat));
+    }
+
+    function animate(time) {
+      const t = time * 0.0003;
+      nodes.forEach((node, idx) => {
+        node.position.y += Math.sin(t + idx * 0.7) * 0.0015;
+      });
+      scene.rotation.y = t * 0.45;
+      controls.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

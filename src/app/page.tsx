@@ -1,139 +1,72 @@
 import Link from 'next/link';
-import { modules } from '@/data/modules';
-import { ModuleCard } from '@/components/module-card';
+import { EnterpriseModuleGrid } from '@/components/enterprise-module-grid';
 
-const pillars = [
-  ['Orientation', 'Forstå hvor dere er, hva som blokkerer fremdrift, og hva som faktisk gir effekt.'],
-  ['Architecture', 'Design læringsstrukturer som matcher kontekst, kapasitet og ambisjon.'],
-  ['Adaptation', 'Iterer modulene i takt med endring, uten å miste retning eller kvalitet.'],
-];
+const runeCode = 'ᚠᚱᛟᛋᛏ · ᚢᛚᚠᚱ · ᛗᛁᛞᚾᚨᛏᛏ · ᛋᛏᛁᛚᛚᚻᛖᛏ';
 
-const duoAssistantPrinciples = [
-  {
-    title: 'GitHub som sannhetskilde',
-    body: 'Bruk issues, branches og PR-er for å styre retning, prioriteringer og historikk i leveransen.',
-  },
-  {
-    title: 'Copilot for tempo',
-    body: 'La Copilot foreslå kode, tester og refaktorering fortløpende mens dere itererer i editoren.',
-  },
-  {
-    title: 'Du har siste ordet',
-    body: 'Alle forslag godkjennes av deg før merge: du eier kvalitet, retning og endelig beslutning.',
-  },
-];
+function VikingShieldArtwork() {
+  return (
+    <section className="relative overflow-hidden rounded-xl border border-[#d9b574]/35 bg-gradient-to-br from-[#121212] via-[#2a201a] to-[#6f2b1f] p-8 shadow-[0_12px_30px_rgba(0,0,0,0.45)]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#d9b57422,transparent_55%)]" />
+      <figure className="relative mx-auto flex max-w-3xl flex-col items-center text-center">
+        <figcaption className="text-xs uppercase tracking-[0.24em] text-[#d9b574]">Kunstverk</figcaption>
+        <h2 className="mt-3 text-3xl font-semibold text-[#f7f1e4] md:text-4xl">Viking-skjold</h2>
+        <svg viewBox="0 0 420 420" role="img" aria-label="Stort kunstverk av et viking skjold" className="mt-6 h-auto w-full max-w-[420px]">
+          <defs>
+            <radialGradient id="wood" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#8c5a3f" />
+              <stop offset="55%" stopColor="#6f2b1f" />
+              <stop offset="100%" stopColor="#1c1c1c" />
+            </radialGradient>
+          </defs>
+          <circle cx="210" cy="210" r="186" fill="url(#wood)" stroke="#d9b574" strokeWidth="10" />
+          <circle cx="210" cy="210" r="122" fill="none" stroke="#d9b574" strokeOpacity="0.55" strokeWidth="9" />
+          <circle cx="210" cy="210" r="46" fill="#2a201a" stroke="#f0e6d2" strokeWidth="6" />
+          <line x1="210" y1="26" x2="210" y2="394" stroke="#d9b574" strokeOpacity="0.45" strokeWidth="5" />
+          <line x1="26" y1="210" x2="394" y2="210" stroke="#d9b574" strokeOpacity="0.45" strokeWidth="5" />
+          <line x1="79" y1="79" x2="341" y2="341" stroke="#d9b574" strokeOpacity="0.35" strokeWidth="4" />
+          <line x1="341" y1="79" x2="79" y2="341" stroke="#d9b574" strokeOpacity="0.35" strokeWidth="4" />
+        </svg>
+      </figure>
+    </section>
+  );
+}
 
 export default function HomePage() {
   return (
-    <div className="space-y-20 pb-8">
-      <section className="space-y-8 py-10">
-        <p className="text-xs uppercase tracking-[0.24em] text-accent">A Learning Constellation</p>
-        <h1 className="max-w-3xl text-4xl font-semibold leading-tight md:text-6xl">MURMUR : A Learning Constellation</h1>
-        <p className="max-w-3xl text-lg text-ink">
-          Vi selger skreddersydde læringsmoduler for selskaper som trenger fart og retning, og for individer som vil bygge
-          robust kapasitet i arbeid og liv.
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/contact" className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-night hover:opacity-90">
-            Book discovery call
+    <div className="-mx-6 -mt-6 min-h-screen bg-gradient-to-b from-[#0f0f10] via-[#2a201a] to-[#6f2b1f] px-6 pb-10 text-[#f0e6d2] md:-mx-10 md:px-10">
+      <header className="mx-auto max-w-5xl border-b-4 border-[#d9b574] bg-[#101010]/80 px-6 py-14 text-center text-[#f7f1e4] backdrop-blur-sm">
+        <p className="text-xs uppercase tracking-[0.24em] text-[#d9b574]">Launch Edition</p>
+        <h1 className="mt-3 text-4xl font-semibold md:text-5xl">MurMur Á Learning Constellation</h1>
+        <p className="mt-4 text-base md:text-lg">Eksklusive software-moduler for Maskens barn & Enterprises</p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/contact"
+            className="rounded-full bg-[#d9b574] px-6 py-2 text-sm font-semibold text-[#121212] transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f7f1e4]"
+          >
+            Bestill discovery-samtale
           </Link>
-          <Link href="/modules" className="rounded-full border border-white/20 px-6 py-3 text-sm font-semibold hover:border-white/50">
-            Get a module recommendation
-          </Link>
-        </div>
-      </section>
-
-      <section className="grid gap-6 md:grid-cols-3">
-        {pillars.map(([title, body]) => (
-          <article key={title} className="card">
-            <h2 className="text-xl font-semibold">{title}</h2>
-            <p className="mt-3 text-sm text-ink">{body}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="card">
-        <h2 className="text-2xl font-semibold">How it works</h2>
-        <ol className="mt-6 grid gap-6 md:grid-cols-3">
-          {['Discovery & signal-mapping', 'Module architecture & scope', 'Execution with adaptive checkpoints'].map((step, i) => (
-            <li key={step} className="rounded-xl border border-white/10 p-4 text-sm text-ink">
-              <p className="text-xs text-accent">Steg {i + 1}</p>
-              <p className="mt-2 text-white">{step}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="card">
-        <p className="text-xs uppercase tracking-[0.24em] text-accent">Vibe coding collaboration</p>
-        <h2 className="mt-3 text-2xl font-semibold">Samarbeid med GitHub og Copilot</h2>
-        <p className="mt-3 max-w-3xl text-sm text-ink">
-          Bygg en enkel vibe-coding-flyt der GitHub håndterer struktur og sporbarhet, mens Copilot hjelper med forslag i sanntid.
-          Dere kan jobbe raskt med små commits, tydelige PR-er og løpende forbedringer, samtidig som du alltid bestemmer hva
-          som faktisk skal inn i main.
-        </p>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {duoAssistantPrinciples.map((principle) => (
-            <article key={principle.title} className="rounded-xl border border-white/10 bg-night/30 p-4">
-              <h3 className="text-base font-semibold text-white">{principle.title}</h3>
-              <p className="mt-2 text-sm text-ink">{principle.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-2xl font-semibold">Module showcase</h2>
-        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {modules.slice(0, 6).map((module) => (
-            <ModuleCard key={module.slug} module={module} />
-          ))}
-        </div>
-      </section>
-
-      <section className="card">
-        <p className="text-xs uppercase tracking-[0.24em] text-accent">Nytt pilotkonsept</p>
-        <h2 className="mt-3 text-2xl font-semibold">Raspberry Pi-oppsett for skjermer på arbeidsplassen</h2>
-        <p className="mt-3 max-w-4xl text-sm text-ink">
-          Vi setter opp Raspberry Pi med eksisterende PC-skjermer for å vise målrettet innhold innen markedsføring,
-          motivasjon og selvlæring. Løsningen er laget for å spare tid, redusere friksjon i hverdagen og forebygge store
-          feil som i verste fall kan koste millioner.
-        </p>
-        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-ink">
-          <li>Første bedrift får gratis pilotplan mot signert, streng NDA.</li>
-          <li>Strukturert oppfølging og feedback for kontinuerlig optimalisering.</li>
-          <li>Kan skaleres fra enkeltpersoner og team til store enterprise-miljøer.</li>
-          <li>Konkurransedyktige priser etter pilotfasen.</li>
-        </ul>
-        <div className="mt-6">
-          <Link href="/contact" className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-night hover:opacity-90">
-            Søk om gratis pilot
+          <Link
+            href="/pricing"
+            className="rounded-full border border-[#d9b574]/60 px-6 py-2 text-sm font-semibold text-[#f7f1e4] transition hover:bg-[#121212]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d9b574]"
+          >
+            Se prismodeller
           </Link>
         </div>
-      </section>
+      </header>
 
+      <main className="mx-auto mt-8 max-w-5xl space-y-8">
+        <VikingShieldArtwork />
+        <EnterpriseModuleGrid />
 
-
-      <section className="card">
-        <p className="text-xs uppercase tracking-[0.24em] text-accent">New demo</p>
-        <h2 className="mt-3 text-2xl font-semibold">Winamp-style MP3 player</h2>
-        <p className="mt-3 max-w-3xl text-sm text-ink">
-          Try our easy visual MP3 player with upload support, playlist handling, and live-generated artwork while the music runs.
-        </p>
-        <div className="mt-6">
-          <Link href="/winamp" className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-night hover:opacity-90">
-            Open MP3 Player
-          </Link>
-        </div>
-      </section>
-
-      <section className="card">
-        <h2 className="text-2xl font-semibold">Case studies kommer snart</h2>
-        <p className="mt-3 max-w-3xl text-sm text-ink">
-          Vi publiserer konkrete resultathistorier når klienter har gitt samtykke. Inntil da deler vi metode, tempo og
-          kvalitetskrav i discovery-samtalen.
-        </p>
-      </section>
+        <section className="rounded-lg border border-[#d9b574]/40 bg-[#101010]/85 p-6 text-[#f5f5f5] shadow-[0_4px_8px_rgba(0,0,0,0.2)]">
+          <p className="text-xs uppercase tracking-[0.24em] text-[#d9b574]">Hemmelig gåte</p>
+          <h2 className="mt-3 text-2xl font-semibold">Norrøn kryptisk kode</h2>
+          <p className="mt-4 rounded-md bg-black/40 p-4 font-mono text-lg leading-relaxed text-[#d9b574]">{runeCode}</p>
+          <p className="mt-4 text-sm text-[#ded2bc]">
+            Når frosten tier, ulven snur, og midnatt speiler det første navnet du bar — da kjenner kun du nøkkelen.
+          </p>
+        </section>
+      </main>
     </div>
   );
 }

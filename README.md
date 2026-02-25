@@ -21,6 +21,19 @@ The shell provides:
 - Node.js 20
 - Python 3.10
 
+## Environment variables
+Create a local env file before running:
+
+```bash
+cp .env.example .env.local
+```
+
+Required variables:
+- `NEXT_PUBLIC_SITE_URL`
+- `OPENAI_API_KEY`
+- `APP_ENV` (default: `production`)
+- `LOG_LEVEL` (default: `info`)
+
 ## Run locally
 ```bash
 npm install

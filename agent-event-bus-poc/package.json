@@ -1,0 +1,15 @@
+{
+  "name": "agent-event-bus-poc",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Proof-of-concept event bus topology and schema checks",
+  "type": "module",
+  "scripts": {
+    "emit:topology": "node scripts/emit-event.js bus/samples/topology.changed.sample.json",
+    "emit:health": "node scripts/emit-event.js bus/samples/module.health.sample.json",
+    "check:topology": "node system/invariants.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

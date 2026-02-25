@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOC Live Events</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #070b16; color: #dfe7ff; }
+    header { padding: 14px 18px; border-bottom: 1px solid #1b2642; background: #0c1430; }
+    main { max-width: 940px; margin: 20px auto; padding: 0 16px 20px; }
+    .status { margin: 14px 0 18px; color: #95abda; }
+    ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    li {
+      border: 1px solid #24335c;
+      border-left: 4px solid #4af3ff;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #0e1734;
+    }
+    .meta { color: #9cb0df; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header><strong>MurMur Security — SOC Live Feed</strong></header>
+  <main>
+    <p class="status" id="status">Connecting to Supabase realtime…</p>
+    <ul id="eventList"></ul>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script>
+    const statusEl = document.getElementById('status');
+    const eventList = document.getElementById('eventList');
+
+    function addEvent(event) {
+      const item = document.createElement('li');
+      item.innerHTML = `
+        <div><strong>${event.title || 'Security Event'}</strong></div>
+        <div>${event.description || 'No description provided.'}</div>
+        <div class="meta">Severity: ${event.severity || 'unknown'} · Source: ${event.source || 'n/a'} · ${new Date(event.created_at || Date.now()).toLocaleString()}</div>
+      `;
+      eventList.prepend(item);
+      while (eventList.children.length > 25) eventList.removeChild(eventList.lastChild);
+    }
+
+    (async function init() {
+      try {
+        const cfg = window.SUPABASE_CONFIG;
+        if (!cfg || cfg.url.includes('YOUR_PROJECT')) {
+          statusEl.textContent = 'Set your Supabase URL and anon key in config.js to enable live events.';
+          return;
+        }
+
+        const supabase = window.supabase.createClient(cfg.url, cfg.anonKey);
+        statusEl.textContent = 'Connected. Listening for INSERT events…';
+
+        const { data, error } = await supabase
+          .from(cfg.table)
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (error) throw error;
+        (data || []).reverse().forEach(addEvent);
+
+        supabase
+          .channel(cfg.channels.soc)
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: cfg.table }, payload => {
+            addEvent(payload.new || {});
+          })
+          .subscribe((state) => {
+            if (state === 'SUBSCRIBED') {
+              statusEl.textContent = 'Realtime active. Awaiting new SOC events…';
+            }
+          });
+      } catch (err) {
+        statusEl.textContent = `Realtime unavailable: ${err.message}`;
+      }
+    })();
+  </script>
+</body>
+</html>

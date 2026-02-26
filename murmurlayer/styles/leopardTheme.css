@@ -1,0 +1,164 @@
+:root {
+  --panel: rgba(10, 10, 12, 0.86);
+  --border: rgba(255, 210, 120, 0.35);
+  --text: rgba(255, 240, 220, 0.92);
+  --accent: rgba(255, 170, 40, 0.9);
+  --accent2: rgba(120, 230, 255, 0.75);
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(1200px 800px at 30% 20%, rgba(255, 160, 40, 0.12), transparent 55%),
+    radial-gradient(900px 700px at 70% 60%, rgba(120, 230, 255, 0.1), transparent 60%),
+    radial-gradient(circle at 20% 30%, rgba(0, 0, 0, 0.35) 0 14px, transparent 15px),
+    radial-gradient(circle at 40% 60%, rgba(0, 0, 0, 0.32) 0 12px, transparent 13px),
+    radial-gradient(circle at 65% 35%, rgba(0, 0, 0, 0.3) 0 16px, transparent 17px),
+    radial-gradient(circle at 80% 70%, rgba(0, 0, 0, 0.28) 0 11px, transparent 12px),
+    linear-gradient(135deg, #2a1b10, #0b0b10 55%, #101018);
+  background-size: auto, auto, 140px 140px, 160px 160px, 180px 180px, 150px 150px, auto;
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.murmur-shell {
+  width: min(980px, calc(100vw - 24px));
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+
+.murmur-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  letter-spacing: 0.6px;
+}
+
+.brand b {
+  color: var(--accent);
+}
+
+.brand small {
+  opacity: 0.75;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 12px;
+  padding: 12px;
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.panel-h {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.controls {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.slider {
+  width: 100%;
+}
+
+.list {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.item {
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.badge {
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  opacity: 0.85;
+}
+
+.eq {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+  padding: 10px 12px 14px;
+}
+
+.eqCol {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+
+.eqCol input[type="range"] {
+  writing-mode: bt-lr;
+  -webkit-appearance: slider-vertical;
+  width: 18px;
+  height: 140px;
+}
+
+.eqCol label {
+  font-size: 11px;
+  opacity: 0.75;
+}

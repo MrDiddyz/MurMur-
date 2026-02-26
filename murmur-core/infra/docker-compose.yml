@@ -1,0 +1,14 @@
+services:
+  murmur-core:
+    build:
+      context: ../services/core
+    ports:
+      - "8080:8080"
+    environment:
+      - MURMUR_DB_PATH=/data/murmur.db
+      - MURMUR_LOG_LEVEL=info
+    volumes:
+      - murmur_data:/data
+
+volumes:
+  murmur_data:

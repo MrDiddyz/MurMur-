@@ -2,6 +2,33 @@ import { LearningModule } from '@/lib/types';
 
 export const modules: LearningModule[] = [
   {
+    slug: 'pilot',
+    name: 'Pilot',
+    category: 'Business',
+    description: 'Kom raskt i gang med en fokusert oppstart som gir tydelig retning og raske læringssløyfer.',
+    outcomes: ['Klar oppstartsplan', 'Felles mål og prioriteringer', 'Målbare signaler innen 30 dager'],
+    timeline: '2-4 uker',
+    priceFrom: 'fra 18 000 NOK',
+  },
+  {
+    slug: 'mental-wellbeing',
+    name: 'Mental Wellbeing',
+    category: 'Personal',
+    description: 'Bygg robuste arbeidsrytmer og mental kapasitet med praktiske, ikke-kliniske wellbeing-rammer.',
+    outcomes: ['Bedre fokus og energiflyt', 'Redusert kognitivt stress', 'Enkle daglige praksiser som varer'],
+    timeline: '4-6 uker',
+    priceFrom: 'fra 12 000 NOK',
+  },
+  {
+    slug: 'membership',
+    name: 'Membership',
+    category: 'Systems',
+    description: 'Etabler et medlemsformat for kontinuerlig læring, oppfølging og tydelig progresjon over tid.',
+    outcomes: ['Strukturert medlemsreise', 'Forutsigbar leveranserytme', 'Bedre retensjon og opplevd verdi'],
+    timeline: '6-8 uker',
+    priceFrom: 'fra 22 000 NOK',
+  },
+  {
     slug: 'signal-to-strategy',
     name: 'Signal to Strategy',
     category: 'Business',

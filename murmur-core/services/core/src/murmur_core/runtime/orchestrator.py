@@ -3,8 +3,10 @@ from __future__ import annotations
 from murmur_core.runtime.agents import (
     BuilderAgent,
     ContentAgent,
+    DataEngineerAgent,
     MemoryAgent,
     OptimizerAgent,
+    AppProgrammerAgent,
     ReflectionAgent,
     ResearchAgent,
 )
@@ -17,7 +19,9 @@ class Orchestrator:
         self.store = store
         self.agents = {
             "research": ResearchAgent(),
+            "data_engineer": DataEngineerAgent(),
             "builder": BuilderAgent(),
+            "app_programmer": AppProgrammerAgent(),
             "content": ContentAgent(),
             "optimizer": OptimizerAgent(),
             "memory": MemoryAgent(),
@@ -29,18 +33,28 @@ class Orchestrator:
         run.events.append(e)
         self.store.add_event(e)
 
-    def run(self, goal: str) -> Run:
+    def run(self, goal: str, workflow: str = "default") -> Run:
         run = Run(goal=goal)
         self.store.upsert_run(run)
 
         self._emit(run, "orchestrator", "goal_received", "Goal received.", {"goal": goal})
 
-        plan = [
-            ("research", "Finn innsikt og avklaringer", {"query": goal}),
-            ("builder", "Skisser minimal demo/byggplan", {"goal": goal}),
-            ("content", "Lag 1 post + 1 CTA", {"topic": goal}),
-            ("optimizer", "Lag A/B hooks + metrics", {"goal": goal}),
-        ]
+        if workflow == "full_data_engineer_app_programmer":
+            plan = [
+                ("research", "Finn innsikt og avklaringer", {"query": goal}),
+                ("data_engineer", "Design dataplattform og kvalitetssjekker", {"goal": goal}),
+                ("builder", "Skisser minimal demo/byggplan", {"goal": goal}),
+                ("app_programmer", "Bygg full app-program og leveranseflyt", {"goal": goal}),
+                ("content", "Lag 1 post + 1 CTA", {"topic": goal}),
+                ("optimizer", "Lag A/B hooks + metrics", {"goal": goal}),
+            ]
+        else:
+            plan = [
+                ("research", "Finn innsikt og avklaringer", {"query": goal}),
+                ("builder", "Skisser minimal demo/byggplan", {"goal": goal}),
+                ("content", "Lag 1 post + 1 CTA", {"topic": goal}),
+                ("optimizer", "Lag A/B hooks + metrics", {"goal": goal}),
+            ]
         self._emit(run, "orchestrator", "plan_created", "Plan created.", {"steps": [p[1] for p in plan]})
 
         for role, title, inp in plan:

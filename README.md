@@ -42,6 +42,26 @@ npm run build
 4. Build command: `npm run build`.
 5. Start command: `npm run start`.
 
+## Artifact-to-deploy automation flow
+
+```text
+ChatGPT
+   ↓
+Generated File Artifact
+   ↓
+Codex Repo Handler
+   ↓
+Agent File Mover
+   ↓
+GitHub Commit
+   ↓
+Vercel Deploy
+   ↓
+WebSocket Notify Dashboard
+```
+
+This sequence describes the handoff from AI-generated output to deployed updates and dashboard notifications.
+
 ## Editing modules content
 All module content lives in:
 - `src/data/modules.ts`

@@ -59,3 +59,17 @@ docker compose up --build
 ## 5. Verification log
 - ✅ `sed -n '1,320p' murmur-core/README.md`
 - ✅ `git commit -m "Document example /run response payload in README"`
+
+
+## 6. Full Data Engineer + App Programmer workflow
+Bruk dette når du vil kjøre utvidet plan med egne steg for dataplattform og app-programmering.
+
+`POST /run` body:
+```json
+{
+  "goal": "Kjør full data Engineer app programmer",
+  "workflow": "full_data_engineer_app_programmer"
+}
+```
+
+Dette legger til rollene `data_engineer` og `app_programmer` i planen før memory/reflection.

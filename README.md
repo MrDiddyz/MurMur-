@@ -9,6 +9,54 @@ Production-ready marketing website for MURMUR, built with Next.js (App Router), 
 - Server Actions for contact form handling
 - SEO metadata + sitemap + robots
 
+## Request flow (iPhone/browser to MurMur runtime)
+```text
+iPhone / Browser
+        ↓
+HTTPS (TLS)
+        ↓
+Reverse Proxy (Nginx / Traefik)
+        ↓
+Auth Layer (JWT + RBAC)
+        ↓
+Session Orchestrator
+        ↓
+Kubernetes / Docker
+        ↓
+MurMur Node Containers
+        ↓
+Persistent Storage + Logs
+```
+
+### JWT claims and RBAC gate example
+```json
+{
+  "sub": "user_123",
+  "role": "architect",
+  "permissions": [
+    "spawn_node",
+    "deploy_module",
+    "read_logs"
+  ],
+  "organization": "murmur-lab"
+}
+```
+
+```ts
+if (!permissions.includes("spawn_node")) {
+  deny();
+}
+```
+
+### Session spawn lifecycle
+```text
+POST /spawn-session
+→ Creates Kubernetes pod
+→ Mounts user volume
+→ Injects scoped token
+→ Attaches terminal stream
+```
+
 
 ## Nix development shell
 If you use Nix, this repo now includes a `flake.nix` for a reproducible dev environment.

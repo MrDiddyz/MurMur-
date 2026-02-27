@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from murmur_core.runtime.orchestrator import Orchestrator
@@ -12,6 +14,7 @@ orch = Orchestrator(store=store)
 
 class GoalIn(BaseModel):
     goal: str = Field(..., min_length=3, max_length=4000)
+    workflow: Literal["default", "full_data_engineer_app_programmer"] = "default"
 
 
 class RunOut(BaseModel):
@@ -28,7 +31,7 @@ def health():
 
 @app.post("/run", response_model=RunOut)
 def run_goal(payload: GoalIn):
-    run = orch.run(goal=payload.goal)
+    run = orch.run(goal=payload.goal, workflow=payload.workflow)
     return {
         "run_id": run.run_id,
         "status": run.status,

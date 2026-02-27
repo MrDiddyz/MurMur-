@@ -6,7 +6,7 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
-Role = Literal["orchestrator", "research", "builder", "content", "optimizer", "memory", "reflection"]
+Role = Literal["orchestrator", "research", "data_engineer", "builder", "app_programmer", "content", "optimizer", "memory", "reflection"]
 EventType = Literal["goal_received", "plan_created", "task_created", "task_done", "reflection", "summary"]
 
 

@@ -30,6 +30,31 @@ class ResearchAgent(BaseAgent):
         return task, []
 
 
+class DataEngineerAgent(BaseAgent):
+    role = "data_engineer"
+
+    def handle(self, task: Task):
+        goal = task.input.get("goal", "MurMur Core")
+        task.output = {
+            "pipelines": [
+                "Ingest: hent signaler fra API/webhook og lagre rådata",
+                "Transform: valider skjema og normaliser events",
+                "Serve: eksponer KPI-tabeller for dashboards",
+            ],
+            "schema": [
+                "events(run_id, role, type, ts, payload)",
+                "runs(run_id, goal, status, summary, created_at)",
+            ],
+            "quality_checks": [
+                "null-check på run_id og event_type",
+                "unikhet på event_id",
+                f"daglig freshness-sjekk for {goal}",
+            ],
+        }
+        task.status = "done"
+        return task, []
+
+
 class BuilderAgent(BaseAgent):
     role = "builder"
 
@@ -41,6 +66,29 @@ class BuilderAgent(BaseAgent):
                 {"path": "services/core/src/... ", "desc": "Agent service (allerede i repo)"},
             ],
             "deploy": ["docker compose up --build", "open http://localhost:8080/docs"],
+        }
+        task.status = "done"
+        return task, []
+
+
+class AppProgrammerAgent(BaseAgent):
+    role = "app_programmer"
+
+    def handle(self, task: Task):
+        goal = task.input.get("goal", "MurMur Core")
+        task.output = {
+            "backend": [
+                "FastAPI endpoint: POST /run",
+                "Persist run/events/tasks i SQLite via Store",
+            ],
+            "frontend": [
+                "Next.js side for statusvisning",
+                "WebSocket-klient for live run-events",
+            ],
+            "delivery": [
+                f"Bygg app-program for: {goal}",
+                "Deploy via Vercel + notify dashboard",
+            ],
         }
         task.status = "done"
         return task, []

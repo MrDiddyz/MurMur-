@@ -1,85 +1,132 @@
-# MURMUR : A Learning Constellation
+# MURMUR
+### A Learning Constellation
 
-Production-ready marketing website for MURMUR, built with Next.js (App Router), TypeScript, and Tailwind CSS.
+MurMur is a modular intelligence infrastructure designed to help systems learn, reflect, and evolve continuously.
 
-## Stack
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Server Actions for contact form handling
-- SEO metadata + sitemap + robots
+It is not a single AI model.
+It is a coordinated ecosystem of specialized agents, simulation environments, and adaptive memory — built to optimize real-world decision-making at scale.
 
+MurMur is designed for organizations and individuals who require **structured intelligence**, not just responses.
 
-## Nix development shell
-If you use Nix, this repo now includes a `flake.nix` for a reproducible dev environment.
+---
 
-```bash
-nix develop
-```
+## Vision
 
-The shell provides:
-- Node.js 20
-- Python 3.10
+Modern software executes instructions.
+MurMur develops capability.
 
-## Run locally
+Our goal is to create a learning architecture where:
+
+- Multiple AI agents specialize and collaborate
+- Systems simulate possible futures before acting
+- Decisions improve through reinforcement and reflection
+- Knowledge compounds over time instead of resetting per session
+
+MurMur is built as an extensible foundation for adaptive systems in business, research, and complex operational environments.
+
+---
+
+## Core Principles
+
+**Modularity**
+Every capability is separable, replaceable, and composable.
+
+**Reflection**
+Agents do not only act — they analyze their own performance.
+
+**Simulation Before Execution**
+Decisions can be tested in modeled environments before real deployment.
+
+**Persistent Memory**
+Learning is cumulative and structured.
+
+**Human-Steerable Intelligence**
+Users guide goals and constraints while MurMur handles optimization.
+
+---
+
+## System Architecture
+
+MurMur operates as a coordinated constellation of functional layers.
+
+### Orchestrator Engine
+Central coordination layer managing agent communication, task routing, and execution cycles.
+
+### Agent Framework
+Specialized AI roles working together:
+
+- Teacher Agent — structured reasoning and knowledge organization
+- Experimental Agent — hypothesis generation and exploration
+- Think Tank Simulator — multi-perspective modeling
+- Reflective Agent — performance evaluation and learning synthesis
+
+### Memory System
+Persistent structured knowledge including:
+
+- Observations
+- Decisions
+- Outcomes
+- Behavioral patterns
+- Learned strategies
+
+### Simulation Layer
+Model-based environments for:
+
+- Scenario testing
+- Behavioral economics modeling
+- Market dynamics
+- Reinforcement learning training
+
+### Module Layer
+Commercial or domain-specific capabilities packaged as independent extensions.
+
+### Interface Layer
+Web dashboard and control environment for visualization and system steering.
+
+---
+
+## Technology Stack
+
+**Core Runtime**
+- TypeScript / Node.js
+- Fastify API layer
+
+**Data Infrastructure**
+- PostgreSQL (Supabase)
+- Redis (Upstash)
+
+**Frontend**
+- Next.js (App Router)
+- Real-time dashboards
+
+**Simulation & Training**
+- Python environments
+- Gym-compatible reinforcement learning
+
+**Infrastructure**
+- Docker-first architecture
+- Cloud-native deployment
+- CI/CD via GitHub Actions
+
+---
+
+## Repository Structure
+
+MurMur is organized as a modular codebase to support long-term scalability.
+
+## Local Development
+
 ```bash
 npm install
 npm run dev
 ```
+
 Open `http://localhost:3000`.
 
-## Quality checks
+## Quality Checks
+
 ```bash
 npm run lint
 npm run typecheck
 npm run build
 ```
-
-## Deploy (Vercel recommended)
-1. Push repository to GitHub.
-2. Import project in Vercel.
-3. Framework preset: **Next.js**.
-4. Build command: `npm run build`.
-5. Start command: `npm run start`.
-
-## Editing modules content
-All module content lives in:
-- `src/data/modules.ts`
-
-Update/add module objects there (`slug`, category, outcomes, timeline, `priceFrom`).
-Dynamic detail routes (`/modules/[slug]`) and sitemap generation pick this data automatically.
-
-## Contact form storage
-Contact submissions are stored locally (JSON) at:
-- `modules/contact-submissions.json`
-
-For production, replace this with a proper database or secure CRM integration.
-
-## Analytics placeholder
-A production-only placeholder script is included in:
-- `src/components/analytics-placeholder.tsx`
-
-Replace with your analytics provider snippet (e.g., Plausible, PostHog, GA4), and set any required env vars.
-
-## Safety and wellbeing disclaimer
-Wellbeing pages are explicitly non-clinical and non-diagnostic.
-- No medical advice, diagnosis, or treatment is offered.
-- Crisis guidance directs users to local emergency services and helplines.
-- Disclaimer appears in wellbeing and legal pages.
-
-## Modular realtime-learning backend (MurMur core)
-The Python orchestrator now runs a modular AI loop with persistent learning and logging:
-- `modules/listener.py`: extracts intent/signals with deterministic rule-based parsing.
-- `modules/spectre.py`: drives Spectre mode planning for a niche side-income workflow.
-- `modules/synthesizer.py`: composes end-user response in selected tone.
-- `modules/memory.py`: updates runtime state and appends JSONL logs for each interaction.
-
-Generated runtime files:
-- `modules/runtime-state.json`
-- `modules/runtime-log.jsonl`
-
-API endpoint for live mapping/state:
-- `GET /state`
-
-
-Default response tone in API is now `knivskarp` for concise execution-focused output.

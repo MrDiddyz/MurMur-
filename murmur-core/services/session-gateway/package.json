@@ -1,0 +1,24 @@
+{
+  "name": "@murmur/session-gateway",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "node --enable-source-maps dist/server.js",
+    "build": "tsc -p tsconfig.json",
+    "test": "tsx --test src/**/*.test.ts",
+    "prisma:generate": "prisma generate"
+  },
+  "dependencies": {
+    "@prisma/client": "5.19.1",
+    "ws": "8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.14.10",
+    "@types/ws": "8.5.12",
+    "prisma": "5.19.1",
+    "tsx": "4.16.2",
+    "typescript": "5.5.3"
+  }
+}

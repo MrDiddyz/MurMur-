@@ -1,61 +1,61 @@
-# MurMur Core (v0.1)
+# MurMur Core (v0.3 starter)
 
-## 1. Run locally (docker)
-From `infra/`:
-- `docker compose up --build`
-- open `http://localhost:8080/docs`
+GitHub-ready monorepo skeleton for:
+- **Next.js terminal UI** (`apps/terminal-web`)
+- **WebSocket session gateway** (`services/session-gateway`)
+- **Existing Python core API** (`services/core`)
+- **Infra + SQL** (`infra`)
 
-## 2. Run goal
-POST `http://localhost:8080/run`
-Body:
-```json
-{"goal":"Lag en content-agent for MurMur som publiserer ukentlig og lærer av metrics"}
+## Repo structure
+
+```text
+murmur-core/
+├─ apps/
+│  └─ terminal-web/           # Next.js terminal client over WebSocket
+├─ services/
+│  ├─ core/                   # Existing Python orchestrator service
+│  └─ session-gateway/        # Node/TS WebSocket + Docker session spawner + Prisma
+└─ infra/
+   ├─ docker-compose.yml      # Local stack incl. Postgres
+   └─ sql/
+      └─ 001_rbac.sql         # Prisma-compatible RBAC/session tables + seed data
 ```
 
-## 3. Test
-**Kjør dette lokalt:**
+## Quick start
 
 ```bash
 cd murmur-core/infra
 docker compose up --build
 ```
 
-## 4. Example response (`POST /run`)
-```json
-{
-  "run_id": "9f2b6c9a9b8a4b7f8e7a6f0f8c9d1e2f",
-  "status": "done",
-  "summary": "research:Finn innsikt og avklaringer -> insights, questions | builder:Skisser minimal demo/byggplan -> files, deploy | content:Lag 1 post + 1 CTA -> post | optimizer:Lag A/B hooks + metrics -> ab_tests, metrics | memory:Store run learnings -> stored, note | reflection:Reflect and improve -> reflection, event_count",
-  "events": [
-    {
-      "event_id": "…",
-      "run_id": "…",
-      "ts": "…Z",
-      "role": "orchestrator",
-      "type": "goal_received",
-      "message": "Goal received.",
-      "data": {
-        "goal": "Lag en content-agent som bygger og publiserer 3 posts i uka, måler CTR og forbedrer hooks"
-      }
-    },
-    {
-      "event_id": "…",
-      "role": "orchestrator",
-      "type": "plan_created",
-      "message": "Plan created.",
-      "data": {
-        "steps": [
-          "Finn innsikt og avklaringer",
-          "Skisser minimal demo/byggplan",
-          "Lag 1 post + 1 CTA",
-          "Lag A/B hooks + metrics"
-        ]
-      }
-    }
-  ]
-}
-```
+Then open:
+- Terminal UI: `http://localhost:3001`
+- Session gateway health: `http://localhost:8787`
+- Python core docs: `http://localhost:8080/docs`
 
-## 5. Verification log
-- ✅ `sed -n '1,320p' murmur-core/README.md`
-- ✅ `git commit -m "Document example /run response payload in README"`
+## RBAC behavior (gateway)
+
+The browser connects to:
+- `ws://localhost:8787/ws?email=<user-email>`
+
+Gateway uses Prisma (`DATABASE_URL`) and enforces permissions from DB:
+- `viewer`: `session.read`
+- `operator`: `session.read`, `session.start`, `session.stdin`
+- `admin`: all of the above + `session.stop`
+
+## Prisma model alignment
+
+`services/session-gateway/prisma/schema.prisma` defines:
+- `User` (belongs to one `Role`)
+- `Role` (has many `Permission` rows and `User`s)
+- `Permission` (action scoped per role)
+- `Session` (tracks active session container id per user)
+
+Seed SQL inserts default roles/permissions and a local bootstrap user:
+- `admin@murmur.local`
+
+## Notes
+
+- `session-gateway` mounts `/var/run/docker.sock` in docker-compose to spawn disposable containers.
+- Starter command in UI launches `alpine:3.20` and loops over stdin lines.
+- Run `npx prisma generate` inside `services/session-gateway` after dependency install.

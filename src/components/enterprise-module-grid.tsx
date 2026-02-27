@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 
 const moduler = [
   {
@@ -17,7 +18,14 @@ const moduler = [
     kontaktUrl: '/contact?module=sikkerhets-node-beta',
     vippsUrl: '/contact?module=sikkerhets-node-beta&intent=vipps',
   },
-];
+] as const satisfies ReadonlyArray<{
+  id: number;
+  navn: string;
+  pris: string;
+  beskrivelse: string;
+  kontaktUrl: Route;
+  vippsUrl: Route;
+}>;
 
 export function EnterpriseModuleGrid() {
   return (

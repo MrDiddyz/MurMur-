@@ -1,5 +1,8 @@
 # MURMUR : A Learning Constellation
 
+## Architecture Notes
+- [Observability & Agent Orchestration Architecture](docs/observability-architecture.md)
+
 Production-ready marketing website for MURMUR, built with Next.js (App Router), TypeScript, and Tailwind CSS.
 
 ## Stack

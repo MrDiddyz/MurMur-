@@ -1,0 +1,154 @@
+.murmur-shell {
+  display: grid;
+  gap: 1rem;
+  padding-bottom: 3rem;
+}
+
+.murmur-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.murmur-panel {
+  border: 1px solid rgba(250, 212, 124, 0.35);
+  border-radius: 16px;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 15% 12%, rgba(255, 210, 131, 0.18), transparent 35%),
+    linear-gradient(140deg, rgba(38, 24, 14, 0.82), rgba(10, 12, 22, 0.82));
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), inset 0 0 26px rgba(255, 164, 57, 0.05);
+}
+
+.murmur-panel.hero {
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(216, 147, 43, 0.33), transparent 45%),
+    repeating-linear-gradient(140deg, rgba(18, 16, 13, 0.96) 0 18px, rgba(82, 52, 20, 0.94) 18px 36px, rgba(17, 14, 11, 0.96) 36px 56px);
+}
+
+.murmur-panel h3,
+.murmur-panel h1 {
+  margin: 0;
+}
+
+.murmur-panel p {
+  margin: 0.45rem 0;
+}
+
+.murmur-muted {
+  color: rgba(255, 238, 210, 0.78);
+  font-size: 0.85rem;
+}
+
+.tag {
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: #7df4ff;
+}
+
+.murmur-upload-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.murmur-upload-grid label,
+.murmur-eq-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.murmur-upload-grid input,
+.murmur-eq-grid input,
+.murmur-row button {
+  accent-color: #45f3ff;
+}
+
+.murmur-list {
+  list-style: none;
+  margin: 0.65rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.murmur-list li {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.murmur-list button {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(8, 12, 22, 0.65);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.35rem 0.5rem;
+}
+
+.murmur-list li.active button:first-child {
+  border-color: #66f2ff;
+  box-shadow: 0 0 14px rgba(102, 242, 255, 0.3);
+}
+
+.murmur-list .danger {
+  color: #ff9ca8;
+}
+
+.murmur-row {
+  margin-top: 0.65rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.murmur-row button {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(20, 29, 47, 0.92), rgba(6, 11, 20, 0.95));
+  color: white;
+  padding: 0.45rem 0.75rem;
+}
+
+.murmur-eq-grid {
+  margin-top: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(90px, 1fr));
+  gap: 0.5rem;
+}
+
+.murmur-canvas {
+  width: 100%;
+  height: 320px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #0a0f17;
+}
+
+.murmur-metrics {
+  margin-top: 0.65rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.murmur-metrics span {
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(11, 14, 25, 0.66);
+}
+
+.murmur-audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.murmur-back {
+  color: #7df4ff;
+}

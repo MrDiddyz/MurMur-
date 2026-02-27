@@ -130,3 +130,53 @@ npm run lint
 npm run typecheck
 npm run build
 ```
+
+## MurMurLayer: Psycho Reactive Audio Visual Player
+
+Route: `/winamp`
+
+### File Tree
+
+```text
+src/murmurlayer/
+  core/
+    audioEngine.ts
+    performanceMonitor.ts
+    stateBus.tsx
+    visualEngine.ts
+  ui/
+    eqPanel.tsx
+    playerControls.tsx
+    playlist.tsx
+    uploadPanel.tsx
+    visualCanvas.tsx
+  app/
+    page.tsx
+src/styles/
+  leopardTheme.css
+src/app/winamp/page.tsx
+```
+
+### Install & Run
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000/winamp`.
+
+### Performance Notes
+
+- Visual rendering targets 60fps through `requestAnimationFrame` and quality auto-throttling.
+- Performance monitor lowers visual complexity when FPS < 50.
+- Analyzer cost is reduced dynamically by switching `fftSize` and increasing smoothing.
+- Memory guard trims oldest uploaded images when heap pressure is high.
+- Object URLs are revoked on item removal and provider unmount to avoid leaks.
+
+### Extension Guide
+
+- **Ableton Link / MIDI output:** add adapters in `core/audioEngine.ts` and publish transport sync state through `stateBus.tsx`.
+- **Shader GPU pipeline:** replace the current canvas 2D warping in `core/visualEngine.ts` with WebGL/WebGPU shader passes.
+- **Electron build:** package this Next route in an Electron shell and reuse current modules unchanged.
+- **AI visuals:** stream prompt-generated images into `stateBus.addImages` and let lazy decode + bitmap cache drive rendering.

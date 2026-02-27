@@ -1,0 +1,19 @@
+{
+  "name": "murmur-terminal",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @murmur/node-registry & npm run dev -w @murmur/server & npm run dev -w @murmur/web",
+    "build": "npm run build -ws",
+    "lint": "npm run lint -ws",
+    "db:generate": "prisma generate --schema=./prisma/schema.prisma",
+    "db:migrate": "prisma migrate deploy --schema=./prisma/schema.prisma"
+  },
+  "devDependencies": {
+    "prisma": "^5.20.0"
+  }
+}

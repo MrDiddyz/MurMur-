@@ -1,67 +1,384 @@
 <!DOCTYPE html>
-<html>
+<html lang="no">
 <head>
-<meta charset="UTF-8">
-<title>Murmur Security Map</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MurMur – Mental Wellbeing & Signature A7</title>
 
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+  <style>
+    :root { --navH: 72px; }
 
-<style>
-body{
-  margin:0;
-  background:#0b0f1a;
-  color:white;
-  font-family:system-ui;
-}
-#map{
-  width:100vw;
-  height:100vh;
-}
-.node{
-  fill:#1e2a44;
-  stroke:#4da3ff;
-  stroke-width:2;
-  cursor:pointer;
-}
-.node:hover{ fill:#2f4b7a; }
-</style>
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f6f6f6;
+      color: #333;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Sticky Nav */
+    .topnav {
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      background: rgba(0, 89, 179, 0.92);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .topnav .inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-decoration: none;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+
+    .navlinks {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .navlinks a {
+      color: rgba(255,255,255,0.92);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14.5px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .navlinks a:hover {
+      background: rgba(255,255,255,0.14);
+      transform: translateY(-1px);
+    }
+
+    /* So anchors don't hide behind sticky nav */
+    .section { scroll-margin-top: calc(var(--navH) + 18px); }
+
+    header {
+      background: #0059b3;
+      color: white;
+      padding: 18px 20px;
+      text-align: center;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+      animation: fadeIn 1.2s ease forwards;
+    }
+
+    /* Hero */
+    .hero {
+      background: url('https://picsum.photos/1200/600?blur=2') center/cover;
+      padding: 140px 20px;
+      text-align: center;
+      color: white;
+      animation: fadeIn 1.4s ease forwards;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      margin-bottom: 12px;
+      animation: slideUp 1.3s ease forwards;
+    }
+
+    .hero p {
+      font-size: 20px;
+      animation: slideUp 1.6s ease forwards;
+    }
+
+    .cta-btn {
+      background: #ffcc00;
+      color: #003366;
+      padding: 14px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 25px;
+      display: inline-block;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .cta-btn:hover {
+      transform: scale(1.075);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+    }
+
+    /* Sections */
+    .section {
+      max-width: 1000px;
+      margin: auto;
+      padding: 50px 20px;
+      background: white;
+      margin-top: 40px;
+      border-radius: 12px;
+      animation: fadeIn 1.2s ease forwards;
+    }
+
+    .service-box {
+      background: #eef5ff;
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .service-box:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.15);
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: bold;
+      color: #0059b3;
+      margin-top: 10px;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap: 25px;
+    }
+
+    .testimonial {
+      background: #fafafa;
+      padding: 22px;
+      border-left: 5px solid #0059b3;
+      border-radius: 6px;
+      font-style: italic;
+      transition: transform 0.25s ease;
+    }
+
+    .testimonial:hover { transform: translateX(6px); }
+
+    /* A7 Signature Premium Section */
+    .signature {
+      border: 2px solid #e7d9ff;
+      background: linear-gradient(135deg, #ffffff 0%, #f7f0ff 100%);
+      box-shadow: 0 10px 35px rgba(80,0,120,0.09);
+    }
+
+    .signature-box {
+      background: #fbf7ff;
+      padding: 30px;
+      border-radius: 12px;
+      border-left: 6px solid #a566ff;
+      transition: transform 0.3s ease, box-shadow 0.4s ease;
+    }
+
+    .signature-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 36px rgba(120,0,180,0.18);
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: #ddd;
+      margin-top: 40px;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 640px) {
+      :root { --navH: 96px; }
+      .hero h1 { font-size: 36px; }
+      .topnav .inner { align-items: flex-start; }
+      .navlinks a { font-size: 14px; padding: 7px 9px; }
+    }
+  </style>
 </head>
 
 <body>
 
-<svg id="map" viewBox="0 0 500 700">
+  <!-- STICKY NAV -->
+  <nav class="topnav" aria-label="Hovednavigasjon">
+    <div class="inner">
+      <a class="brand" href="#">MurMur</a>
+      <div class="navlinks">
+        <a href="#tjenester">Tjenester</a>
+        <a href="#a7">A7</a>
+        <a href="#kundehistorier">Kundehistorier</a>
+        <a href="#kontakt">Kontakt</a>
+      </div>
+    </div>
+  </nav>
 
-<rect class="node" x="150" y="20" width="200" height="50"/>
-<text x="210" y="50">CLIENT</text>
+  <header>
+    MurMur – Mental Wellbeing & Signature Innovation
+  </header>
 
-<rect class="node" x="150" y="100" width="200" height="50"/>
-<text x="200" y="130">EDGE SECURITY</text>
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Moderne mental støtte – for mennesker og organisasjoner</h1>
+    <p>Trygg · Anonym · Alltid tilgjengelig</p>
 
-<rect class="node" x="150" y="180" width="200" height="50"/>
-<text x="220" y="210">AUTH</text>
+    <a class="cta-btn"
+       href="mailto:MurMurAI@proton.me?subject=MurMur%20-%20Kom%20i%20gang&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20%C3%A5%20komme%20i%20gang.%0A%0AVennlig%20hilsen">
+      Kom i gang
+    </a>
+  </div>
 
-<rect class="node" x="150" y="260" width="200" height="50"/>
-<text x="200" y="290">EVENT API</text>
+  <!-- WHY MURMUR -->
+  <div class="section">
+    <h2>Hvorfor MurMur?</h2>
+    <p>
+      MurMur kombinerer smart teknologi, anonym støtte og moderne psykisk egenomsorg.
+      Skapt for å redusere stress, styrke trivsel og gjøre hjelp tilgjengelig – når du trenger det.
+    </p>
+  </div>
 
-<rect class="node" x="150" y="340" width="200" height="50"/>
-<text x="200" y="370">RISK ENGINE</text>
+  <!-- SERVICES -->
+  <div class="section" id="tjenester">
+    <h2>Våre tjenester</h2>
 
-<rect class="node" x="150" y="420" width="200" height="50"/>
-<text x="200" y="450">DATABASE</text>
+    <div class="service-box">
+      <h3>1. MurMur Pilot for Bedrifter</h3>
+      <p>En komplett løsning for mental støtte i bedrifter (10–20 ansatte i pilot).</p>
+      <p class="price">Fra 7 900 kr/mnd</p>
+      <a class="cta-btn"
+         href="mailto:MurMurAI@proton.me?subject=MurMur%20Pilot%20for%20Bedrifter&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20mer%20info%20om%20MurMur%20Pilot%20for%20bedrifter.%0A%0ASt%C3%B8rrelse%20p%C3%A5%20team%2Fbedrift%3A%20%0A%0AVennlig%20hilsen">
+        Be om tilbud
+      </a>
+    </div>
 
-<rect class="node" x="150" y="500" width="200" height="50"/>
-<text x="210" y="530">RESPONSE</text>
+    <div class="service-box">
+      <h3>2. MurMur Mental Wellbeing – Lavterskel</h3>
+      <p>Ubegrenset støtte, refleksjoner og øvelser – alltid tilgjengelig.</p>
+      <p class="price">299 kr/mnd per bruker</p>
+      <a class="cta-btn"
+         href="mailto:MurMurAI@proton.me?subject=MurMur%20Mental%20Wellbeing%20-%20Lavterskel&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20%C3%A5%20starte%20MurMur%20Mental%20Wellbeing%20(Lavterskel).%0A%0AVennlig%20hilsen">
+        Start abonnement
+      </a>
+    </div>
 
-</svg>
+    <div class="service-box">
+      <h3>3. Privat Medlemskap – Light</h3>
+      <p>En enkel og rimelig løsning for privatpersoner.</p>
+      <p class="price">99 kr/mnd</p>
+      <a class="cta-btn"
+         href="mailto:MurMurAI@proton.me?subject=Privat%20Medlemskap%20-%20Light&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20%C3%A5%20starte%20Privat%20Medlemskap%20(Light).%0A%0AVennlig%20hilsen">
+        Bli medlem
+      </a>
+    </div>
+  </div>
 
-<script>
-svgPanZoom('#map', {
-  zoomEnabled: true,
-  controlIconsEnabled: true,
-  fit: true,
-  center: true
-});
-</script>
+  <!-- PREMIUM A7 SIGNATURE -->
+  <div class="section signature" id="a7">
+    <h2 style="text-align:center; font-size: 38px; margin-bottom: 10px;">
+      🜚⚡A7 – MurMur Signature
+    </h2>
+
+    <p style="text-align:center; max-width: 760px; margin:auto;">
+      Vår mest eksklusive premium-tjeneste. For organisasjoner og privatkunder som ønsker
+      maksimal kvalitet, personlig tilpasning og full enterprise-støtte.
+    </p>
+
+    <div class="signature-box" style="margin-top: 30px;">
+      <h3 style="font-size: 26px; margin-top:0; color: #5a2bb4;">
+        Innhold i Signature A7
+      </h3>
+
+      <ul style="font-size: 17px; line-height: 1.8;">
+        <li>Full enterprise wellbeing-motor</li>
+        <li>Skreddersydde kognitive modeller for bedriften</li>
+        <li>Dype anonymiserte innsiktsdashboards til ledelse</li>
+        <li>Avansert AI-drevet emosjonell restitusjon</li>
+        <li>Prioritert tilgang til all ny MurMur-teknologi</li>
+        <li>Eksklusiv onboarding og kontinuerlig optimalisering</li>
+      </ul>
+
+      <p style="font-weight:bold; font-size:23px; color:#5a2bb4; margin-top:20px;">
+        Fra 19 900 kr/mnd (begrenset tilgjengelighet)
+      </p>
+    </div>
+
+    <div style="text-align:center; margin-top:25px;">
+      <a class="cta-btn"
+         href="mailto:MurMurAI@proton.me?subject=A7%20Signature%20-%20Be%20om%20tilgang&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20%C3%A5%20be%20om%20tilgang%20til%20A7%20Signature.%0A%0AOrganisasjon%20(om%20relevant)%3A%20%0A%C3%98nsket%20oppstart%3A%20%0A%0AVennlig%20hilsen">
+        Be om tilgang til A7 Signature
+      </a>
+    </div>
+  </div>
+
+  <!-- CLIENT STORIES -->
+  <div class="section" id="kundehistorier">
+    <h2>Kundehistorier</h2>
+
+    <div class="testimonials">
+      <div class="testimonial">
+        “Stressnivå gikk ned markant etter seks uker. MurMur brukes daglig av teamet.”
+        <br><strong>– HR-leder, teknologibransjen</strong>
+      </div>
+
+      <div class="testimonial">
+        “Jeg får perspektiv og ro når jeg trenger det mest.”
+        <br><strong>– Privatmedlem</strong>
+      </div>
+
+      <div class="testimonial">
+        “Endelig en løsning folk faktisk bruker. Anonymt og tilgjengelig hele tiden.”
+        <br><strong>– Teamleder, helsesektor</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="section" id="kontakt">
+    <h2>Kontakt & betaling</h2>
+
+    <p>
+      Første kontakt og branding: <br>
+      <strong><a href="mailto:MurMurAI@proton.me">MurMurAI@proton.me</a></strong>
+    </p>
+
+    <h3>Betalingsmetoder</h3>
+    <ul>
+      <li>Vipps (SaaS)</li>
+      <li>Stripe / Kortbetaling</li>
+      <li>Krypto (BTC, ETH, USDT, USDC)</li>
+    </ul>
+
+    <a class="cta-btn"
+       href="mailto:MurMurAI@proton.me?subject=Kontakt%20MurMur&body=Hei%20MurMur%2C%0A%0AJeg%20%C3%B8nsker%20%C3%A5%20komme%20i%20kontakt%20om%20...%0A%0AVennlig%20hilsen">
+      Kontakt oss
+    </a>
+  </div>
+
+  <footer>
+    © 2026 MurMur – Alle rettigheter reservert
+  </footer>
 
 </body>
 </html>

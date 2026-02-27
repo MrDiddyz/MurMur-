@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Route } from 'next';
 
 const links = [
   { href: '/murmur-aicore', label: 'Landing' },
@@ -7,7 +8,7 @@ const links = [
   { href: '/murmur-aicore/pricing', label: 'Membership' },
   { href: '/murmur-aicore/app/dashboard', label: 'Member Area' },
   { href: '/murmur-aicore/build-order', label: 'Build Order' },
-];
+] as const satisfies ReadonlyArray<{ href: Route; label: string }>;
 
 export function MurmurCoreNav() {
   return (

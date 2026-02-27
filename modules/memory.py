@@ -27,6 +27,9 @@ DEFAULT_STATE = RuntimeState(
 )
 
 
+MAX_STATE_ITEMS = 10
+
+
 def _ensure_parent(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -40,17 +43,72 @@ def _clone_default_state() -> RuntimeState:
     )
 
 
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_ranked_items(raw_items: Any) -> list[str]:
+    if not isinstance(raw_items, list):
+        return []
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+
+    for raw in raw_items:
+        item = str(raw).strip()
+        if not item:
+            continue
+        key = item.casefold()
+        if key in seen:
+            continue
+
+        seen.add(key)
+        normalized.append(item)
+        if len(normalized) >= MAX_STATE_ITEMS:
+            break
+
+    return normalized
+
+
+
+
+def _append_unique_capped(target: list[str], candidate: str) -> None:
+    value = candidate.strip()
+    if not value or value in target:
+        return
+
+    target.append(value)
+    if len(target) > MAX_STATE_ITEMS:
+        del target[0]
+
+def _parse_state(data: dict[str, Any]) -> RuntimeState:
+    niche_raw = data.get("niche", DEFAULT_STATE.niche)
+    niche = str(niche_raw).strip() or DEFAULT_STATE.niche
+
+    return RuntimeState(
+        interactions=_safe_int(data.get("interactions", 0)),
+        niche=niche,
+        top_goals=_normalize_ranked_items(data.get("top_goals", [])),
+        top_obstacles=_normalize_ranked_items(data.get("top_obstacles", [])),
+    )
+
+
 def load_state() -> RuntimeState:
     if not STATE_PATH.exists():
         return _clone_default_state()
 
-    data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    return RuntimeState(
-        interactions=int(data.get("interactions", 0)),
-        niche=str(data.get("niche", DEFAULT_STATE.niche)),
-        top_goals=list(data.get("top_goals", [])),
-        top_obstacles=list(data.get("top_obstacles", [])),
-    )
+    try:
+        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return _clone_default_state()
+
+    if not isinstance(data, dict):
+        return _clone_default_state()
+
+    return _parse_state(data)
 
 
 def save_state(state: RuntimeState) -> None:
@@ -58,10 +116,10 @@ def save_state(state: RuntimeState) -> None:
     STATE_PATH.write_text(
         json.dumps(
             {
-                "interactions": state.interactions,
+                "interactions": max(0, state.interactions),
                 "niche": state.niche,
-                "top_goals": state.top_goals[:10],
-                "top_obstacles": state.top_obstacles[:10],
+                "top_goals": state.top_goals[:MAX_STATE_ITEMS],
+                "top_obstacles": state.top_obstacles[:MAX_STATE_ITEMS],
             },
             ensure_ascii=False,
             indent=2,
@@ -81,14 +139,10 @@ def update_from_listener(listener_output: dict[str, Any]) -> RuntimeState:
     state.interactions += 1
 
     for goal in listener_output.get("goals", []):
-        g = str(goal).strip()
-        if g and g not in state.top_goals:
-            state.top_goals.append(g)
+        _append_unique_capped(state.top_goals, str(goal))
 
     for obstacle in listener_output.get("obstacles", []):
-        o = str(obstacle).strip()
-        if o and o not in state.top_obstacles:
-            state.top_obstacles.append(o)
+        _append_unique_capped(state.top_obstacles, str(obstacle))
 
     niche = listener_output.get("niche")
     if niche:

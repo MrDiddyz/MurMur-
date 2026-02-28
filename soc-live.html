@@ -1,218 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MurMur SOC Live Feed</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #060b14;
-      --panel: #0b1426;
-      --line: rgba(102, 178, 255, 0.25);
-      --text: #dbeaff;
-      --ok: #2dd4bf;
-      --warn: #f59e0b;
-      --high: #f87171;
-    }
+<meta charset="UTF-8">
+<title>MurMur</title>
 
-    body {
-      margin: 0;
-      background: linear-gradient(180deg, #0a1330, var(--bg));
-      color: var(--text);
-      font-family: Inter, system-ui, sans-serif;
-      min-height: 100vh;
-      padding: 22px;
-    }
+<style>
+body{
+margin:0;
+background:black;
+overflow:hidden;
+font-family:Arial, sans-serif;
+color:white;
+}
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: grid;
-      gap: 16px;
-    }
+/* ===== STAR FIELD ===== */
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
 
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(11, 20, 38, 0.86);
-      padding: 14px;
-      backdrop-filter: blur(8px);
-    }
+/* ===== CENTER CORE ===== */
+.center{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
 
-    .head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+/* ===== IMPOSSIBLE CUBE ===== */
+.cube{
+width:200px;
+height:200px;
+transform-style:preserve-3d;
+animation:rotateCube 12s infinite linear;
+margin:auto;
+cursor:pointer;
+}
 
-    h1 { margin: 0; font-size: 1.2rem; }
+.face{
+position:absolute;
+width:200px;
+height:200px;
+background:rgba(0,255,255,0.08);
+border:1px solid rgba(0,255,255,0.6);
+display:flex;
+align-items:center;
+justify-content:center;
+backdrop-filter:blur(5px);
+}
 
-    #status {
-      font-size: 0.85rem;
-      opacity: 0.9;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 10px;
-    }
+.front{transform:translateZ(100px);}
+.back{transform:rotateY(180deg) translateZ(100px);}
+.right{transform:rotateY(90deg) translateZ(100px);}
+.left{transform:rotateY(-90deg) translateZ(100px);}
+.top{transform:rotateX(90deg) translateZ(100px);}
+.bottom{transform:rotateX(-90deg) translateZ(100px);}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 0.92rem;
-    }
+@keyframes rotateCube{
+0%{transform:rotateX(0deg) rotateY(0deg);}
+100%{transform:rotateX(360deg) rotateY(360deg);}
+}
 
-    th, td {
-      text-align: left;
-      padding: 10px 8px;
-      border-bottom: 1px solid rgba(102, 178, 255, 0.15);
-      vertical-align: top;
-    }
+/* ===== UI BUTTON ===== */
+button{
+margin-top:25px;
+padding:12px 30px;
+background:transparent;
+border:1px solid cyan;
+color:white;
+cursor:pointer;
+}
 
-    th {
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      opacity: 0.85;
-    }
-
-    .badge {
-      display: inline-flex;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      border: 1px solid currentColor;
-    }
-
-    .sev-low { color: var(--ok); }
-    .sev-medium { color: var(--warn); }
-    .sev-high { color: var(--high); }
-
-    .hint {
-      font-size: 0.86rem;
-      opacity: 0.88;
-      line-height: 1.4;
-    }
-
-    code { color: #9dd4ff; }
-  </style>
+/* ===== HIDDEN MODULE ===== */
+.module{
+margin-top:20px;
+display:none;
+font-size:18px;
+color:#00ffff;
+}
+</style>
 </head>
+
 <body>
-  <main class="container">
-    <section class="panel head">
-      <h1>Live SOC Event Stream</h1>
-      <span id="status">Initializing…</span>
-    </section>
 
-    <section class="panel hint">
-      Listening to Supabase realtime events on table <code>soc_events</code>. Update <code>config.js</code> with your project URL and anon key.
-    </section>
+<canvas id="stars"></canvas>
 
-    <section class="panel">
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Source</th>
-            <th>Event</th>
-            <th>Severity</th>
-            <th>Details</th>
-          </tr>
-        </thead>
-        <tbody id="event-body"></tbody>
-      </table>
-    </section>
-  </main>
+<div class="center">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="./config.js"></script>
-  <script>
-    const statusEl = document.getElementById('status');
-    const eventBody = document.getElementById('event-body');
+<h1>MurMur</h1>
+<p>The Living Intelligence Constellation</p>
 
-    function setStatus(text) {
-      statusEl.textContent = text;
-    }
+<div class="cube" onclick="unlockModule()">
+<div class="face front">Module</div>
+<div class="face back">AI</div>
+<div class="face right">Core</div>
+<div class="face left">Access</div>
+<div class="face top">Evolution</div>
+<div class="face bottom">∞</div>
+</div>
 
-    function severityClass(level = '') {
-      const normalized = String(level).toLowerCase();
-      if (normalized === 'high' || normalized === 'critical') return 'sev-high';
-      if (normalized === 'medium' || normalized === 'moderate') return 'sev-medium';
-      return 'sev-low';
-    }
+<button onclick="simulatePayment()">Unlock Module</button>
 
-    function addRow(eventData) {
-      const row = document.createElement('tr');
-      const timestamp = eventData.created_at || new Date().toISOString();
-      const date = new Date(timestamp);
-      const source = eventData.source || 'unknown';
-      const name = eventData.event_name || eventData.type || 'event';
-      const severity = eventData.severity || 'low';
-      const details = eventData.details || eventData.message || '-';
+<div class="module" id="module">
+Module Activated
+<br><br>
+Access Path Opened
+<br><br>
+MurMur Core requires voluntary testing.
+</div>
 
-      row.innerHTML = `
-        <td>${date.toLocaleString()}</td>
-        <td>${source}</td>
-        <td>${name}</td>
-        <td><span class="badge ${severityClass(severity)}">${String(severity).toUpperCase()}</span></td>
-        <td>${details}</td>
-      `;
+</div>
 
-      eventBody.prepend(row);
+<script>
 
-      while (eventBody.children.length > 100) {
-        eventBody.removeChild(eventBody.lastChild);
-      }
-    }
+/* ===== STARFIELD ===== */
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
 
-    const cfg = window.SUPABASE_CONFIG;
-    if (!cfg || !cfg.url || !cfg.anonKey || cfg.url.includes('YOUR-PROJECT')) {
-      setStatus('Config missing: update config.js');
-      addRow({
-        source: 'local',
-        event_name: 'configuration_required',
-        severity: 'medium',
-        details: 'Set SUPABASE_CONFIG.url and SUPABASE_CONFIG.anonKey in config.js'
-      });
-    } else {
-      const supabase = window.supabase.createClient(cfg.url, cfg.anonKey);
-      setStatus('Connected · waiting for realtime events…');
+let stars=[];
+for(let i=0;i<200;i++){
+stars.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2
+});
+}
 
-      supabase
-        .channel('soc-live-feed')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'soc_events'
-        }, payload => {
-          addRow(payload.new || payload.old || payload);
-        })
-        .subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            setStatus('Subscribed to public.soc_events');
-          } else {
-            setStatus(`Realtime status: ${status}`);
-          }
-        });
+function drawStars(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="white";
+stars.forEach(s=>{
+ctx.beginPath();
+ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+ctx.fill();
+});
+requestAnimationFrame(drawStars);
+}
+drawStars();
 
-      supabase
-        .from('soc_events')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20)
-        .then(({ data, error }) => {
-          if (error) {
-            addRow({ source: 'supabase', event_name: 'load_error', severity: 'high', details: error.message });
-            return;
-          }
-          (data || []).forEach(addRow);
-        });
-    }
-  </script>
+/* ===== SHOOTING STAR LOOP ===== */
+function shootingStar(){
+let x=Math.random()*canvas.width;
+let y=0;
+
+let interval=setInterval(()=>{
+ctx.strokeStyle="white";
+ctx.beginPath();
+ctx.moveTo(x,y);
+ctx.lineTo(x+80,y+20);
+ctx.stroke();
+x+=15;
+y+=5;
+if(y>canvas.height) clearInterval(interval);
+},20);
+}
+
+setInterval(shootingStar,10000);
+
+/* ===== PAYMENT SIM ===== */
+let paid=false;
+
+function simulatePayment(){
+paid=true;
+alert("Payment Confirmed — Module Path Opening");
+}
+
+/* ===== MODULE UNLOCK ===== */
+function unlockModule(){
+if(!paid){
+alert("Module locked — complete payment first");
+return;
+}
+document.getElementById("module").style.display="block";
+}
+
+</script>
+
 </body>
 </html>

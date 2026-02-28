@@ -1,4 +1,4 @@
-gh issue create \
+ja gh issue create \
   --title "Codex Integration — Repository Connection & Execution Pipeline" \
   --label "integration,infrastructure,ai-agent,high-priority" \
   --body "
@@ -32,4 +32,4 @@ INITIAL TEST TASK
 Create a minimal file in the repo via Codex and verify commit + trace log.
 
 This is a foundational step required for autonomous development capabilities.
-"
+"gh auth login

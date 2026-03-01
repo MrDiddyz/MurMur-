@@ -1,142 +1,163 @@
-MurMur- Repository
+# MurMur Enterprise
 
-Repository ID: 1158260772Overview: This repository contains information about high-level GitHub repository language composition. A concise outline of its functionality and structure is included.
+> Adaptive Intelligence Infrastructure for Modern Organizations
 
-# MURMUR
-### A Learning Constellation
+MurMur is a secure, enterprise-grade AI orchestration platform designed to transform static systems into adaptive intelligence networks.
 
-MurMur is a modular intelligence infrastructure designed to help systems learn, reflect, and evolve continuously.
-
-It is not a single AI model.
-It is a coordinated ecosystem of specialized agents, simulation environments, and adaptive memory — built to optimize real-world decision-making at scale.
-
-MurMur is designed for organizations and individuals who require **structured intelligence**, not just responses.
+Built with a security-first architecture, MurMur enables organizations to deploy governed AI agents across operations while maintaining compliance, observability, and control.
 
 ---
 
-## Vision
+## 🚀 What MurMur Is
 
-Modern software executes instructions.
-MurMur develops capability.
+MurMur is not a chatbot.
 
-Our goal is to create a learning architecture where:
+MurMur is an intelligence infrastructure layer that:
 
-- Multiple AI agents specialize and collaborate
-- Systems simulate possible futures before acting
-- Decisions improve through reinforcement and reflection
-- Knowledge compounds over time instead of resetting per session
+- Orchestrates modular AI agents
+- Maintains structured memory across systems
+- Enforces enterprise security policies
+- Provides full auditability and governance
+- Scales across multi-tenant environments
 
-MurMur is built as an extensible foundation for adaptive systems in business, research, and complex operational environments.
-
----
-
-## Core Principles
-
-**Modularity**
-Every capability is separable, replaceable, and composable.
-
-**Reflection**
-Agents do not only act — they analyze their own performance.
-
-**Simulation Before Execution**
-Decisions can be tested in modeled environments before real deployment.
-
-**Persistent Memory**
-Learning is cumulative and structured.
-
-**Human-Steerable Intelligence**
-Users guide goals and constraints while MurMur handles optimization.
+It is designed for organizations that require adaptive systems without compromising compliance.
 
 ---
 
-## System Architecture
+## 🏛 Core Value Proposition
 
-MurMur operates as a coordinated constellation of functional layers.
-
-### Orchestrator Engine
-Central coordination layer managing agent communication, task routing, and execution cycles.
-
-### Agent Framework
-Specialized AI roles working together:
-
-- Teacher Agent — structured reasoning and knowledge organization
-- Experimental Agent — hypothesis generation and exploration
-- Think Tank Simulator — multi-perspective modeling
-- Reflective Agent — performance evaluation and learning synthesis
-
-### Memory System
-Persistent structured knowledge including:
-
-- Observations
-- Decisions
-- Outcomes
-- Behavioral patterns
-- Learned strategies
-
-### Simulation Layer
-Model-based environments for:
-
-- Scenario testing
-- Behavioral economics modeling
-- Market dynamics
-- Reinforcement learning training
-
-### Module Layer
-Commercial or domain-specific capabilities packaged as independent extensions.
-
-### Interface Layer
-Web dashboard and control environment for visualization and system steering.
+| Capability | Description |
+|------------|------------|
+| Zero-Trust Architecture | Identity-first system design |
+| SSO / SCIM | Enterprise federation support |
+| Multi-Tenant Isolation | Logical and role-level separation |
+| AI Governance | Feature-flag controlled behavior |
+| Full Audit Logging | Traceable agent decisions |
+| Encrypted Infrastructure | TLS + at-rest encryption |
+| Modular Orchestrator | Plug-in AI architecture |
 
 ---
 
-## Technology Stack
+## 🧠 Platform Overview
 
-**Core Runtime**
-- TypeScript / Node.js
-- Fastify API layer
+MurMur is composed of five core layers:
 
-**Data Infrastructure**
-- PostgreSQL (Supabase)
-- Redis (Upstash)
+1. **Identity Layer**
+2. **Orchestration Layer**
+3. **Memory Layer**
+4. **Governance Layer**
+5. **Observability Layer**
 
-**Frontend**
-- Next.js (App Router)
-- Real-time dashboards
+Each layer is independently scalable and replaceable.
 
-**Simulation & Training**
-- Python environments
-- Gym-compatible reinforcement learning
-
-**Infrastructure**
-- Docker-first architecture
-- Cloud-native deployment
-- CI/CD via GitHub Actions
+For detailed technical boundaries, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ---
 
-## Repository Structure
+## 🔐 Security
 
-MurMur is organized as a monorepo to support long-term scalability.
+MurMur enforces:
 
-- `apps/web` — Next.js interface
-- `apps/api` — Fastify API (orchestrator entry)
-- `packages/core` — core orchestration primitives
-- `packages/types` — shared types
+- Role-based access control (RBAC)
+- Row-Level Security (RLS)
+- SAML SSO
+- SCIM provisioning
+- Environment isolation (Dev / Stage / Prod)
+- Immutable audit logs
 
-## Local Development
+Security documentation is available upon request.
 
-1) Copy `.env.example` → `.env`
-2) Install dependencies
-3) Run development servers
+---
+
+## 📊 Enterprise Use Cases
+
+- AI-augmented operations
+- Automated compliance workflows
+- Adaptive revenue optimization
+- Intelligent monitoring systems
+- Agent-based decision engines
+
+---
+
+## 💳 Revenue Model
+
+- Enterprise subscription (tiered)
+- Dedicated environment pricing
+- Usage-based AI execution scaling
+- Add-on governance modules
+
+---
+
+## 🌍 Strategic Position
+
+MurMur positions itself between:
+
+- Hyperscaler AI APIs (stateless)
+- Traditional SaaS tools (static workflows)
+
+MurMur introduces a governed intelligence layer.
+
+---
+
+## 🏗 Repository Structure
+
+This repository is organized as a multi-surface platform with web interfaces, orchestration services, agent modules, and intelligence runtimes.
+
+```text
+.
+├── agents/                      # Agent logic and orchestration components
+├── apps/                        # Application surfaces and service entry points
+├── core/                        # Shared core runtime modules
+├── db/                          # Database artifacts and configuration
+├── docs/                        # Internal documentation
+├── modules/                     # Pluggable feature modules
+├── murmur-core/                 # Core MurMur framework implementation
+├── murmur-intelligence-core/    # Intelligence and adaptive capability layer
+├── murmur-landing/              # Landing and brand-facing frontend
+├── murmur-security-interactive/ # Security-focused interactive components
+├── murmur-video-engine/         # Video/media subsystem
+├── next-murmur-status/          # Status/monitoring Next.js app
+├── packages/                    # Shared packages (types/utilities)
+├── prompts/                     # Prompt assets and templates
+├── public/                      # Static assets
+├── scripts/                     # Project automation scripts
+├── src/                         # Main Next.js application source
+├── supabase/                    # Supabase-specific resources
+└── tests/                       # Test suites
+```
+
+---
+
+## 🛠 Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm 9+
+
+### Run locally
 
 ```bash
-npm i
+npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Default local URL: `http://localhost:3000`
 
-## Quality Checks
+### If you hit `npm` 403 errors
+
+Some enterprise environments enforce outbound proxy and registry policies that can return `403 Forbidden` during dependency install. If that happens:
+
+```bash
+npm config get registry
+npm config delete proxy
+npm config delete https-proxy
+npm install
+```
+
+If your organization requires a proxy, reapply approved values using your internal registry and network policy.
+
+### Build and quality checks
 
 ```bash
 npm run lint
@@ -144,11 +165,23 @@ npm run typecheck
 npm run build
 ```
 
-## MurMurLayer: Psycho Reactive Audio Visual Player
 
-Route: `/winamp`
+---
 
-### File Tree
+## ⚖️ Legal & Compliance Notice
+
+MurMur is intended for lawful, policy-compliant enterprise use. Organizations are responsible for configuring tenant isolation, access controls, retention, and audit policies to satisfy applicable legal and regulatory obligations.
+
+Nothing in this repository constitutes legal advice; consult qualified counsel for jurisdiction-specific compliance requirements.
+
+
+---
+
+## 🎛 MurMurLayer: Psycho Reactive Audio Visual Player
+
+Available at route: `/winamp`.
+
+### Feature Module Tree
 
 ```text
 src/murmurlayer/
@@ -170,14 +203,7 @@ src/styles/
 src/app/winamp/page.tsx
 ```
 
-### Install & Run
-
-```bash
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000/winamp`.
+Open `http://localhost:3000/winamp` after starting the dev server.
 
 ### Performance Notes
 
@@ -190,6 +216,6 @@ Open `http://localhost:3000/winamp`.
 ### Extension Guide
 
 - **Ableton Link / MIDI output:** add adapters in `core/audioEngine.ts` and publish transport sync state through `stateBus.tsx`.
-- **Shader GPU pipeline:** replace the current canvas 2D warping in `core/visualEngine.ts` with WebGL/WebGPU shader passes.
+- **Shader GPU pipeline:** replace current canvas 2D warping in `core/visualEngine.ts` with WebGL/WebGPU shader passes.
 - **Electron build:** package this Next route in an Electron shell and reuse current modules unchanged.
 - **AI visuals:** stream prompt-generated images into `stateBus.addImages` and let lazy decode + bitmap cache drive rendering.

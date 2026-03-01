@@ -1,138 +1,54 @@
-# MURMUR
-### A Learning Constellation
+# MurMur SaaS (Marketing + Billing Core)
 
-MurMur is a modular intelligence infrastructure designed to help systems learn, reflect, and evolve continuously.
+Production-ready foundation for **murmurapp.no** with Next.js App Router, Stripe subscriptions, Vipps Startpakke onboarding, Supabase persistence, protected dashboard access, and operational endpoints.
 
-It is not a single AI model.
-It is a coordinated ecosystem of specialized agents, simulation environments, and adaptive memory — built to optimize real-world decision-making at scale.
+## Stack
 
-MurMur is designed for organizations and individuals who require **structured intelligence**, not just responses.
+- Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- Stripe Checkout / Payment Links + Billing Portal
+- Vipps Startpakke (one-time, NOK 1490) via payment link
+- Supabase Auth + Postgres (customers, subscriptions, events, audit log)
+- Vercel deployment flow from GitHub
 
----
+## Delivered Modules
 
-## Vision
+- Marketing pages (NO + EN): `/` and `/en`
+- Protected customer dashboard: `/dashboard`
+- Stripe webhook endpoint with signature verification + idempotency: `/api/webhooks/stripe`
+- Stripe customer portal endpoint: `/api/billing/portal`
+- Subscription sync cron job endpoint: `/api/jobs/subscription-sync`
+- Health endpoint: `/api/health`
+- Supabase SQL schema: `supabase/schema.sql`
 
-Modern software executes instructions.
-MurMur develops capability.
+## Environment Variables
 
-Our goal is to create a learning architecture where:
-
-- Multiple AI agents specialize and collaborate
-- Systems simulate possible futures before acting
-- Decisions improve through reinforcement and reflection
-- Knowledge compounds over time instead of resetting per session
-
-MurMur is built as an extensible foundation for adaptive systems in business, research, and complex operational environments.
-
----
-
-## Core Principles
-
-**Modularity**
-Every capability is separable, replaceable, and composable.
-
-**Reflection**
-Agents do not only act — they analyze their own performance.
-
-**Simulation Before Execution**
-Decisions can be tested in modeled environments before real deployment.
-
-**Persistent Memory**
-Learning is cumulative and structured.
-
-**Human-Steerable Intelligence**
-Users guide goals and constraints while MurMur handles optimization.
-
----
-
-## System Architecture
-
-MurMur operates as a coordinated constellation of functional layers.
-
-### Orchestrator Engine
-Central coordination layer managing agent communication, task routing, and execution cycles.
-
-### Agent Framework
-Specialized AI roles working together:
-
-- Teacher Agent — structured reasoning and knowledge organization
-- Experimental Agent — hypothesis generation and exploration
-- Think Tank Simulator — multi-perspective modeling
-- Reflective Agent — performance evaluation and learning synthesis
-
-### Memory System
-Persistent structured knowledge including:
-
-- Observations
-- Decisions
-- Outcomes
-- Behavioral patterns
-- Learned strategies
-
-### Simulation Layer
-Model-based environments for:
-
-- Scenario testing
-- Behavioral economics modeling
-- Market dynamics
-- Reinforcement learning training
-
-### Module Layer
-Commercial or domain-specific capabilities packaged as independent extensions.
-
-### Interface Layer
-Web dashboard and control environment for visualization and system steering.
-
----
-
-## Technology Stack
-
-**Core Runtime**
-- TypeScript / Node.js
-- Fastify API layer
-
-**Data Infrastructure**
-- PostgreSQL (Supabase)
-- Redis (Upstash)
-
-**Frontend**
-- Next.js (App Router)
-- Real-time dashboards
-
-**Simulation & Training**
-- Python environments
-- Gym-compatible reinforcement learning
-
-**Infrastructure**
-- Docker-first architecture
-- Cloud-native deployment
-- CI/CD via GitHub Actions
-
----
-
-## Repository Structure
-
-MurMur is organized as a monorepo to support long-term scalability.
-
-- `apps/web` — Next.js interface
-- `apps/api` — Fastify API (orchestrator entry)
-- `packages/core` — core orchestration primitives
-- `packages/types` — shared types
-
-## Local Development
-
-1) Copy `.env.example` → `.env`
-2) Install dependencies
-3) Run development servers
+Create `.env.local`:
 
 ```bash
-npm i
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PRICE_STARTER=
+STRIPE_PRICE_GROWTH=
+VIPPS_STARTPAKKE_PRICE_ID=
+BILLING_PORTAL_RETURN_URL=http://localhost:3000/dashboard
+CRON_SECRET=
+DEV_FALLBACK_USER_ID=
+```
+
+> `DEV_FALLBACK_USER_ID` is only for local testing and should not be enabled in production.
+
+## Local Run
+
+```bash
+npm install
 npm run dev
 ```
 
 Open `http://localhost:3000`.
 
-## Quality Checks
+## Required Checks
 
 ```bash
 npm run lint
@@ -140,52 +56,49 @@ npm run typecheck
 npm run build
 ```
 
-## MurMurLayer: Psycho Reactive Audio Visual Player
+## Stripe Setup
 
-Route: `/winamp`
+1. Create products/prices:
+   - Starter (€49/month)
+   - Growth (€149/month)
+2. Create Checkout links (or use API) and include `client_reference_id=<supabase_user_id>`.
+3. Configure webhook endpoint:
+   - URL: `https://<your-domain>/api/webhooks/stripe`
+   - Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
+4. Add webhook signing secret to `STRIPE_WEBHOOK_SECRET`.
+5. Enable billing portal in Stripe and keep `BILLING_PORTAL_RETURN_URL` aligned with `/dashboard`.
 
-### File Tree
+## Vipps Startpakke Setup
 
-```text
-src/murmurlayer/
-  core/
-    audioEngine.ts
-    performanceMonitor.ts
-    stateBus.tsx
-    visualEngine.ts
-  ui/
-    eqPanel.tsx
-    playerControls.tsx
-    playlist.tsx
-    uploadPanel.tsx
-    visualCanvas.tsx
-  app/
-    page.tsx
-src/styles/
-  leopardTheme.css
-src/app/winamp/page.tsx
-```
+1. Create Vipps payment link for **NOK 1490** (one-time).
+2. Map successful purchases into `subscriptions` with:
+   - `provider = 'vipps'`
+   - `plan_code = 'vipps_startpakke'`
+3. Store customer reference in `customers.vipps_customer_ref`.
 
-### Install & Run
+## Supabase Setup
 
-```bash
-npm install
-npm run dev
-```
+1. Create project in Supabase.
+2. Run SQL from `supabase/schema.sql` in SQL editor.
+3. Enable RLS policies appropriate for your org (service role is used only server-side for backend routes).
+4. Use Supabase Auth user ID as canonical customer identity (`customers.user_id`).
 
-Open `http://localhost:3000/winamp`.
+## Deployment (GitHub → Vercel → Domeneshop)
 
-### Performance Notes
+1. Push repository to GitHub.
+2. Import project in Vercel.
+3. Add all environment variables in Vercel Project Settings.
+4. Configure cron call to `POST /api/jobs/subscription-sync` with `Authorization: Bearer <CRON_SECRET>`.
+5. Domeneshop DNS:
+   - `A` record root (`@`) → Vercel IP (as documented by Vercel at setup time)
+   - `CNAME` `www` → cname.vercel-dns.com
+6. Set primary domain to `murmurapp.no` in Vercel.
 
-- Visual rendering targets 60fps through `requestAnimationFrame` and quality auto-throttling.
-- Performance monitor lowers visual complexity when FPS < 50.
-- Analyzer cost is reduced dynamically by switching `fftSize` and increasing smoothing.
-- Memory guard trims oldest uploaded images when heap pressure is high.
-- Object URLs are revoked on item removal and provider unmount to avoid leaks.
+## Safety / Production Disclaimers
 
-### Extension Guide
-
-- **Ableton Link / MIDI output:** add adapters in `core/audioEngine.ts` and publish transport sync state through `stateBus.tsx`.
-- **Shader GPU pipeline:** replace the current canvas 2D warping in `core/visualEngine.ts` with WebGL/WebGPU shader passes.
-- **Electron build:** package this Next route in an Electron shell and reuse current modules unchanged.
-- **AI visuals:** stream prompt-generated images into `stateBus.addImages` and let lazy decode + bitmap cache drive rendering.
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` client-side.
+- Verify Stripe webhook signatures against raw request body only.
+- Keep webhook processing idempotent using unique event keys.
+- Restrict cron endpoint with a strong `CRON_SECRET`.
+- Add rate limiting/WAF and alerting before full production rollout.
+- Regularly audit `audit_log` and failed webhook responses.

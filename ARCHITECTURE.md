@@ -80,6 +80,13 @@ MurMur introduces a governed intelligence layer.
 
 ---
 
+
+## Autonomous Infrastructure AI
+
+MurMur includes a global control intelligence design for predictive scaling, failover, and cost-aware orchestration across regions. See `docs/autonomous-infrastructure-ai.md` for the full architecture and control loop specification.
+
+---
+
 ## Development
 
 ```bash

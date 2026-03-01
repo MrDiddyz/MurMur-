@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: murmur
+      POSTGRES_DB: murmur
+    volumes:
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murmur"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  core:
+    build: ./murmur-core
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  billing:
+    build: ./murmur-billing
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+
+  worker:
+    build: ./murmur-worker
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: ${REDIS_HOST}
+      JWT_SECRET: ${JWT_SECRET}
+      CORE_URL: ${CORE_URL}
+      MAX_JOB_RETRIES: ${MAX_JOB_RETRIES:-5}
+    depends_on:
+      core:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  web:
+    build: ./murmur-web
+    ports:
+      - "3000:3000"

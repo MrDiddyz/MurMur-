@@ -1,195 +1,73 @@
-MurMur- Repository
+# MurMur
 
-Repository ID: 1158260772Overview: This repository contains information about high-level GitHub repository language composition. A concise outline of its functionality and structure is included.
+MurMur is a modular intelligence platform for operating high-consequence workflows with auditable AI assistance. It combines orchestration, persistent memory, simulation, and policy enforcement so teams can move from one-off prompts to repeatable decision systems.
 
-# MURMUR
-### A Learning Constellation
-
-MurMur is a modular intelligence infrastructure designed to help systems learn, reflect, and evolve continuously.
-
-It is not a single AI model.
-It is a coordinated ecosystem of specialized agents, simulation environments, and adaptive memory — built to optimize real-world decision-making at scale.
-
-MurMur is designed for organizations and individuals who require **structured intelligence**, not just responses.
-
----
+This repository is a multi-surface codebase: product interfaces, orchestration services, intelligence assets, security tooling, and deployment scaffolding.
 
 ## Vision
 
-Modern software executes instructions.
-MurMur develops capability.
+MurMur is built for organizations that require **operationally reliable AI**, not just conversational output. The platform vision is to:
 
-Our goal is to create a learning architecture where:
+- Turn fragmented AI usage into governed, end-to-end workflows.
+- Create memory-backed systems that improve with every execution cycle.
+- Support simulation-first planning before expensive real-world action.
+- Preserve human control through explicit policies, review paths, and traceability.
 
-- Multiple AI agents specialize and collaborate
-- Systems simulate possible futures before acting
-- Decisions improve through reinforcement and reflection
-- Knowledge compounds over time instead of resetting per session
+## Architecture
 
-MurMur is built as an extensible foundation for adaptive systems in business, research, and complex operational environments.
+MurMur is designed as a layered system:
 
----
+1. **Experience Layer** — Next.js applications and dashboards for operators and stakeholders.
+2. **Orchestration Layer** — task routing, execution lifecycle management, and agent coordination.
+3. **Intelligence Layer** — prompt registry, decision templates, reflective loops, and simulation assets.
+4. **Memory + Data Layer** — durable stores for observations, decisions, outcomes, and policy state.
+5. **Security + Policy Layer** — authorization checks, secret management, audit logging, and hardening controls.
+6. **Infrastructure Layer** — cloud runtime, CI/CD, observability, and deployment automation.
 
-## Core Principles
+For detailed diagrams and deployment topologies, see [`docs/architecture.md`](docs/architecture.md).
 
-**Modularity**
-Every capability is separable, replaceable, and composable.
+## Modules
 
-**Reflection**
-Agents do not only act — they analyze their own performance.
+The repository is intentionally modular. Key areas include:
 
-**Simulation Before Execution**
-Decisions can be tested in modeled environments before real deployment.
+- `src/` — primary application routes and UI surfaces (including dashboard, solutions, and product modules).
+- `core/` — memory and event bus primitives used by orchestration logic.
+- `agents/` — specialized agent definitions and runtime behavior components.
+- `modules/` — domain extensions and packaged capability units.
+- `murmur-intelligence-core/` — prompt registry, decision schemas, and validation scripts.
+- `murmur-stronghold/` and `murmur-security-interactive/` — security-focused assets and hardening artifacts.
+- `docs/` — architecture records, strategy docs, and operational guidance.
+- `tests/` — automated checks and validation scaffolding.
 
-**Persistent Memory**
-Learning is cumulative and structured.
+## Roadmap
 
-**Human-Steerable Intelligence**
-Users guide goals and constraints while MurMur handles optimization.
+### Near-term (0-2 quarters)
 
----
+- Consolidate orchestration interfaces behind stable service contracts.
+- Expand decision schema coverage for product, security, and operations workflows.
+- Harden deployment baselines with stricter identity boundaries and audit retention defaults.
+- Publish operator runbooks for incident handling and model rollback.
 
-## System Architecture
+### Mid-term (2-4 quarters)
 
-MurMur operates as a coordinated constellation of functional layers. See `ARCHITECTURE.md` for a full breakdown.
+- Introduce simulation-driven planning loops tied directly to production policy gates.
+- Improve multi-tenant isolation and per-tenant memory partitioning.
+- Add deeper observability: latency budgets, decision-quality metrics, and failure taxonomies.
 
-### Orchestrator Engine
-Central coordination layer managing agent communication, task routing, and execution cycles.
+### Long-term (4+ quarters)
 
-### Agent Framework
-Specialized AI roles working together:
+- Build adaptive optimization loops that continuously refine workflows with policy-safe reinforcement.
+- Support regulated deployment profiles (e.g., sector-specific controls and reporting templates).
+- Enable hybrid cloud + edge execution for latency-sensitive environments.
 
-- Teacher Agent — structured reasoning and knowledge organization
-- Experimental Agent — hypothesis generation and exploration
-- Think Tank Simulator — multi-perspective modeling
-- Reflective Agent — performance evaluation and learning synthesis
+## Security
 
-### Memory System
-Persistent structured knowledge including:
+MurMur follows a defense-in-depth operating model:
 
-- Observations
-- Decisions
-- Outcomes
-- Behavioral patterns
-- Learned strategies
+- **Identity-first access control**: least privilege for users, services, and automation.
+- **Secret hygiene**: environment-level secret isolation and rotation-ready integration points.
+- **Data governance**: scoped persistence, explicit retention strategy, and deletion workflows.
+- **Execution safety**: policy checks before high-impact actions and explicit audit trails.
+- **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
-### Simulation Layer
-Model-based environments for:
-
-- Scenario testing
-- Behavioral economics modeling
-- Market dynamics
-- Reinforcement learning training
-
-### Module Layer
-Commercial or domain-specific capabilities packaged as independent extensions.
-
-### Interface Layer
-Web dashboard and control environment for visualization and system steering.
-
----
-
-## Technology Stack
-
-**Core Runtime**
-- TypeScript / Node.js
-- Fastify API layer
-
-**Data Infrastructure**
-- PostgreSQL (Supabase)
-- Redis (Upstash)
-
-**Frontend**
-- Next.js (App Router)
-- Real-time dashboards
-
-**Simulation & Training**
-- Python environments
-- Gym-compatible reinforcement learning
-
-**Infrastructure**
-- Docker-first architecture
-- Cloud-native deployment
-- CI/CD via GitHub Actions
-
----
-
-## Repository Structure
-
-MurMur is organized as a monorepo to support long-term scalability.
-
-- `apps/web` — Next.js interface
-- `apps/api` — Fastify API (orchestrator entry)
-- `packages/core` — core orchestration primitives
-- `packages/types` — shared types
-
-## Local Development
-
-1) Copy `.env.example` → `.env`
-2) Install dependencies
-3) Run development servers
-
-```bash
-npm i
-npm run dev
-```
-
-Open `http://localhost:3000`.
-
-## Quality Checks
-
-```bash
-npm run lint
-npm run typecheck
-npm run build
-```
-
-## MurMurLayer: Psycho Reactive Audio Visual Player
-
-Route: `/winamp`
-
-### File Tree
-
-```text
-src/murmurlayer/
-  core/
-    audioEngine.ts
-    performanceMonitor.ts
-    stateBus.tsx
-    visualEngine.ts
-  ui/
-    eqPanel.tsx
-    playerControls.tsx
-    playlist.tsx
-    uploadPanel.tsx
-    visualCanvas.tsx
-  app/
-    page.tsx
-src/styles/
-  leopardTheme.css
-src/app/winamp/page.tsx
-```
-
-### Install & Run
-
-```bash
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000/winamp`.
-
-### Performance Notes
-
-- Visual rendering targets 60fps through `requestAnimationFrame` and quality auto-throttling.
-- Performance monitor lowers visual complexity when FPS < 50.
-- Analyzer cost is reduced dynamically by switching `fftSize` and increasing smoothing.
-- Memory guard trims oldest uploaded images when heap pressure is high.
-- Object URLs are revoked on item removal and provider unmount to avoid leaks.
-
-### Extension Guide
-
-- **Ableton Link / MIDI output:** add adapters in `core/audioEngine.ts` and publish transport sync state through `stateBus.tsx`.
-- **Shader GPU pipeline:** replace the current canvas 2D warping in `core/visualEngine.ts` with WebGL/WebGPU shader passes.
-- **Electron build:** package this Next route in an Electron shell and reuse current modules unchanged.
-- **AI visuals:** stream prompt-generated images into `stateBus.addImages` and let lazy decode + bitmap cache drive rendering.
+Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.

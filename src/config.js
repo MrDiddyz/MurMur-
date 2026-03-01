@@ -8,6 +8,7 @@ function must(name) {
 
 export const config = {
   discordToken: must("DISCORD_TOKEN"),
+  guildId: process.env.GUILD_ID || null,
   openaiKey: must("OPENAI_API_KEY"),
   openaiModel: process.env.OPENAI_MODEL || "gpt-4o-mini",
 

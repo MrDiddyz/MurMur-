@@ -1,6 +1,7 @@
 import { supabase } from "../db/supabase.js";
 import { decideAction } from "./decisionMaker.js";
 import { executeGrowthAction } from "./actions.js";
+import { config } from "../config.js";
 
 async function getLastHourCounts() {
   const now = new Date();
@@ -63,9 +64,12 @@ async function getLastGrowthPostAt() {
 
 export async function runGrowthCycle(client) {
   const now = new Date();
-  const guild = client.guilds.cache.first();
+  const guild = config.guildId
+    ? client.guilds.cache.get(config.guildId) || (await client.guilds.fetch(config.guildId).catch(() => null))
+    : client.guilds.cache.first();
+
   if (!guild) {
-    console.log("No guild found for growth cycle.");
+    console.log("No guild found for growth cycle.", { configuredGuildId: config.guildId });
     return;
   }
 

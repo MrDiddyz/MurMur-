@@ -25,6 +25,7 @@ Day 1–5 foundation for a production-safe Discord bot with OpenAI replies, Supa
 - `guildMemberAdd` logs joins and sends a welcome message in the configured channel.
 - Hourly aggregator runs every hour at minute `0`.
 - Growth cycle runs every hour at minute `5` with an 8-hour cooldown between posts.
+- If `GUILD_ID` is set, growth cycle targets that guild; otherwise it uses the first cached guild.
 
 ## Commands
 

@@ -16,7 +16,7 @@ export function onGuildMemberAdd(client) {
       });
 
       const channel = member.guild.channels.cache.find(
-        (c) => c?.isTextBased?.() && c.name === config.welcomeChannelName
+        (c) => c?.isTextBased?.() && typeof c.send === "function" && c.name === config.welcomeChannelName
       );
 
       if (channel) {

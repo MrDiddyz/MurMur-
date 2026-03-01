@@ -4,7 +4,9 @@ import crypto from "crypto";
 import { config } from "../config.js";
 
 function findTextChannelByName(guild, name) {
-  return guild.channels.cache.find((c) => c?.isTextBased?.() && c.name === name);
+  return guild.channels.cache.find(
+    (c) => c?.isTextBased?.() && typeof c.send === "function" && c.name === name
+  );
 }
 
 export async function executeGrowthAction({ client, guild, action }) {

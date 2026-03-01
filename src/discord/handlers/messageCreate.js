@@ -45,7 +45,7 @@ export function onMessageCreate(client) {
         }
       });
 
-      if (!message.content?.startsWith("!ask")) return;
+      if (!/^!ask\b/i.test(message.content || "")) return;
 
       if (!allowUser(message.author.id)) {
         await message.reply("⏳ Litt for mange forespørsler nå — prøv igjen om et minutt.");

@@ -51,7 +51,7 @@ Users guide goals and constraints while MurMur handles optimization.
 
 ## System Architecture
 
-MurMur operates as a coordinated constellation of functional layers.
+MurMur operates as a coordinated constellation of functional layers. See `ARCHITECTURE.md` for a full breakdown.
 
 ### Orchestrator Engine
 Central coordination layer managing agent communication, task routing, and execution cycles.

@@ -1,15 +1,19 @@
+import { createDiscordClient } from "./discord/client.js";
+import { onMessageCreate } from "./discord/handlers/messageCreate.js";
+import { onGuildMemberAdd } from "./discord/handlers/guildMemberAdd.js";
+import { config } from "./config.js";
+import { startHourlyAggregator } from "./metrics/hourlyAggregator.js";
 import { startGrowthScheduler } from "./growth/scheduler.js";
 
-export function wireClientReady(client, { startHourlyAggregator } = {}) {
-  if (!client || typeof client.once !== "function") {
-    throw new Error("wireClientReady requires a Discord client-like object with once()");
-  }
+const client = createDiscordClient();
 
-  client.once("ready", () => {
-    if (typeof startHourlyAggregator === "function") {
-      startHourlyAggregator();
-    }
+client.once("ready", () => {
+  console.log(`✅ MurMur Node online as ${client.user.tag}`);
+  startHourlyAggregator();
+  startGrowthScheduler(client);
+});
 
-    startGrowthScheduler(client);
-  });
-}
+onMessageCreate(client);
+onGuildMemberAdd(client);
+
+client.login(config.discordToken);

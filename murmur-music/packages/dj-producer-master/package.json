@@ -1,0 +1,9 @@
+{
+  "name": "@murmur/dj-producer-master",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  }
+}

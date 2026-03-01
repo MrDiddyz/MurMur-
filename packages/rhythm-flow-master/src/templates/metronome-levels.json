@@ -1,0 +1,8 @@
+{
+  "levels": [
+    { "name": "Quarter notes", "subdivision": "1" },
+    { "name": "Eighth notes", "subdivision": "1&" },
+    { "name": "Sixteenth notes", "subdivision": "1e&a" },
+    { "name": "Sparse click", "subdivision": "barline only" }
+  ]
+}

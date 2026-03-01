@@ -1,0 +1,11 @@
+{
+  "setName": "",
+  "durationMinutes": 60,
+  "tracks": [],
+  "energyCurve": [
+    "warmup",
+    "build",
+    "peak",
+    "resolve"
+  ]
+}

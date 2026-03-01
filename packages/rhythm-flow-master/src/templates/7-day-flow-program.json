@@ -1,0 +1,12 @@
+{
+  "title": "7-Day Flow Program",
+  "days": [
+    { "day": 1, "focus": "timing fundamentals" },
+    { "day": 2, "focus": "syllable control" },
+    { "day": 3, "focus": "cadence switching" },
+    { "day": 4, "focus": "off-beat pocket" },
+    { "day": 5, "focus": "breath + stamina" },
+    { "day": 6, "focus": "performance simulation" },
+    { "day": 7, "focus": "review and refinement" }
+  ]
+}

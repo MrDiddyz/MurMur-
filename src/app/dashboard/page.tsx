@@ -1,3 +1,5 @@
+import DashboardGamified from '@/components/dashboard/dashboard-gamified';
+
 const stats = [
   { label: 'MRR', value: 'NOK 182,400', detail: '+8.4% vs last month' },
   { label: 'ARR', value: 'NOK 2,188,800', detail: 'Projected from current MRR' },
@@ -21,6 +23,8 @@ export default function DashboardPage() {
           </article>
         ))}
       </section>
+
+      <DashboardGamified userId="00000000-0000-0000-0000-000000000001" />
     </div>
   );
 }

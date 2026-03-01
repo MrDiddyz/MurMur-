@@ -1,0 +1,8 @@
+{
+  "name": "turbo",
+  "version": "2.0.12-local",
+  "private": true,
+  "bin": {
+    "turbo": "./bin/turbo.js"
+  }
+}

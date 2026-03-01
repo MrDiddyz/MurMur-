@@ -112,12 +112,21 @@ Web dashboard and control environment for visualization and system steering.
 
 ## Repository Structure
 
-MurMur is organized as a modular codebase to support long-term scalability.
+MurMur is organized as a monorepo to support long-term scalability.
+
+- `apps/web` — Next.js interface
+- `apps/api` — Fastify API (orchestrator entry)
+- `packages/core` — core orchestration primitives
+- `packages/types` — shared types
 
 ## Local Development
 
+1) Copy `.env.example` → `.env`
+2) Install dependencies
+3) Run development servers
+
 ```bash
-npm install
+npm i
 npm run dev
 ```
 

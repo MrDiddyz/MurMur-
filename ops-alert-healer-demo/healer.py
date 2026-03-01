@@ -31,10 +31,23 @@ class ActionDecision:
     reason: str
 
 
+def _decode_summary(entry_fields: dict[str, str]) -> dict[str, Any]:
+    summary_raw = entry_fields.get("summary", "{}")
+    try:
+        parsed = json.loads(summary_raw)
+    except json.JSONDecodeError:
+        return {}
+
+    if not isinstance(parsed, dict):
+        return {}
+
+    return parsed
+
+
 def parse_decision(entry_fields: dict[str, str], now: float, last_restart_at: dict[str, float]) -> ActionDecision:
-    summary = json.loads(entry_fields.get("summary", "{}"))
-    target = summary.get("target_service", "")
-    action = summary.get("action", "restart")
+    summary = _decode_summary(entry_fields)
+    target = str(summary.get("target_service", "")).strip()
+    action = str(summary.get("action", "restart")).strip().lower()
 
     if action != "restart":
         return ActionDecision(False, target, f"unsupported action={action}")
@@ -56,7 +69,7 @@ def ensure_group(client: Any) -> None:
     try:
         client.xgroup_create(STREAM_NAME, GROUP_NAME, id="0", mkstream=True)
         print(f"created stream group {GROUP_NAME}")
-    except Exception as exc:
+    except redis.exceptions.ResponseError as exc:
         if "BUSYGROUP" not in str(exc):
             raise
 

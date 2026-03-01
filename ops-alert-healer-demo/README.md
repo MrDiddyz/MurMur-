@@ -31,7 +31,7 @@ docker compose -f ops-alert-healer-demo/docker-compose.yml up --build -d
 
 ```bash
 body='{"status":"firing","receiver":"demo","alerts":[{"labels":{"alertname":"ServiceDown","severity":"critical","target_service":"dummy-service","action":"restart"},"annotations":{"summary":"dummy service down"}}]}'
-sig=$(python - <<'PY'
+sig=$(BODY="$body" python - <<'PY'
 import hashlib, hmac, os
 body = os.environ["BODY"].encode()
 secret = b"demo-secret"
@@ -43,8 +43,6 @@ curl -i -X POST http://localhost:8080/webhook/alertmanager \
   -H "X-Alertmanager-Signature: $sig" \
   --data "$body"
 ```
-
-(Use `BODY="$body"` before the Python one-liner if needed.)
 
 ## Inspect logs
 

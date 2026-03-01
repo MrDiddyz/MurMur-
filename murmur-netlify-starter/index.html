@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Murmur Netlify Starter</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Murmur Netlify Starter</h1>
+      <p>Run a serverless function through Netlify and render the response below.</p>
+
+      <form id="prompt-form">
+        <label for="prompt">Prompt</label>
+        <textarea id="prompt" name="prompt" rows="4" placeholder="Ask Murmur something..."></textarea>
+        <button type="submit">Send</button>
+      </form>
+
+      <section>
+        <h2>Response</h2>
+        <pre id="response">No response yet.</pre>
+      </section>
+
+      <p class="muted" id="status"></p>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>

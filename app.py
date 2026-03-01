@@ -51,4 +51,5 @@ def state() -> dict[str, object]:
         "niche": current.niche,
         "top_goals": current.top_goals,
         "top_obstacles": current.top_obstacles,
+        "affect": current.affect,
     }

@@ -5,6 +5,9 @@ from typing import Any
 from modules.memory import RuntimeState
 
 
+MINOR_PROGRESSION = ["i", "VI", "III", "VII"]
+
+
 def _build_senior_template() -> dict[str, object]:
     return {
         "name": "SeniorFit-Motivasjon",
@@ -111,6 +114,7 @@ def run_spectre_mode(user_text: str, listener_output: dict[str, Any], state: Run
             "interactions": state.interactions,
             "known_goals": state.top_goals[:5],
             "known_obstacles": state.top_obstacles[:5],
+            "affect": state.affect,
         },
         "raw_input": user_text,
     }
@@ -119,5 +123,11 @@ def run_spectre_mode(user_text: str, listener_output: dict[str, Any], state: Run
         payload["senior_template"] = _build_senior_template()
     if include_video_system_template:
         payload["video_system_template"] = _build_video_system_template()
+
+    if state.niche == "music/psytrance":
+        payload["harmony_progression"] = MINOR_PROGRESSION
+        payload["next_actions"].append(
+            "Bruk harmonisk grunnprogresjon i → VI → III → VII for mørk psytrance-retning"
+        )
 
     return payload

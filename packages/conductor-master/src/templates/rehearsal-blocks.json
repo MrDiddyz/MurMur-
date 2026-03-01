@@ -1,0 +1,8 @@
+{
+  "title": "Block Rehearsal Structure",
+  "blocks": [
+    { "label": "A", "minutes": 20, "focus": "rhythm + entrances" },
+    { "label": "B", "minutes": 20, "focus": "balance + intonation" },
+    { "label": "C", "minutes": 15, "focus": "musical arc + transitions" }
+  ]
+}

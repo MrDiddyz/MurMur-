@@ -1,0 +1,10 @@
+{
+  "title": "Aria Practice Plan",
+  "aria": "",
+  "tempoTargets": ["slow", "medium", "performance"],
+  "sections": [
+    { "name": "Text + IPA", "minutes": 10 },
+    { "name": "Musical Line", "minutes": 15 },
+    { "name": "Expression", "minutes": 10 }
+  ]
+}

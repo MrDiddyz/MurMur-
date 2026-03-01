@@ -1,0 +1,10 @@
+{
+  "bars": 8,
+  "sections": [
+    { "name": "Intro", "startBar": 1, "endBar": 2 },
+    { "name": "Build", "startBar": 3, "endBar": 4 },
+    { "name": "Drop", "startBar": 5, "endBar": 6 },
+    { "name": "Resolve", "startBar": 7, "endBar": 8 }
+  ],
+  "energyCurve": [2, 4, 6, 8, 9, 8, 6, 5]
+}

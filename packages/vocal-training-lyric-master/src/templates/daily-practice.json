@@ -1,0 +1,10 @@
+{
+  "title": "Daily Vocal Practice",
+  "durationMinutes": 30,
+  "blocks": [
+    { "name": "Breath", "minutes": 5 },
+    { "name": "Warmups", "minutes": 10 },
+    { "name": "Technique", "minutes": 10 },
+    { "name": "Cooldown", "minutes": 5 }
+  ]
+}

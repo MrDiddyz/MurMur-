@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS payment_events (
   id TEXT PRIMARY KEY,
   type TEXT NOT NULL,
@@ -31,3 +33,18 @@ CREATE TABLE IF NOT EXISTS payment_intents (
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jobs_intent_id ON jobs(intent_id);
 CREATE INDEX IF NOT EXISTS idx_payment_intents_status ON payment_intents(status);
+
+CREATE TABLE IF NOT EXISTS posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  account_id UUID NOT NULL,
+  caption TEXT NOT NULL,
+  video_url TEXT NOT NULL,
+  tiktok_publish_id TEXT,
+  status TEXT NOT NULL CHECK (status IN ('draft', 'queued', 'uploading', 'processing', 'published', 'failed')),
+  error_message TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_posts_account_id ON posts(account_id);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);

@@ -3,6 +3,8 @@ import Stripe from "stripe"
 import pkg from "pg"
 import Redis from "ioredis"
 import { requireStripeSignature } from "./auth.js"
+import { createPublishWorker, publishQueue } from "./queue.js"
+import { handlePollStatusJob, handlePublishPostJob } from "./publish-jobs.js"
 
 const { Pool } = pkg
 const fastify = Fastify({ logger: true, bodyLimit: 1024 * 1024 })
@@ -48,6 +50,39 @@ fastify.addContentTypeParser("application/json", { parseAs: "buffer" }, (req, bo
     done(null, JSON.parse(body.toString("utf8")))
   } catch (err) {
     done(err)
+  }
+})
+
+fastify.post("/posts/create", async (req, res) => {
+  const { account_id: accountId, caption, video_url: videoUrl } = req.body || {}
+
+  if (!accountId || !caption || !videoUrl) {
+    return res.code(400).send({ error: "account_id, caption, and video_url are required" })
+  }
+
+  try {
+    const inserted = await db.query(
+      `INSERT INTO posts(account_id, caption, video_url, status)
+       VALUES ($1, $2, $3, 'queued')
+       RETURNING id`,
+      [accountId, caption, videoUrl]
+    )
+
+    const postId = inserted.rows[0].id
+
+    await publishQueue.add(
+      "publish_post",
+      { postId },
+      {
+        attempts: 5,
+        backoff: { type: "exponential", delay: 1_000 }
+      }
+    )
+
+    return res.code(201).send({ id: postId })
+  } catch (error) {
+    req.log.error({ err: error?.message }, "failed creating post")
+    return res.code(500).send({ error: "post_create_failed" })
   }
 })
 
@@ -136,5 +171,18 @@ fastify.get("/health", async () => {
   await redis.ping()
   return { status: "ok" }
 })
+
+const publishWorker = createPublishWorker(async (job) => {
+  if (job.name === "publish_post") {
+    return handlePublishPostJob(job, { db })
+  }
+
+  if (job.name === "poll_status") {
+    return handlePollStatusJob(job, { db })
+  }
+
+  throw new Error("unknown_job_type")
+})
+
 
 fastify.listen({ port: 3001, host: "0.0.0.0" })

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getStripeLink, type ModuleKey } from '@/lib/env';
 
 type PricingModule = {
@@ -106,12 +105,14 @@ export default function PricingPage() {
 
               <div className="mt-6 flex flex-wrap gap-2">
                 {stripeLink ? (
-                  <Link
+                  <a
                     href={stripeLink}
+                    target="_blank"
+                    rel="noreferrer"
                     className="rounded-lg bg-cyan-500 px-3 py-2 text-sm font-medium text-black hover:bg-cyan-400"
                   >
                     Set sail with Stripe
-                  </Link>
+                  </a>
                 ) : (
                   <button
                     type="button"

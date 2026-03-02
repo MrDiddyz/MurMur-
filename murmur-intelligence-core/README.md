@@ -21,3 +21,7 @@ Initial scaffold for prompts, schemas, decisions, and scripts.
 - scripts/validate_decisions.js
 - registry.json
 - CODEX.md
+
+## Validation
+- Run `node murmur-intelligence-core/scripts/validate_clinic_knowledge_router.js` to validate the clinic knowledge-router config against its schema.
+- Runtime endpoint for Vercel/Netlify-compatible Next.js deployments: `GET /api/clinic-ai/router` (served from `src/app/api/clinic-ai/router/route.ts`).

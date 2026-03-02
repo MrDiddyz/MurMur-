@@ -7,7 +7,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from psycopg2.extensions import connection as PgConnection
 
-from backend.auth.deps import require_api_key_dep
+from backend.auth.deps import require_api_key
 from backend.auth.security import hash_password
 from backend.db import get_connection
 from backend.routes.admin_keys import router as admin_keys_router
@@ -32,20 +32,23 @@ def bootstrap_admin_user() -> None:
     if not database_url:
         return
 
-    with psycopg2.connect(database_url) as db:
-        with db.cursor() as cur:
-            cur.execute("SELECT id FROM admin_users WHERE email = %s", (email.lower(),))
-            if cur.fetchone():
-                return
+    try:
+        with psycopg2.connect(database_url) as db:
+            with db.cursor() as cur:
+                cur.execute("SELECT id FROM admin_users WHERE email = %s", (email.lower(),))
+                if cur.fetchone():
+                    return
 
-            cur.execute(
-                """
-                INSERT INTO admin_users(email, password_hash, is_active)
-                VALUES (%s, %s, TRUE)
-                """,
-                (email.lower(), hash_password(password)),
-            )
-            db.commit()
+                cur.execute(
+                    """
+                    INSERT INTO admin_users(email, password_hash, is_active)
+                    VALUES (%s, %s, TRUE)
+                    """,
+                    (email.lower(), hash_password(password)),
+                )
+                db.commit()
+    except psycopg2.Error:
+        return
 
 
 @app.on_event("startup")
@@ -57,7 +60,7 @@ def on_startup():
 def run_agent(
     req: GoalRequest,
     db: PgConnection = Depends(get_connection),
-    _api_key=Depends(require_api_key_dep),
+    _api_key: dict = Depends(require_api_key),
 ):
     run_id = str(uuid.uuid4())
     result = f"Executed goal: {req.goal}"

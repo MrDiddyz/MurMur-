@@ -16,10 +16,9 @@ def require_admin_jwt(authorization: str = Header(default=None)) -> dict[str, An
         raise HTTPException(status_code=401, detail="missing token")
 
     try:
-        payload = verify_admin_jwt(token)
+        return verify_admin_jwt(token)
     except ValueError as exc:
         raise HTTPException(status_code=403, detail="invalid token") from exc
-    return payload
 
 
 def _extract_api_key(authorization: str | None, x_api_key: str | None) -> str | None:
@@ -31,9 +30,9 @@ def _extract_api_key(authorization: str | None, x_api_key: str | None) -> str | 
 
 
 def require_api_key(
-    db: PgConnection,
     authorization: str = Header(default=None),
     x_api_key: str = Header(default=None),
+    db: PgConnection = Depends(get_connection),
 ) -> dict[str, Any]:
     raw_key = _extract_api_key(authorization, x_api_key)
     if not raw_key:
@@ -43,7 +42,11 @@ def require_api_key(
     if not prefix:
         raise HTTPException(status_code=401, detail="invalid api key")
 
-    key_hash = hash_api_key(raw_key)
+    try:
+        key_hash = hash_api_key(raw_key)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail="API_KEY_PEPPER not configured") from exc
+
     with db.cursor() as cur:
         cur.execute(
             """
@@ -61,11 +64,3 @@ def require_api_key(
         db.commit()
 
     return {"id": row[0], "name": row[1], "scopes": row[2] or []}
-
-
-def require_api_key_dep(
-    authorization: str = Header(default=None),
-    x_api_key: str = Header(default=None),
-    db: PgConnection = Depends(get_connection),
-) -> dict[str, Any]:
-    return require_api_key(db=db, authorization=authorization, x_api_key=x_api_key)

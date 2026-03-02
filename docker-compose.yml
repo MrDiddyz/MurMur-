@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: murmur_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  migrator:
+    image: postgres:15
+    restart: "no"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: murmur
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: murmur_db
+      MIGRATIONS_DIR: /database/migrations
+    volumes:
+      - ./scripts:/scripts:ro
+      - ./database:/database:ro
+    entrypoint: ["/bin/sh", "-c", "chmod +x /scripts/migrate.sh && /scripts/migrate.sh"]
+
+  backend:
+    image: python:3.11-slim
+    command: ["sh", "-c", "sleep infinity"]
+
+  nginx:
+    image: nginx:latest
+
+volumes:
+  pgdata:

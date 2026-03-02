@@ -1,21 +1,23 @@
-import os
 import uuid
 from datetime import datetime
 
-import psycopg2
 from fastapi import Depends, FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 from auth import verify_token
+from db import close_db, execute, fetch_val, init_db
 
 app = FastAPI()
 
 
-def get_connection():
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        raise HTTPException(status_code=500, detail="DATABASE_URL not configured")
-    return psycopg2.connect(database_url)
+@app.on_event("startup")
+async def startup() -> None:
+    await init_db()
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    await close_db()
 
 
 class GoalRequest(BaseModel):
@@ -23,34 +25,31 @@ class GoalRequest(BaseModel):
 
 
 @app.post("/run")
-def run_agent(req: GoalRequest, auth=Depends(verify_token)):
+async def run_agent(req: GoalRequest, auth=Depends(verify_token)):
     run_id = str(uuid.uuid4())
     result = f"Executed goal: {req.goal}"
 
     try:
-        with get_connection() as db:
-            with db.cursor() as cur:
-                cur.execute(
-                    """
-                    INSERT INTO agent_runs(run_id, goal, result, created_at)
-                    VALUES (%s,%s,%s,%s)
-                    """,
-                    (run_id, req.goal, result, datetime.utcnow()),
-                )
-                db.commit()
-    except psycopg2.Error as exc:
+        await execute(
+            """
+            INSERT INTO agent_runs(run_id, goal, result, created_at)
+            VALUES ($1, $2, $3, $4)
+            """,
+            run_id,
+            req.goal,
+            result,
+            datetime.utcnow(),
+        )
+    except Exception as exc:
         raise HTTPException(status_code=503, detail="database unavailable") from exc
 
     return {"run_id": run_id, "result": result}
 
 
 @app.get("/health")
-def health():
+async def health():
     try:
-        with get_connection() as db:
-            with db.cursor() as cur:
-                cur.execute("SELECT 1")
-                cur.fetchone()
-    except psycopg2.Error:
+        await fetch_val("SELECT 1")
+    except Exception:
         raise HTTPException(status_code=503, detail="database unavailable")
     return {"status": "ok"}

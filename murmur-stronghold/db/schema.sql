@@ -31,3 +31,9 @@ CREATE TABLE IF NOT EXISTS payment_intents (
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_jobs_intent_id ON jobs(intent_id);
 CREATE INDEX IF NOT EXISTS idx_payment_intents_status ON payment_intents(status);
+
+CREATE TABLE IF NOT EXISTS webhook_events (
+  event_id TEXT PRIMARY KEY,
+  received_at TIMESTAMP DEFAULT NOW(),
+  payload JSONB NOT NULL
+);

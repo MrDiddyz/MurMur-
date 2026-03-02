@@ -71,3 +71,36 @@ MurMur follows a defense-in-depth operating model:
 - **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
 Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+
+## TikTok Webhook Configuration (Publish Updates)
+
+The billing/API service exposes a TikTok webhook receiver for publish status updates:
+
+- `POST /webhooks/tiktok`
+- `GET /webhooks/tiktok/health`
+
+### Verification flow
+
+1. TikTok sends:
+   - `X-Tt-Signature`
+   - `X-Tt-Timestamp`
+   - raw JSON request body
+2. Server validates HMAC-SHA256 with `TIKTOK_WEBHOOK_SECRET` over:
+   - `${timestamp}.${rawBody}`
+3. Requests are rejected when:
+   - signature is missing
+   - timestamp is older than 5 minutes
+   - signature mismatch
+4. Replay/idempotency protection is enforced via `webhook_events(event_id)`.
+
+### TikTok Developer Portal setup
+
+1. In TikTok Developer Portal, open your app's Webhook/Event subscription settings.
+2. Set callback URL to your deployed API endpoint:
+   - `https://<your-domain>/webhooks/tiktok`
+3. Subscribe to the `publish.status_change` event.
+4. Configure the same signing secret in both places:
+   - TikTok portal signing secret
+   - service env var `TIKTOK_WEBHOOK_SECRET`
+5. Verify health endpoint for ops checks:
+   - `https://<your-domain>/webhooks/tiktok/health`

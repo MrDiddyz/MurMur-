@@ -15,5 +15,13 @@ export async function runGrowthCycle(client, metrics = {}) {
     now,
   });
 
+  if (decision?.type === "post") {
+    decision.meta = {
+      ...(decision.meta ?? {}),
+      autoSchedule: Boolean(metrics.auto_schedule),
+      accountId: metrics.account_id ?? "default-account",
+    };
+  }
+
   return executeGrowthAction(client, decision, now);
 }

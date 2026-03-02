@@ -71,3 +71,46 @@ MurMur follows a defense-in-depth operating model:
 - **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
 Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+
+## Adaptive Posting Time Optimization (Thompson Sampling)
+
+MurMur now includes a **multi-armed bandit posting-time model** that replaces fixed posting heuristics with adaptive learning.
+
+### Why Thompson Sampling
+
+Thompson Sampling balances:
+- **Exploration**: trying under-tested posting hours to discover upside.
+- **Exploitation**: preferring hours with stronger historical reward.
+
+Each hour (`0-23`) is modeled as a bandit arm with Beta-distribution parameters:
+- `alpha` tracks positive reward mass.
+- `beta` tracks negative reward mass.
+
+The scheduler samples each arm and chooses the highest sample.
+
+### Exploration safety
+
+To avoid early lock-in, the scheduler enforces uniform exploration until each arm has at least 5 trials.
+
+### Reward formula (v1)
+
+Reward is normalized and clamped to `[0,1]`:
+
+```text
+reward = 0.4 * normalized_views
+       + 0.3 * normalized_likes
+       + 0.3 * normalized_watch_time
+```
+
+This reward is persisted per post and used to update arm parameters after engagement metrics are collected.
+
+### Feedback loop
+
+1. Auto-scheduler selects posting hour with Thompson Sampling (or forced exploration).
+2. Post is scheduled for next available day at that hour.
+3. Engagement metrics are collected.
+4. Reward is computed and arm updated:
+   - `alpha += reward`
+   - `beta += (1 - reward)`
+   - `total_trials += 1`
+   - `total_reward += reward`

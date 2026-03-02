@@ -1,0 +1,64 @@
+name: Verification Pack
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://murmur:murmur@postgres:5432/murmur
+      JWT_SECRET: ci-jwt-secret
+      STRIPE_KEY: sk_test_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_placeholder
+      REDIS_HOST: redis
+      CORE_URL: http://core:8000
+      TIKTOK_WEBHOOK_SECRET: ci-tiktok-webhook-secret
+      WEBHOOK_URL: http://localhost:3001/webhooks/tiktok
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Start docker compose services
+        run: docker compose -f murmur-stronghold/docker-compose.yml up -d postgres redis core billing worker
+
+      - name: Run migrations/schema
+        run: |
+          docker compose -f murmur-stronghold/docker-compose.yml exec -T postgres \
+            psql -U murmur -d murmur -v ON_ERROR_STOP=1 -f /docker-entrypoint-initdb.d/schema.sql
+
+      - name: Run unit tests
+        run: |
+          npm test --if-present
+          npm --prefix murmur-stronghold/murmur-billing test
+
+      - name: Run E2E verification
+        run: npm run verify:e2e
+
+      - name: Run webhook verification
+        run: npm run verify:webhook
+
+      - name: Run ML sanity verification
+        run: npm run verify:ml
+
+      - name: Assert DB diagnostics
+        run: |
+          docker compose -f murmur-stronghold/docker-compose.yml exec -T postgres \
+            psql -U murmur -d murmur -v ON_ERROR_STOP=1 -f - < scripts/assert_db.sql
+
+      - name: Compose logs on failure
+        if: failure()
+        run: docker compose -f murmur-stronghold/docker-compose.yml logs --no-color

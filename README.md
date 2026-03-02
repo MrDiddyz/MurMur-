@@ -104,3 +104,45 @@ The billing/API service exposes a TikTok webhook receiver for publish status upd
    - service env var `TIKTOK_WEBHOOK_SECRET`
 5. Verify health endpoint for ops checks:
    - `https://<your-domain>/webhooks/tiktok/health`
+
+## Verification Pack
+
+A repeatable verification suite is available to validate queue processing, webhook auth/idempotency, token-expiry simulation, DB assertions, and ML sanity checks.
+
+### Local run
+
+1. Ensure Docker + Docker Compose are installed.
+2. Run:
+   - `npm run verify:e2e`
+   - `npm run verify:webhook`
+   - `npm run verify:ml`
+   - or all at once: `npm run verify:all`
+3. Optional DB diagnostics:
+   - `docker compose -f murmur-stronghold/docker-compose.yml exec -T postgres psql -U murmur -d murmur -f - < scripts/assert_db.sql`
+4. Optional TikTok token expiry simulation:
+   - `docker compose -f murmur-stronghold/docker-compose.yml exec -T postgres psql -U murmur -d murmur -f - < scripts/simulate_token_expiry.sql`
+
+### Required environment variables
+
+Defaults are provided for local verification scripts, but CI/real environments should set:
+
+- `DATABASE_URL`
+- `REDIS_HOST`
+- `CORE_URL`
+- `JWT_SECRET`
+- `TIKTOK_WEBHOOK_SECRET`
+- `WEBHOOK_URL` (optional; defaults to `http://localhost:3001/webhooks/tiktok`)
+
+### Troubleshooting checklist
+
+- Billing health fails:
+  - Check `docker compose -f murmur-stronghold/docker-compose.yml ps`
+  - Check logs: `docker compose -f murmur-stronghold/docker-compose.yml logs billing`
+- Worker not completing jobs:
+  - Verify `CORE_URL` reaches core service from worker (`http://core:8000` in compose)
+  - Inspect worker logs for retries/dead-letter behavior
+- Webhook tests failing:
+  - Confirm `TIKTOK_WEBHOOK_SECRET` matches API secret
+  - Confirm webhook timestamp skew is within 5 minutes
+- DB assertions failing:
+  - Run `scripts/assert_db.sql` directly to inspect latest rows and counts

@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "simulate:agents": "node scripts/agent-simulation.mjs"
+    "simulate:agents": "node scripts/agent-simulation.mjs",
+    "verify:e2e": "bash scripts/verify_e2e.sh",
+    "verify:webhook": "node scripts/send_test_webhook.js",
+    "verify:ml": "node scripts/ml_sanity.js",
+    "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml"
   },
   "dependencies": {
     "next": "14.2.32",

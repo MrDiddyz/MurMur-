@@ -1,20 +1,9 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+import psycopg2
 
-from backend.config import settings
-
-
-class Base(DeclarativeBase):
-    pass
+from backend.config import DATABASE_URL
 
 
-engine = create_engine(settings.database_url, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
-
-
-def get_db():
-    db: Session = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+def get_connection():
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL is not set")
+    return psycopg2.connect(DATABASE_URL)

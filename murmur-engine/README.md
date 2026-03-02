@@ -27,12 +27,12 @@ murmur-engine/
 
 ## Features
 
-- FastAPI application with health and strategy endpoints
-- PostgreSQL support with SQLAlchemy + psycopg2
-- `ideas`, `scores`, and `strategy_memory` persistence tables
-- Explore/exploit strategy selection (epsilon-greedy)
-- Reward feedback pipeline to update strategy performance
-- Railway deployment config and Procfile
+- FastAPI app with `GET /health` and `POST /run`
+- PostgreSQL access using `psycopg2`
+- Explore/exploit strategy choice from `strategy_memory`
+- OpenAI-powered idea generation in the pipeline
+- Writes to `ideas`, `scores`, and `strategy_memory`
+- Railway deploy config and Procfile
 
 ## Dependency Versions
 
@@ -42,6 +42,14 @@ murmur-engine/
 - python-dotenv==1.0.1
 - openai==1.14.3
 - pydantic==2.6.4
+
+## Environment Variables
+
+```env
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+OPENAI_API_KEY=your_openai_key
+ENV=production
+```
 
 ## Local Run
 
@@ -58,10 +66,7 @@ uvicorn backend.main:app --reload
 ## API Endpoints
 
 - `GET /health`
-- `POST /strategies`
-- `GET /strategies`
-- `POST /selection`
-- `POST /strategies/{strategy}/reward`
+- `POST /run`
 
 ## Railway Deploy Steps
 
@@ -74,18 +79,6 @@ uvicorn backend.main:app --reload
    ```bash
    psql "$DATABASE_URL" -f database/migration.sql
    ```
-
-
-## Environment Variables
-
-Use the following minimum environment variables (also included in `.env.example`):
-
-```env
-DATABASE_URL=postgresql://user:password@host:5432/dbname
-OPENAI_API_KEY=your_openai_key
-ENV=production
-```
-
 
 ## Database Schema
 

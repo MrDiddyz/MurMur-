@@ -1,0 +1,27 @@
+ALTER TABLE posts
+  ADD COLUMN IF NOT EXISTS scheduled_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS priority_score NUMERIC DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS auto_schedule BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS schedule_history (
+  id UUID PRIMARY KEY,
+  post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+  previous_time TIMESTAMPTZ,
+  new_time TIMESTAMPTZ,
+  reason TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_posts_scheduled_at ON posts(scheduled_at);
+CREATE INDEX IF NOT EXISTS idx_schedule_history_post_id_created_at ON schedule_history(post_id, created_at DESC);
+
+
+CREATE TABLE IF NOT EXISTS post_engagement (
+  post_id UUID PRIMARY KEY REFERENCES posts(id) ON DELETE CASCADE,
+  likes INTEGER NOT NULL DEFAULT 0,
+  comments INTEGER NOT NULL DEFAULT 0,
+  shares INTEGER NOT NULL DEFAULT 0,
+  score NUMERIC NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

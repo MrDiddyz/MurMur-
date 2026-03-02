@@ -71,3 +71,54 @@ MurMur follows a defense-in-depth operating model:
 - **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
 Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+
+## Content Scheduler + Automation Engine
+
+### Scheduler flow diagram
+
+```text
+POST /api/posts/schedule
+        |
+        v
+Rate-limit guard (max 5 posts/hour/account)
+        |
+        v
+Heuristic optimizer (18:00–21:00 preferred, 02:00–06:00 avoided, hourly spread)
+        |
+        v
+Update posts.scheduled_at + priority_score + auto_schedule
+Insert schedule_history audit row
+        |
+        v
+BullMQ queue: scheduled_publish (delayed job)
+        |
+        v
+Worker execution at scheduled time
+  -> posts.status = queued
+  -> enqueue publish_post job
+        |
+        v
+Publish completion hook (/api/posts/published)
+  -> posts.published_at set
+  -> engagement placeholder + adaptive score update
+```
+
+### Automation overview
+
+- **Manual scheduling:** client provides `scheduled_at` and queue delay is computed from that timestamp.
+- **Auto scheduling:** client sets `auto_optimize=true`; scheduler finds the next high-probability slot.
+- **Rate-limit aware:** when an account has >=5 posts in the same hour, scheduling shifts to the next valid slot.
+- **Adaptive feedback loop:** once a post is marked published, engagement placeholders are stored and the internal score is incrementally tuned.
+
+### Enable auto scheduling
+
+1. Run migration `db/migrations/20260302_add_scheduler.sql`.
+2. Set `DATABASE_URL` and `REDIS_URL` for API + worker runtimes.
+3. Start your existing publish worker and the `scheduled_publish` worker (`src/workers/scheduledPublishWorker.ts`).
+4. Call `POST /api/posts/schedule` with:
+   ```json
+   {
+     "post_id": "<uuid>",
+     "auto_optimize": true
+   }
+   ```

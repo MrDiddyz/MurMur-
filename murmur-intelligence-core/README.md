@@ -10,6 +10,8 @@ Initial scaffold for prompts, schemas, decisions, and scripts.
 - prompts/agents/reflection_loop.v1.0.0.yaml
 - schemas/prompt.schema.json
 - schemas/decision.schema.json
+- schemas/clinic-ai-knowledge-router.schema.json
+- knowledge-base/clinic-ai-knowledge-router.sandra-constance.nb-NO.json
 - decisions/templates/DEC-template-architecture.json
 - decisions/templates/DEC-template-product.json
 - decisions/templates/DEC-template-security.json

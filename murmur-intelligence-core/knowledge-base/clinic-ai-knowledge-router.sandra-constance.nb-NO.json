@@ -1,0 +1,179 @@
+{
+  "meta": {
+    "brand": "Sandra Constance – Naturmedisinsk veiledning",
+    "locale": "nb-NO",
+    "timezone": "Europe/Oslo",
+    "version": "1.0.0",
+    "updated_at": "2026-02-19T00:00:00+01:00",
+    "owner_contact": { "name": "Sandra Constance" }
+  },
+
+  "safety_policy": {
+    "disclaimer": "Jeg kan gi generell informasjon om tilbudet, men ikke stille diagnose eller gi personlig medisinsk rådgivning i chat. Ved alvorlige/plutselige symptomer: kontakt lege/akutt.",
+    "disallowed_content": [
+      "Diagnose eller vurdering av alvorlighetsgrad",
+      "Personlige behandlingsplaner i chat",
+      "Anbefale dosering av tilskudd/medisiner",
+      "Be om sensitive helseopplysninger"
+    ],
+    "red_flags": {
+      "message": "Dette kan være viktig å vurdere med lege/akutt helsehjelp. Jeg anbefaler at du tar kontakt med helsepersonell så snart som mulig.",
+      "triggers": [
+        { "id": "chest_pain", "pattern": "brystsmerte|trykk i bryst", "severity": "high" },
+        { "id": "breathing", "pattern": "pustevansker|tungpust", "severity": "high" },
+        { "id": "fainting", "pattern": "besvimte|svimte av", "severity": "high" },
+        { "id": "suicidal", "pattern": "selvmord|ikke leve|ta livet", "severity": "high" }
+      ]
+    },
+    "data_minimization": {
+      "do_not_collect": ["diagnoser", "medisinliste", "journalopplysninger", "detaljert symptomlogg"],
+      "allowed_fields": ["tema_kategori", "ønsker_booking", "kontaktmetode"]
+    }
+  },
+
+  "routing": {
+    "intents": [
+      {
+        "id": "ask_price",
+        "description": "Spør om pris, mva, introtilbud",
+        "examples": ["Hva koster det?", "Er mva inkludert?", "Hvor lenge varer introprisen?"],
+        "module": "pricing",
+        "priority": 90,
+        "confidence_threshold": 0.55
+      },
+      {
+        "id": "book_time",
+        "description": "Vil booke eller trenger booking-hjelp",
+        "examples": ["Hvordan booker jeg?", "Jeg vil bestille time", "Link til booking?"],
+        "module": "booking",
+        "priority": 95,
+        "confidence_threshold": 0.55
+      },
+      {
+        "id": "what_is_consultation",
+        "description": "Hva skjer i konsultasjonen og hva får man etterpå",
+        "examples": ["Hvordan foregår timen?", "Hva får jeg etter timen?", "Hva går dere gjennom?"],
+        "module": "service_overview",
+        "priority": 80,
+        "confidence_threshold": 0.55
+      },
+      {
+        "id": "is_it_for_me",
+        "description": "Usikker på om dette passer",
+        "examples": ["Er dette for meg?", "Passer det hvis jeg sliter med magen?", "Jeg har diffuse symptomer"],
+        "module": "intake_triage",
+        "priority": 85,
+        "confidence_threshold": 0.55
+      },
+      {
+        "id": "general_faq",
+        "description": "Generelle spørsmål",
+        "examples": ["Tilbyr du digital time?", "Avbestilling?", "Hvor holder du til?"],
+        "module": "faq",
+        "priority": 60,
+        "confidence_threshold": 0.5
+      }
+    ],
+
+    "router_rules": [
+      {
+        "id": "rule_red_flag_override",
+        "when": { "matches_pattern": "brystsmerte|pustevansker|selvmord|svimte av" },
+        "then": { "route_to": "safety_red_flag", "set_flags": ["red_flag"], "prepend_disclaimer": true }
+      },
+      {
+        "id": "rule_booking_keywords",
+        "when": { "contains_any": ["book", "bestill", "time", "booking", "lenke"] },
+        "then": { "route_to": "booking", "set_flags": ["high_intent_booking"] }
+      },
+      {
+        "id": "rule_price_keywords",
+        "when": { "contains_any": ["pris", "koster", "mva", "introduksjonspris"] },
+        "then": { "route_to": "pricing" }
+      }
+    ],
+
+    "fallback": {
+      "route_to": "service_overview",
+      "message": "Jeg kan hjelpe med info om konsultasjonen, pris og booking. Hva lurer du mest på akkurat nå?"
+    }
+  },
+
+  "knowledge_base": {
+    "service": {
+      "name": "Naturmedisinsk konsultasjon",
+      "description": "I en naturmedisinsk konsultasjon går vi gjennom sykehistorikk, symptomer, livsstil og kosthold for å se sammenhenger og finne mulige årsaker til plager – og hva som kan være nyttig videre.",
+      "what_happens": [
+        "Kartlegging av sykehistorikk, symptomer og mål",
+        "Gjennomgang av livsstil og kosthold",
+        "Oppsummering av funn og neste steg"
+      ],
+      "deliverable_after": "Etter timen får du tilsendt en personlig plan med konkrete anbefalinger til kosthold, livsstil og eventuelle tilskudd.",
+      "helps_with": [
+        "Tarmproblematikk",
+        "Hormonubalanse",
+        "Stoffskifte",
+        "Angst og depresjon / psykisk helse",
+        "Migrene",
+        "Betennelse",
+        "Smerter i kroppen / vonde ledd",
+        "Diffuse symptomer"
+      ]
+    },
+
+    "offers": {
+      "intro_price": { "amount": 350, "currency": "NOK", "vat_included": false, "amount_with_vat": 450 },
+      "regular_price": { "amount": 1000, "currency": "NOK" },
+      "vat_note": "350 kr (450 kr inkl. mva).",
+      "price_note": "Dette er en introduksjonspris som vil øke etter hvert."
+    },
+
+    "links": {
+      "booking_url": "https://system.easypractice.net/book/sandra-constance",
+      "website_url": "https://www.tivandernaturmedisin.no/",
+      "contact_message_prompt": "Hvis du er usikker på om dette passer for deg, send en melding med hva du ønsker hjelp med (helt kort), så kan vi finne riktig neste steg."
+    },
+
+    "faq": [
+      {
+        "id": "faq_what_do_we_cover",
+        "q": "Hva går vi gjennom i konsultasjonen?",
+        "a": "Vi går gjennom sykehistorikk, symptomer, livsstil og kosthold for å se sammenhenger og finne ut hva som kan være nyttig videre.",
+        "tags": ["konsultasjon", "prosess"],
+        "cta": { "type": "book", "label": "Book time", "url": "https://system.easypractice.net/book/sandra-constance" }
+      },
+      {
+        "id": "faq_after_session",
+        "q": "Hva får jeg etter timen?",
+        "a": "Du får tilsendt en personlig plan med konkrete anbefalinger til kosthold, livsstil og eventuelle tilskudd.",
+        "tags": ["plan", "leveranse"]
+      },
+      {
+        "id": "faq_price",
+        "q": "Hva koster det?",
+        "a": "Introduksjonspris er 350 kr (450 kr inkl. mva). Ordinær pris er 1000 kr. Introprisen vil øke etter hvert.",
+        "tags": ["pris", "mva"],
+        "cta": { "type": "book", "label": "Book time", "url": "https://system.easypractice.net/book/sandra-constance" }
+      },
+      {
+        "id": "faq_booking",
+        "q": "Hvordan booker jeg time?",
+        "a": "Du kan booke direkte via bookingsiden. Hvis du er usikker på om dette er for deg, kan du sende en melding først.",
+        "tags": ["booking"],
+        "cta": { "type": "book", "label": "Gå til booking", "url": "https://system.easypractice.net/book/sandra-constance" }
+      },
+      {
+        "id": "faq_who_is_it_for",
+        "q": "Hvem passer dette for?",
+        "a": "Tilbudet passer for deg som ønsker helhetlig veiledning knyttet til mage/tarm, hormoner, stoffskifte, stress/psykisk helse, migrene, betennelse/smerter eller diffuse symptomer.",
+        "tags": ["målgruppe"]
+      }
+    ],
+
+    "tone_snippets": {
+      "greeting": "Hei! 👋 Hvordan kan jeg hjelpe deg i dag?",
+      "closing": "Vil du at jeg sender deg bookinglenken, eller vil du lese litt mer om hvordan konsultasjonen foregår?",
+      "book_cta": "Book time her: https://system.easypractice.net/book/sandra-constance"
+    }
+  }
+}

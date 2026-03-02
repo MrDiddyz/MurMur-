@@ -71,3 +71,36 @@ MurMur follows a defense-in-depth operating model:
 - **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
 Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+
+## Cross-Learning Engine
+
+MurMur now supports a hybrid cross-learning loop for multi-account reinforcement-style training.
+
+### Knowledge transfer flow
+
+- Each account keeps a personalized model in `data/models/accounts/<account_id>.json`.
+- A shared global model is stored at `data/models/global_model.json` and is trained from aggregated replay data.
+- If an account model does not exist yet, it is initialized from the global model so new accounts inherit prior learning quickly.
+
+### Why hybrid (global + account) is used
+
+- **Global model** captures broad patterns that generalize across accounts.
+- **Account models** preserve local behavior and per-account style.
+- The system applies a **soft update** when global quality improves:
+  - `account_weights = 0.8 * account_weights + 0.2 * global_weights`
+- This lets accounts benefit from system-wide learning without losing personalization abruptly.
+
+### Cluster-aware transfer and negative-transfer mitigation
+
+- Cluster models are maintained in `data/models/cluster_models/` using:
+  - follower-count bucket (`small`, `medium`, `large`)
+  - niche category
+- Accounts share partial weights with peers in the same cluster only.
+- This reduces negative transfer by limiting cross-account influence to behaviorally similar cohorts.
+- Global updates are periodic via `GLOBAL_UPDATE_INTERVAL` (default `50`) to avoid overreacting to noisy short-term data.
+
+### Config flags
+
+- `ML_GLOBAL_ENABLED=true`
+- `ML_CLUSTER_ENABLED=true`
+- `GLOBAL_UPDATE_INTERVAL=50`

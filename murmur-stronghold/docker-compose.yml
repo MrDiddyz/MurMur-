@@ -14,7 +14,8 @@ services:
       retries: 5
 
   redis:
-    image: redis:7
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -26,8 +27,14 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_URL: ${REDIS_URL}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
+      QUEUE_NAME: ${QUEUE_NAME:-tasks}
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   billing:
@@ -46,16 +53,16 @@ services:
       - "3001:3001"
 
   worker:
-    build: ./murmur-worker
+    build: ./murmur-core
+    command: ["python", "-m", "worker"]
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_HOST: ${REDIS_HOST}
+      REDIS_URL: ${REDIS_URL}
       JWT_SECRET: ${JWT_SECRET}
-      CORE_URL: ${CORE_URL}
-      MAX_JOB_RETRIES: ${MAX_JOB_RETRIES:-5}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
+      WORKER_SERVICE_NAME: ${WORKER_SERVICE_NAME:-murmur-worker}
+      QUEUE_NAME: ${QUEUE_NAME:-tasks}
     depends_on:
-      core:
-        condition: service_started
       redis:
         condition: service_healthy
       postgres:

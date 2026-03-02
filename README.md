@@ -60,6 +60,15 @@ The repository is intentionally modular. Key areas include:
 - Support regulated deployment profiles (e.g., sector-specific controls and reporting templates).
 - Enable hybrid cloud + edge execution for latency-sensitive environments.
 
+
+## Codex bootstrap + PR workflow
+
+To support autonomous execution in this repository:
+
+1. `make bootstrap` brings up a validated local baseline (dependency install + lint + typecheck).
+2. `make codex-pr-loop` runs a safe PR loop for Codex (migration visibility, script tests, and the standard validation loop).
+3. In GitHub PRs, you can request an automated review with `@codex review` (when enabled in Codex settings).
+
 ## Security
 
 MurMur follows a defense-in-depth operating model:

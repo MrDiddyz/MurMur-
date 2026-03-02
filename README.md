@@ -71,3 +71,25 @@ MurMur follows a defense-in-depth operating model:
 - **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
 
 Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+
+## Deep RL Scheduler (DQN)
+
+MurMur growth scheduling supports a DQN-based hour selector with a bandit fallback.
+
+- **State definition**: a numeric vector (`metrics.stateVector`) representing posting context (e.g. engagement trend, recency, content type signals). If omitted, a default state is used: `[engagement, hour_of_day]`.
+- **Action space**: 24 discrete actions, one for each hour in a day.
+- **Reward formula**: by default `reward = metrics.reward ?? metrics.engagement ?? 0`. This allows explicit reward injection while preserving compatibility with existing engagement metrics.
+- **Exploration strategy**: epsilon-greedy. With probability `epsilon`, the scheduler picks a random hour; otherwise it picks `argmax(Q(state))`.
+
+### Environment variables
+
+- `ML_ENABLED=true|false` — enable DQN scheduler, otherwise use bandit.
+- `ML_EPSILON=0.1` — exploration rate.
+- `ML_BATCH_SIZE=32` — replay batch size.
+- `ML_TRAIN_INTERVAL=10` — train every N observed transitions.
+
+### Persistence
+
+Model weights are saved per account to:
+
+- `data/models/account_<id>.json`

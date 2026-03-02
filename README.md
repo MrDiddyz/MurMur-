@@ -1,73 +1,101 @@
-# MurMur
+# MurMur TikTok Automation Platform
 
-MurMur is a modular intelligence platform for operating high-consequence workflows with auditable AI assistance. It combines orchestration, persistent memory, simulation, and policy enforcement so teams can move from one-off prompts to repeatable decision systems.
+## Architecture diagram (text)
 
-This repository is a multi-surface codebase: product interfaces, orchestration services, intelligence assets, security tooling, and deployment scaffolding.
+```
+Client/API consumer
+    |
+    v
+[Express API :4000] ---> [PostgreSQL]
+    |
+    +--> [BullMQ Queues on Redis] ---> [Worker Service]
+                                      |
+                                      v
+                               [TikTok Service Modules]
+```
 
-## Vision
+## Services and folders
 
-MurMur is built for organizations that require **operationally reliable AI**, not just conversational output. The platform vision is to:
+- `apps/api`: Express API with health, integration, and post endpoints.
+- `apps/worker`: Background job workers for publish/status/token-refresh jobs.
+- `apps/web`: Placeholder for future frontend.
+- `services/tiktok`: TikTok OAuth/posting/creator/webhook scaffolds.
+- `services/authz`: RBAC/ABAC utility modules.
+- `services/audit`: Audit logging helper.
+- `database/migrations`: SQL schema migrations.
+- `shared`: DB, queue, config, and type helpers.
 
-- Turn fragmented AI usage into governed, end-to-end workflows.
-- Create memory-backed systems that improve with every execution cycle.
-- Support simulation-first planning before expensive real-world action.
-- Preserve human control through explicit policies, review paths, and traceability.
+## Local setup
 
-## Architecture
+1. Copy env values:
+   ```bash
+   cp .env.example .env
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run migration:
+   ```bash
+   npm run migrate
+   ```
+4. Start API:
+   ```bash
+   npm run dev:api
+   ```
+5. Start worker:
+   ```bash
+   npm run dev:worker
+   ```
 
-MurMur is designed as a layered system:
+## Environment variables
 
-1. **Experience Layer** — Next.js applications and dashboards for operators and stakeholders.
-2. **Orchestration Layer** — task routing, execution lifecycle management, and agent coordination.
-3. **Intelligence Layer** — prompt registry, decision templates, reflective loops, and simulation assets.
-4. **Memory + Data Layer** — durable stores for observations, decisions, outcomes, and policy state.
-5. **Security + Policy Layer** — authorization checks, secret management, audit logging, and hardening controls.
-6. **Infrastructure Layer** — cloud runtime, CI/CD, observability, and deployment automation.
+- `NODE_ENV` - `development|test|production`
+- `API_PORT` - API bind port (default `4000`)
+- `DATABASE_URL` - PostgreSQL connection string
+- `REDIS_URL` - Redis connection string
+- `TIKTOK_CLIENT_ID` - TikTok app client id
+- `TIKTOK_CLIENT_SECRET` - TikTok app secret
+- `TIKTOK_REDIRECT_URI` - OAuth redirect URI
 
-For detailed diagrams and deployment topologies, see [`docs/architecture.md`](docs/architecture.md).
+## Docker usage
 
-## Modules
+```bash
+docker compose -f docker/docker-compose.yml up --build
+```
 
-The repository is intentionally modular. Key areas include:
+This command starts:
+- API container on port `4000`
+- Worker container
+- PostgreSQL
+- Redis
 
-- `src/` — primary application routes and UI surfaces (including dashboard, solutions, and product modules).
-- `core/` — memory and event bus primitives used by orchestration logic.
-- `agents/` — specialized agent definitions and runtime behavior components.
-- `modules/` — domain extensions and packaged capability units.
-- `murmur-intelligence-core/` — prompt registry, decision schemas, and validation scripts.
-- `murmur-stronghold/` and `murmur-security-interactive/` — security-focused assets and hardening artifacts.
-- `docs/` — architecture records, strategy docs, and operational guidance.
-- `tests/` — automated checks and validation scaffolding.
+The compose file uses service-to-service URLs (e.g. `postgres`, `redis`) and health checks to reduce startup race conditions.
 
-## Roadmap
+## Queue overview
 
-### Near-term (0-2 quarters)
+BullMQ queues (`shared/queue.ts`):
+- `publish_post` - publish jobs for created posts
+- `poll_status` - polling publish status
+- `refresh_token` - token refresh background tasks
 
-- Consolidate orchestration interfaces behind stable service contracts.
-- Expand decision schema coverage for product, security, and operations workflows.
-- Harden deployment baselines with stricter identity boundaries and audit retention defaults.
-- Publish operator runbooks for incident handling and model rollback.
+## TikTok integration overview
 
-### Mid-term (2-4 quarters)
+TikTok service modules are scaffolded (signatures only):
+- OAuth code exchange
+- Access token refresh
+- Video upload
+- Publish status polling
+- Creator info retrieval
+- Webhook signature verification
 
-- Introduce simulation-driven planning loops tied directly to production policy gates.
-- Improve multi-tenant isolation and per-tenant memory partitioning.
-- Add deeper observability: latency budgets, decision-quality metrics, and failure taxonomies.
+## Security & reliability baseline
 
-### Long-term (4+ quarters)
-
-- Build adaptive optimization loops that continuously refine workflows with policy-safe reinforcement.
-- Support regulated deployment profiles (e.g., sector-specific controls and reporting templates).
-- Enable hybrid cloud + edge execution for latency-sensitive environments.
-
-## Security
-
-MurMur follows a defense-in-depth operating model:
-
-- **Identity-first access control**: least privilege for users, services, and automation.
-- **Secret hygiene**: environment-level secret isolation and rotation-ready integration points.
-- **Data governance**: scoped persistence, explicit retention strategy, and deletion workflows.
-- **Execution safety**: policy checks before high-impact actions and explicit audit trails.
-- **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
-
-Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+- Environment variables validated at boot (`shared/config.ts`).
+- Request payload validation via Zod in API routes.
+- Error middleware avoids leaking internals.
+- Audit logging for integration and post actions.
+- DB transactions for post creation flow.
+- Worker failure path marks publish jobs as failed in DB.
+- Graceful shutdown for API and worker on SIGINT/SIGTERM.
+- No secrets are intentionally logged.

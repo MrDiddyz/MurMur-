@@ -1,0 +1,68 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: murmur
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d murmur']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api.Dockerfile
+    environment:
+      NODE_ENV: development
+      API_PORT: 4000
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      TIKTOK_CLIENT_ID: local-client-id
+      TIKTOK_CLIENT_SECRET: local-client-secret
+      TIKTOK_REDIRECT_URI: https://example.com/callback
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '4000:4000'
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/worker.Dockerfile
+    environment:
+      NODE_ENV: development
+      API_PORT: 4000
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      TIKTOK_CLIENT_ID: local-client-id
+      TIKTOK_CLIENT_SECRET: local-client-secret
+      TIKTOK_REDIRECT_URI: https://example.com/callback
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+volumes:
+  pg_data:

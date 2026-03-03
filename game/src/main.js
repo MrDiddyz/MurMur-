@@ -15,8 +15,13 @@ sprites.enemy.src = './assets/enemy-ship.svg';
 
 const ui = new UI();
 const input = new Input();
-const game = new Game(ui, input, sprites);
+input.bindTouchControls({
+  leftButton: document.getElementById('touch-left'),
+  rightButton: document.getElementById('touch-right'),
+  shootButton: document.getElementById('touch-shoot')
+});
 
+const game = new Game(ui, input, sprites);
 ui.onRestart(() => game.reset());
 
 let lastTime = performance.now();

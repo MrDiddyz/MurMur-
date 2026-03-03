@@ -12,7 +12,10 @@
     "verify:e2e": "bash scripts/verify_e2e.sh",
     "verify:webhook": "node scripts/send_test_webhook.js",
     "verify:ml": "node scripts/ml_sanity.js",
-    "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml"
+    "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml",
+    "game:build": "node scripts/build-game.mjs",
+    "game:preview": "python3 -m http.server 4173 --directory game/dist",
+    "game:dev": "python3 -m http.server 4173 --directory game"
   },
   "dependencies": {
     "next": "14.2.32",

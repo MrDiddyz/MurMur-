@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   convertProposalToCodexTask,
+  createBranchName,
   deriveConstraints,
   mapModule,
 } from './codex-task-spec.mjs';
@@ -43,4 +44,17 @@ test('convertProposalToCodexTask creates the expected payload shape', () => {
     auto_generated: true,
     proposal_id: 'prop-123',
   });
+});
+
+
+test('createBranchName creates proposal branch slug', () => {
+  const proposal = {
+    id: 'prop-999',
+    proposed_solution: 'Add Retry Queue to cron pipeline + alerts!!!',
+  };
+
+  assert.equal(
+    createBranchName(proposal),
+    'feature/proposal-prop-999-add-retry-queue-to-cron-pipeline-alerts',
+  );
 });

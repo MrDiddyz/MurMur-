@@ -22,6 +22,17 @@ export function deriveConstraints(proposal) {
   return "Follow repository modular standards";
 }
 
+
+export function createBranchName(proposal) {
+  const slug = proposal.proposed_solution
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+
+  return `feature/proposal-${proposal.id}-${slug}`;
+}
+
 export function convertProposalToCodexTask(proposal) {
   return {
     task_type: "feature",

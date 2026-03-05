@@ -1,0 +1,18 @@
+# Node
+node_modules/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Build artifacts
+dist/
+build/
+coverage/
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,13 @@
+name: Security
+
+on:
+  pull_request:
+  schedule:
+    - cron: '0 5 * * 1'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Add security scans here"

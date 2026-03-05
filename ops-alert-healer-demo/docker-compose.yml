@@ -1,0 +1,38 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  adapter:
+    build: .
+    command: python adapter.py
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      ALERT_STREAM: alerts
+      ALERTMANAGER_SIGNING_SECRET: demo-secret
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+
+  healer:
+    build: .
+    command: python healer.py
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      ALERT_STREAM: alerts
+      ALERT_GROUP: healers
+      HEALER_CONSUMER: healer-1
+      ALLOWLIST_TARGETS: dummy-service
+      MIN_RESTART_INTERVAL_SECONDS: 30
+    depends_on:
+      - redis
+      - dummy-service
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  dummy-service:
+    image: alpine:3.20
+    container_name: dummy-service
+    command: ["sh", "-c", "echo dummy running && trap : TERM INT; sleep infinity & wait"]

@@ -12,6 +12,17 @@ Body:
 {"goal":"Lag en content-agent for MurMur som publiserer ukentlig og lærer av metrics"}
 ```
 
+
+## 2b. Trigger run via Netlify function
+Use this from the browser when deployed with a Netlify function wrapper:
+
+```ts
+await fetch("/.netlify/functions/run-agent", {
+  method: "POST",
+  body: JSON.stringify({ goal: "Generate 3 posts this week" })
+});
+```
+
 ## 3. Test
 **Kjør dette lokalt:**
 

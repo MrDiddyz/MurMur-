@@ -73,8 +73,6 @@ def _normalize_ranked_items(raw_items: Any) -> list[str]:
     return normalized
 
 
-
-
 def _append_unique_capped(target: list[str], candidate: str) -> None:
     value = candidate.strip()
     if not value or value in target:
@@ -83,6 +81,31 @@ def _append_unique_capped(target: list[str], candidate: str) -> None:
     target.append(value)
     if len(target) > MAX_STATE_ITEMS:
         del target[0]
+
+
+
+def _read_state_payload() -> dict[str, Any] | None:
+    if not STATE_PATH.exists():
+        return None
+
+    try:
+        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+    if not isinstance(data, dict):
+        return None
+
+    return data
+
+
+def _serialize_state(state: RuntimeState) -> dict[str, Any]:
+    return {
+        "interactions": max(0, state.interactions),
+        "niche": state.niche,
+        "top_goals": state.top_goals[:MAX_STATE_ITEMS],
+        "top_obstacles": state.top_obstacles[:MAX_STATE_ITEMS],
+    }
 
 def _parse_state(data: dict[str, Any]) -> RuntimeState:
     niche_raw = data.get("niche", DEFAULT_STATE.niche)
@@ -97,15 +120,8 @@ def _parse_state(data: dict[str, Any]) -> RuntimeState:
 
 
 def load_state() -> RuntimeState:
-    if not STATE_PATH.exists():
-        return _clone_default_state()
-
-    try:
-        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return _clone_default_state()
-
-    if not isinstance(data, dict):
+    data = _read_state_payload()
+    if data is None:
         return _clone_default_state()
 
     return _parse_state(data)
@@ -115,12 +131,7 @@ def save_state(state: RuntimeState) -> None:
     _ensure_parent(STATE_PATH)
     STATE_PATH.write_text(
         json.dumps(
-            {
-                "interactions": max(0, state.interactions),
-                "niche": state.niche,
-                "top_goals": state.top_goals[:MAX_STATE_ITEMS],
-                "top_obstacles": state.top_obstacles[:MAX_STATE_ITEMS],
-            },
+            _serialize_state(state),
             ensure_ascii=False,
             indent=2,
         ),

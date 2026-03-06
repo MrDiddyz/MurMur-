@@ -5,20 +5,33 @@ from typing import Iterable
 from fastapi import HTTPException, status
 
 
+GLOBAL_WILDCARD = "*"
+NAMESPACE_WILDCARD_SUFFIX = ":*"
+
+
+def _wildcard_prefix(scope: str) -> str | None:
+    if not scope.endswith(NAMESPACE_WILDCARD_SUFFIX):
+        return None
+    return scope[: -len(NAMESPACE_WILDCARD_SUFFIX)]
+
+
 def scope_matches(granted_scope: str, required_scope: str) -> bool:
     """Return True when a granted scope satisfies the required scope."""
-    if granted_scope == "*":
+    if granted_scope in {GLOBAL_WILDCARD, required_scope}:
         return True
-    if granted_scope == required_scope:
-        return True
-    if granted_scope.endswith(":*"):
-        prefix = granted_scope[:-2]
-        return required_scope == prefix or required_scope.startswith(f"{prefix}:")
-    return False
+
+    prefix = _wildcard_prefix(granted_scope)
+    if prefix is None:
+        return False
+
+    return required_scope == prefix or required_scope.startswith(f"{prefix}:")
 
 
 def has_scope(granted_scopes: Iterable[str], required_scope: str) -> bool:
-    return any(scope_matches(scope, required_scope) for scope in granted_scopes)
+    for scope in granted_scopes:
+        if scope_matches(scope, required_scope):
+            return True
+    return False
 
 
 def require_scope(granted_scopes: Iterable[str], required_scope: str) -> None:

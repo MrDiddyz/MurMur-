@@ -16,3 +16,10 @@ Minimal 1-server skeleton with FastAPI + Postgres + Nginx using Docker Compose.
    ```bash
    curl http://localhost/health
    ```
+
+## Delivery workflow
+
+For feature work, follow the architecture-first, file-by-file process documented in:
+
+- `docs/architecture-phases.md`
+- `docs/file-generation-template.md`

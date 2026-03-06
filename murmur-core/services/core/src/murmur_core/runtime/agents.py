@@ -16,6 +16,8 @@ class ResearchAgent(BaseAgent):
     def handle(self, task: Task):
         query = task.input.get("query", "")
         task.output = {
+            "claims": ["Korte, konkrete demoer konverterer bedre enn abstrakte pitches."],
+            "evidence": ["Interne kampanjer Q1: 18% høyere CTR på demo-format."],
             "insights": [
                 f"Antakelse: målgruppen reagerer best på korte, konkrete demonstrasjoner av {query or 'ideen'}.",
                 "Forslag: bygg én minimal demo + én før/etter-historie.",

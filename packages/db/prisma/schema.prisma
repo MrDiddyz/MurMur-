@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workflow {
+  id          String               @id @default(cuid())
+  prompt      String
+  status      String
+  metadata    Json?
+  result      Json?
+  error       String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  events      WorkflowEvent[]
+  checkpoints WorkflowCheckpoint[]
+}
+
+model WorkflowEvent {
+  id         String   @id @default(cuid())
+  workflowId String
+  type       String
+  message    String
+  payload    Json?
+  createdAt  DateTime @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, createdAt])
+}
+
+model WorkflowCheckpoint {
+  id         String   @id @default(cuid())
+  workflowId String
+  node       String
+  state      Json
+  createdAt  DateTime @default(now())
+
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId, createdAt])
+}
+
+model Memory {
+  id         String   @id @default(cuid())
+  workflowId String
+  content    String
+  tags       String[]
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([workflowId, createdAt])
+}

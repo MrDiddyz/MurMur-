@@ -1,0 +1,14 @@
+{
+  "name": "murmur",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*",
+    "agents/*",
+    "services/*"
+  ],
+  "scripts": {
+    "build": "echo \"build placeholder\"",
+    "test": "echo \"test placeholder\""
+  }
+}

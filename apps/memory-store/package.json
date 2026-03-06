@@ -1,0 +1,7 @@
+{
+  "name": "@murmur/memory-store",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {"dev":"tsx watch src/index.ts","build":"tsc -p tsconfig.json","typecheck":"tsc --noEmit","lint":"echo 'no lint configured'"},
+  "dependencies": {"@murmur/db":"workspace:*","fastify":"^5.1.0","zod":"^3.23.8"}
+}

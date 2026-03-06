@@ -1,0 +1,20 @@
+{
+  "name": "@murmur/graph",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'no lint configured'"
+  },
+  "dependencies": {
+    "@murmur/builder-agent": "workspace:*",
+    "@murmur/optimizer-agent": "workspace:*",
+    "@murmur/planner-agent": "workspace:*",
+    "@murmur/reviewer-agent": "workspace:*",
+    "@murmur/shared": "workspace:*"
+  }
+}

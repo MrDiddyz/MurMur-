@@ -4,9 +4,13 @@
   "version": "0.1.0",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "turbo run test",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "verify": "bash scripts/verify.sh",
+    "verify:e2e": "bash scripts/verify_e2e.sh"
   },
   "devDependencies": {
     "turbo": "^2.0.0",

@@ -1,0 +1,203 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: murmur-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - murmur_redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/api.Dockerfile
+    container_name: murmur-api
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${API_PORT:-3001}
+      SERVICE_NAME: api
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${API_PORT:-3001}:3001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/worker.Dockerfile
+    container_name: murmur-worker
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${WORKER_PORT:-3010}
+      SERVICE_NAME: worker
+      API_URL: http://api:3001
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${WORKER_PORT:-3010}:3010"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3010/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  planner-agent:
+    build:
+      context: ../..
+      dockerfile: infra/docker/agent.Dockerfile
+      args:
+        AGENT_DIR: agents/planner-agent
+    container_name: murmur-planner-agent
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${PLANNER_AGENT_PORT:-3101}
+      AGENT_NAME: planner-agent
+      API_URL: http://api:3001
+      WORKER_URL: http://worker:3010
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${PLANNER_AGENT_PORT:-3101}:3101"
+    depends_on:
+      worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3101/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  builder-agent:
+    build:
+      context: ../..
+      dockerfile: infra/docker/agent.Dockerfile
+      args:
+        AGENT_DIR: agents/builder-agent
+    container_name: murmur-builder-agent
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${BUILDER_AGENT_PORT:-3102}
+      AGENT_NAME: builder-agent
+      API_URL: http://api:3001
+      WORKER_URL: http://worker:3010
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${BUILDER_AGENT_PORT:-3102}:3102"
+    depends_on:
+      worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3102/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  reviewer-agent:
+    build:
+      context: ../..
+      dockerfile: infra/docker/agent.Dockerfile
+      args:
+        AGENT_DIR: agents/reviewer-agent
+    container_name: murmur-reviewer-agent
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${REVIEWER_AGENT_PORT:-3103}
+      AGENT_NAME: reviewer-agent
+      API_URL: http://api:3001
+      WORKER_URL: http://worker:3010
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${REVIEWER_AGENT_PORT:-3103}:3103"
+    depends_on:
+      worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3103/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  optimizer-agent:
+    build:
+      context: ../..
+      dockerfile: infra/docker/agent.Dockerfile
+      args:
+        AGENT_DIR: agents/optimizer-agent
+    container_name: murmur-optimizer-agent
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${OPTIMIZER_AGENT_PORT:-3104}
+      AGENT_NAME: optimizer-agent
+      API_URL: http://api:3001
+      WORKER_URL: http://worker:3010
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "${OPTIMIZER_AGENT_PORT:-3104}:3104"
+    depends_on:
+      worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3104/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/web.Dockerfile
+    container_name: murmur-web
+    restart: unless-stopped
+    env_file:
+      - ../../.env.example
+    environment:
+      PORT: ${WEB_PORT:-3000}
+      SERVICE_NAME: web
+      API_URL: http://api:3001
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  murmur_redis_data:

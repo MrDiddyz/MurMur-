@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@murmur/shared": ["packages/shared/src"],
+      "@murmur/db": ["packages/db/src"],
+      "@murmur/queue": ["packages/queue/src"],
+      "@murmur/graph": ["packages/graph/src"],
+      "@murmur/planner-agent": ["packages/planner-agent/src"],
+      "@murmur/builder-agent": ["packages/builder-agent/src"],
+      "@murmur/reviewer-agent": ["packages/reviewer-agent/src"],
+      "@murmur/optimizer-agent": ["packages/optimizer-agent/src"]
+    }
+  }
+}

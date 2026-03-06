@@ -1,4 +1,10 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "workers/*"
+  - "apps/api"
+  - "apps/worker"
+  - "packages/agents-core"
+  - "packages/agents-teacher"
+  - "packages/agents-experimental"
+  - "packages/agents-thinktank"
+  - "packages/agents-reflective"
+  - "packages/orchestration"
+  - "packages/workflows"

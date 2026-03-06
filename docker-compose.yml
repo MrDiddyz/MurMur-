@@ -46,7 +46,7 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 10000
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
@@ -61,6 +61,11 @@ services:
       VIPPS_SUBSCRIPTION_KEY: ${VIPPS_SUBSCRIPTION_KEY:-}
       VIPPS_MERCHANT_SERIAL_NUMBER: ${VIPPS_MERCHANT_SERIAL_NUMBER:-}
       SESSION_SECRET: ${SESSION_SECRET:-local-dev-session-secret}
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - api_node_modules:/app/apps/api/node_modules
+      - root_node_modules:/app/node_modules
     ports:
       - "10000:10000"
     healthcheck:
@@ -79,7 +84,7 @@ services:
       api:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       PORT: 10000
       NEXT_TELEMETRY_DISABLED: 1
       API_BASE_URL: http://api:10000
@@ -88,6 +93,13 @@ services:
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - web_node_modules:/app/apps/web/node_modules
+      - root_node_modules:/app/node_modules
     ports:
       - "3000:10000"
     healthcheck:
@@ -110,10 +122,15 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
       API_BASE_URL: http://api:10000
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - worker_node_modules:/app/apps/worker/node_modules
+      - root_node_modules:/app/node_modules
 
   planner-agent:
     build:
@@ -129,10 +146,15 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
       API_BASE_URL: http://api:10000
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - planner_agent_node_modules:/app/agents/planner-agent/node_modules
+      - root_node_modules:/app/node_modules
 
   builder-agent:
     build:
@@ -148,10 +170,15 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
       API_BASE_URL: http://api:10000
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - builder_agent_node_modules:/app/agents/builder-agent/node_modules
+      - root_node_modules:/app/node_modules
 
   reviewer-agent:
     build:
@@ -167,10 +194,15 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
       API_BASE_URL: http://api:10000
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - reviewer_agent_node_modules:/app/agents/reviewer-agent/node_modules
+      - root_node_modules:/app/node_modules
 
   optimizer-agent:
     build:
@@ -186,11 +218,24 @@ services:
       redis:
         condition: service_healthy
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
       REDIS_URL: redis://redis:6379
       API_BASE_URL: http://api:10000
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - .:/app
+      - optimizer_agent_node_modules:/app/agents/optimizer-agent/node_modules
+      - root_node_modules:/app/node_modules
 
 volumes:
+  root_node_modules:
+  api_node_modules:
+  web_node_modules:
+  worker_node_modules:
+  planner_agent_node_modules:
+  builder_agent_node_modules:
+  reviewer_agent_node_modules:
+  optimizer_agent_node_modules:
   murmur_postgres_data:
   murmur_redis_data:

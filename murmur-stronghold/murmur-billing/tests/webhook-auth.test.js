@@ -1,7 +1,7 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 import crypto from "node:crypto"
-import { verifyWebhookSignature } from "../auth.js"
+import { verifyStripeWebhookEvent, verifyWebhookSignature } from "../auth.js"
 
 function sign(body, timestamp, secret) {
   return crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("hex")
@@ -37,4 +37,34 @@ test("verifyWebhookSignature rejects invalid timestamp", () => {
   const result = verifyWebhookSignature(Buffer.from(body), signature, "not-a-number")
   assert.equal(result.valid, false)
   assert.equal(result.reason, "invalid timestamp")
+})
+
+test("verifyStripeWebhookEvent rejects when secret is missing", () => {
+  delete process.env.STRIPE_WEBHOOK_SECRET
+  const stripe = { webhooks: { constructEvent: () => ({ id: "evt_x" }) } }
+
+  assert.throws(() => verifyStripeWebhookEvent(stripe, Buffer.from("{}"), "sig"), /missing stripe webhook secret/)
+})
+
+test("verifyStripeWebhookEvent delegates to Stripe SDK constructEvent", () => {
+  process.env.STRIPE_WEBHOOK_SECRET = "whsec_123"
+
+  let received
+  const expectedEvent = { id: "evt_123", type: "checkout.session.completed" }
+  const stripe = {
+    webhooks: {
+      constructEvent: (rawBody, signature, webhookSecret) => {
+        received = { rawBody, signature, webhookSecret }
+        return expectedEvent
+      },
+    },
+  }
+
+  const rawBody = Buffer.from('{"id":"evt_123"}')
+  const event = verifyStripeWebhookEvent(stripe, rawBody, "t=1,v1=abc")
+
+  assert.deepEqual(event, expectedEvent)
+  assert.equal(received.rawBody, rawBody)
+  assert.equal(received.signature, "t=1,v1=abc")
+  assert.equal(received.webhookSecret, "whsec_123")
 })

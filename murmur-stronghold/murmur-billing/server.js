@@ -2,7 +2,7 @@ import Fastify from "fastify"
 import Stripe from "stripe"
 import pkg from "pg"
 import Redis from "ioredis"
-import { requireStripeSignature, verifyWebhookSignature } from "./auth.js"
+import { requireStripeSignature, verifyStripeWebhookEvent, verifyWebhookSignature } from "./auth.js"
 
 const { Pool } = pkg
 const fastify = Fastify({ logger: true, bodyLimit: 1024 * 1024 })
@@ -129,8 +129,9 @@ fastify.post("/webhook", async (req, res) => {
 
   let event
   try {
-    event = stripe.webhooks.constructEvent(req.rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET)
-  } catch {
+    event = verifyStripeWebhookEvent(stripe, req.rawBody, sig)
+  } catch (error) {
+    req.log.warn({ err: error }, "stripe webhook rejected")
     return res.code(400).send("invalid")
   }
 

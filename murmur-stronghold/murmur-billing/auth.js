@@ -10,6 +10,15 @@ export function requireStripeSignature(req) {
   return signature
 }
 
+export function verifyStripeWebhookEvent(stripe, rawBody, signature) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    throw new Error("missing stripe webhook secret")
+  }
+
+  return stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)
+}
+
 export function verifyWebhookSignature(rawBody, signature, timestamp, nowMs = Date.now()) {
   if (!signature) {
     return { valid: false, reason: "missing signature" }

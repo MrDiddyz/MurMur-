@@ -1,0 +1,20 @@
+{
+  "name": "@murmur/orchestration",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@murmur/agents-core": "workspace:*",
+    "@murmur/agents-teacher": "workspace:*",
+    "@murmur/agents-experimental": "workspace:*",
+    "@murmur/agents-thinktank": "workspace:*",
+    "@murmur/agents-reflective": "workspace:*",
+    "@murmur/workflows": "workspace:*"
+  }
+}

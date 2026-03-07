@@ -1,8 +1,10 @@
 export type JsonObject = Record<string, unknown>;
 
+export type AgentId = "teacher" | "experimental" | "thinktank" | "reflective";
+
 export interface WorkflowRunStep {
-  agentId: string;
-  stage: string;
+  agentId: AgentId;
+  stage: WorkflowStage;
   output: unknown;
   startedAt: string;
   completedAt: string;
@@ -15,6 +17,12 @@ export interface WorkflowRunResult {
   steps: WorkflowRunStep[];
   finalOutput: unknown;
 }
+
+export type WorkflowStage =
+  | TeacherOutput["stage"]
+  | ExperimentalOutput["stage"]
+  | ThinktankOutput["stage"]
+  | ReflectiveOutput["stage"];
 
 export interface WorkflowRunPayload {
   workflowId: string;
@@ -74,19 +82,19 @@ export interface ReflectiveOutput {
 }
 
 export interface Agent<I, O> {
-  readonly id: string;
+  readonly id: AgentId;
   execute(input: I, context: WorkflowContext): Promise<O>;
 }
 
 export class AgentRegistry {
-  private readonly agents = new Map<string, Agent<unknown, unknown>>();
+  private readonly agents = new Map<AgentId, Agent<unknown, unknown>>();
 
   register<I, O>(agent: Agent<I, O>): this {
     this.agents.set(agent.id, agent as Agent<unknown, unknown>);
     return this;
   }
 
-  get<I, O>(id: string): Agent<I, O> {
+  get<I, O>(id: AgentId): Agent<I, O> {
     const agent = this.agents.get(id);
     if (!agent) {
       throw new Error(`Agent not registered: ${id}`);

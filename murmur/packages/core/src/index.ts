@@ -21,7 +21,7 @@ export function bootstrapRuntime(): Runtime {
 
   const workflowRegistry = new WorkflowRegistry().register(murmurWorkflow);
 
-  const workflowRunner = new WorkflowRunner(agentRegistry);
+  const workflowRunner = new WorkflowRunner(agentRegistry, workflowRegistry);
 
   return {
     workflowRunner,

@@ -1,8 +1,10 @@
+import type { AgentId } from "@murmur/agents-core";
+
 export interface WorkflowDefinition {
   id: string;
   name: string;
   description: string;
-  agentSequence: ["teacher", "experimental", "thinktank", "reflective"];
+  agentSequence: [AgentId, AgentId, AgentId, AgentId];
 }
 
 export class WorkflowRegistry {

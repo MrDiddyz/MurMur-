@@ -1,19 +1,16 @@
-import { bootstrapRuntime } from "@murmur/core";
-import type { WorkflowRunPayload } from "@murmur/agents-core";
-
-const runtime = bootstrapRuntime();
-
-export async function processWorkflowJob(payload: WorkflowRunPayload) {
-  runtime.workflowRegistry.get(payload.workflowId);
-  return runtime.workflowRunner.run(payload);
-}
+import { randomUUID } from "node:crypto";
+import type { WorkflowRunInput } from "@murmur/agents-core";
+import { processWorkflowJob } from "./processors/workflow-processor.js";
 
 async function main(): Promise<void> {
-  const samplePayload: WorkflowRunPayload = {
-    workflowId: "murmur",
-    runId: `worker-${Date.now()}`,
-    goal: "Demonstrate asynchronous workflow processing",
-    input: { source: "worker-startup" }
+  const samplePayload: WorkflowRunInput = {
+    workflowId: "murmur-core-v2",
+    runId: randomUUID(),
+    objective: "Design a safer iterative rollout strategy for murmur v2",
+    input: {
+      domain: "agent orchestration",
+      constraints: ["deterministic", "traceable", "typed"]
+    }
   };
 
   const result = await processWorkflowJob(samplePayload);
@@ -26,3 +23,5 @@ if (process.env.WORKER_RUN_ON_START === "true") {
     process.exit(1);
   });
 }
+
+export { processWorkflowJob };

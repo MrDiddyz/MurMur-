@@ -7,7 +7,16 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@murmur/agents-core": "workspace:*"
+    "@murmur/agents-core": "workspace:*",
+    "@murmur/agents-experimental": "workspace:*",
+    "@murmur/agents-evaluator": "workspace:*",
+    "@murmur/agents-evolution": "workspace:*",
+    "@murmur/agents-reflective": "workspace:*",
+    "@murmur/agents-teacher": "workspace:*",
+    "@murmur/agents-thinktank": "workspace:*",
+    "@murmur/memory": "workspace:*",
+    "@murmur/shared": "workspace:*",
+    "@murmur/workflows": "workspace:*"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

@@ -3,11 +3,10 @@
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
-  "exports": {
-    ".": "./src/index.ts"
-  },
+  "exports": { ".": "./src/index.ts" },
   "dependencies": {
-    "@murmur/agents-core": "workspace:*"
+    "@murmur/agents-core": "workspace:*",
+    "@murmur/shared": "workspace:*"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",

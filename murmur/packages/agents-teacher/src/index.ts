@@ -1,33 +1,43 @@
-import type { Agent, TeacherOutput, WorkflowContext } from "@murmur/agents-core";
+import type { AgentResult, AgentTask, BaseAgent } from "@murmur/agents-core";
+import type { AgentContext } from "@murmur/shared";
 
-export interface TeacherInput {
-  goal: string;
-  input: Record<string, unknown>;
+export interface TeacherStageOutput {
+  stage: "planning";
+  objective: string;
+  constraints: string[];
+  plan: string[];
+  successCriteria: string[];
 }
 
-export class TeacherAgent implements Agent<TeacherInput, TeacherOutput> {
-  readonly id = "teacher";
+export class TeacherAgent implements BaseAgent<TeacherStageOutput> {
+  readonly name = "TeacherAgent";
+  readonly role = "teacher" as const;
+  readonly promptVersion = "teacher.v2.0.0";
+  readonly promptDescription = "Clarifies objective, constraints, execution plan, and success criteria.";
 
-  async execute(input: TeacherInput, _context: WorkflowContext): Promise<TeacherOutput> {
-    return {
+  async run(task: AgentTask, context: AgentContext): Promise<AgentResult<TeacherStageOutput>> {
+    const memoryHints = context.memory.slice(0, 2).map((entry) => `Leverage prior lesson: ${entry.key}`);
+    const output: TeacherStageOutput = {
       stage: "planning",
-      objective: input.goal,
+      objective: task.objective,
       constraints: [
-        "Keep the answer grounded in provided input",
-        "Prioritize clear, actionable decisions",
-        "Surface unknowns and assumptions"
+        "Keep recommendations traceable to provided input",
+        "Prefer deterministic checks over ambiguous judgments",
+        ...memoryHints
       ],
       plan: [
-        "Clarify objective and expected output",
-        "Generate multiple candidate strategies",
-        "Critique tradeoffs with expert personas",
-        "Deliver a polished final recommendation"
+        "Decompose goal into evaluable objectives",
+        "Generate multiple candidate solution strategies",
+        "Run comparative synthesis and identify tradeoffs",
+        "Produce a final response with improvement hooks"
       ],
       successCriteria: [
-        "Final direction maps directly to the user goal",
-        "Reasoning path is traceable across stages",
-        "Final draft includes concrete improvements"
+        "Final output explicitly addresses objective",
+        "Reasoning chain remains coherent across stages",
+        "Result provides actionable next steps"
       ]
     };
+
+    return { stage: "planning", output, summary: `Planned objective: ${task.objective}` };
   }
 }

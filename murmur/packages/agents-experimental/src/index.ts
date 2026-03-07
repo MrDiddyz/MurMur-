@@ -1,41 +1,59 @@
-import type {
-  Agent,
-  ExperimentalOutput,
-  TeacherOutput,
-  Variant,
-  WorkflowContext
-} from "@murmur/agents-core";
+import type { AgentResult, AgentTask, BaseAgent } from "@murmur/agents-core";
+import type { AgentContext } from "@murmur/shared";
 
-export interface ExperimentalInput {
-  teacherOutput: TeacherOutput;
+export interface ExperimentalVariant {
+  id: string;
+  title: string;
+  angle: string;
+  risks?: string[];
+  strengths?: string[];
 }
 
-export class ExperimentalAgent implements Agent<ExperimentalInput, ExperimentalOutput> {
-  readonly id = "experimental";
+export interface ExperimentalStageOutput {
+  stage: "exploration";
+  objective: string;
+  variants: ExperimentalVariant[];
+  recommendation: string;
+}
 
-  async execute(input: ExperimentalInput, _context: WorkflowContext): Promise<ExperimentalOutput> {
-    const variants: Variant[] = [
+export class ExperimentalAgent implements BaseAgent<ExperimentalStageOutput> {
+  readonly name = "ExperimentalAgent";
+  readonly role = "experimental" as const;
+  readonly promptVersion = "experimental.v2.0.0";
+  readonly promptDescription = "Generates and compares alternative approaches.";
+
+  async run(task: AgentTask, _context: AgentContext): Promise<AgentResult<ExperimentalStageOutput>> {
+    const variants: ExperimentalVariant[] = [
       {
-        id: "v1",
-        title: "Conservative execution",
-        angle: "Lean on proven patterns to minimize delivery risk"
+        id: "v-conservative",
+        title: "Conservative reliability",
+        angle: "Minimize risk with proven architecture",
+        risks: ["Lower novelty"],
+        strengths: ["High predictability"]
       },
       {
-        id: "v2",
-        title: "Balanced innovation",
-        angle: "Combine reliable architecture with selective experimentation"
+        id: "v-balanced",
+        title: "Balanced evolution",
+        angle: "Mix stable core with guided experimentation",
+        risks: ["Moderate complexity"],
+        strengths: ["Strong adaptability", "Controlled risk"]
       },
       {
-        id: "v3",
-        title: "Aggressive experimentation",
-        angle: "Optimize for novelty and upside with higher uncertainty"
+        id: "v-frontier",
+        title: "Frontier exploration",
+        angle: "Maximize upside through aggressive mutation",
+        risks: ["Higher instability"],
+        strengths: ["Potentially high originality"]
       }
     ];
 
-    return {
+    const output: ExperimentalStageOutput = {
       stage: "exploration",
+      objective: task.objective,
       variants,
-      recommendation: `Recommend ${variants[1].id} because it aligns with the objective \"${input.teacherOutput.objective}\" while balancing speed and quality.`
+      recommendation: "v-balanced"
     };
+
+    return { stage: "exploration", output, summary: `Generated ${variants.length} variants.` };
   }
 }

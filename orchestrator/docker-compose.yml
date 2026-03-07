@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: murmur
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d murmur"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    image: postgres:15
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./db/migrations:/migrations:ro
+    command: >
+      sh -c "
+      for f in /migrations/*.sql; do
+        echo \"Applying $$f\";
+        psql -h postgres -U postgres -d murmur -v ON_ERROR_STOP=1 -f $$f;
+      done"
+
+  api-fastapi:
+    build: ./api/fastapi
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/murmur
+    ports:
+      - "8000:8000"
+
+  api-node:
+    build: ./api/node
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/murmur
+    ports:
+      - "8001:8001"

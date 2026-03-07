@@ -16,6 +16,19 @@ Engine for auto-generating TikTok-first snippets from MurMur songs.
 1. npm install
 2. npm run dev
 
+## Redeploy
+Use the built-in redeploy flow to rebuild, regenerate snippets, rerun tests, and validate output JSON.
+
+```bash
+npm run redeploy
+```
+
+Override profile (optional):
+
+```bash
+TIKTOK_PROFILE=@murmur_artist_001 npm run redeploy
+```
+
 ## CLI options
 - `--input <path>`: track json input
 - `--output <path>`: snippet output json

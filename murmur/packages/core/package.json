@@ -1,0 +1,22 @@
+{
+  "name": "@murmur/core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@murmur/agents-core": "workspace:*",
+    "@murmur/agents-teacher": "workspace:*",
+    "@murmur/agents-experimental": "workspace:*",
+    "@murmur/agents-thinktank": "workspace:*",
+    "@murmur/agents-reflective": "workspace:*",
+    "@murmur/orchestration": "workspace:*",
+    "@murmur/workflows": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

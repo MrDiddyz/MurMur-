@@ -1,5 +1,5 @@
 {
-  "name": "@murmur/api",
+  "name": "@murmur/worker",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",
@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@murmur/agents-core": "workspace:*",
-    "@murmur/core": "workspace:*",
-    "fastify": "^5.2.1"
+    "@murmur/core": "workspace:*"
   }
 }

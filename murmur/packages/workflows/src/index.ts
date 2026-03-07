@@ -1,11 +1,4 @@
-import type { AgentId } from "@murmur/agents-core";
-
-export interface WorkflowDefinition {
-  id: string;
-  name: string;
-  description: string;
-  agentSequence: [AgentId, AgentId, AgentId, AgentId];
-}
+import type { WorkflowDefinition } from "@murmur/shared";
 
 export class WorkflowRegistry {
   private readonly workflows = new Map<string, WorkflowDefinition>();
@@ -17,17 +10,32 @@ export class WorkflowRegistry {
 
   get(workflowId: string): WorkflowDefinition {
     const workflow = this.workflows.get(workflowId);
-    if (!workflow) {
-      throw new Error(`Workflow not found: ${workflowId}`);
-    }
+    if (!workflow) throw new Error(`Workflow not found: ${workflowId}`);
     return workflow;
+  }
+
+  list(): WorkflowDefinition[] {
+    return [...this.workflows.values()];
   }
 }
 
-export const murmurWorkflow: WorkflowDefinition = {
-  id: "murmur",
-  name: "Murmur multi-agent reasoning workflow",
-  description:
-    "Teacher → Experimental → Thinktank → Reflective pipeline for structured reasoning and synthesis.",
-  agentSequence: ["teacher", "experimental", "thinktank", "reflective"]
+export const murmurCoreV2Workflow: WorkflowDefinition = {
+  id: "murmur-core-v2",
+  name: "Murmur Core v2",
+  description: "Teacher → Experimental → Thinktank → Reflective → Evaluator → Evolution",
+  agentSequence: ["teacher", "experimental", "thinktank", "reflective", "evaluator", "evolution"]
+};
+
+export const murmurFastWorkflow: WorkflowDefinition = {
+  id: "murmur-fast",
+  name: "Murmur Fast",
+  description: "Teacher → Experimental → Reflective → Evaluator",
+  agentSequence: ["teacher", "experimental", "reflective", "evaluator"]
+};
+
+export const murmurReviewWorkflow: WorkflowDefinition = {
+  id: "murmur-review",
+  name: "Murmur Review",
+  description: "Reflective → Evaluator → Evolution",
+  agentSequence: ["reflective", "evaluator", "evolution"]
 };

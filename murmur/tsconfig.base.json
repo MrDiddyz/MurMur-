@@ -14,11 +14,15 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
+      "@murmur/shared": ["packages/shared/src/index.ts"],
       "@murmur/agents-core": ["packages/agents-core/src/index.ts"],
       "@murmur/agents-teacher": ["packages/agents-teacher/src/index.ts"],
       "@murmur/agents-experimental": ["packages/agents-experimental/src/index.ts"],
       "@murmur/agents-thinktank": ["packages/agents-thinktank/src/index.ts"],
       "@murmur/agents-reflective": ["packages/agents-reflective/src/index.ts"],
+      "@murmur/agents-evaluator": ["packages/agents-evaluator/src/index.ts"],
+      "@murmur/agents-evolution": ["packages/agents-evolution/src/index.ts"],
+      "@murmur/memory": ["packages/memory/src/index.ts"],
       "@murmur/orchestration": ["packages/orchestration/src/index.ts"],
       "@murmur/workflows": ["packages/workflows/src/index.ts"],
       "@murmur/core": ["packages/core/src/index.ts"]

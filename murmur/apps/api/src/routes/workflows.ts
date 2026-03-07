@@ -1,57 +1,25 @@
 import type { FastifyPluginAsync } from "fastify";
 import { randomUUID } from "node:crypto";
 import type { Runtime } from "@murmur/core";
-import type { WorkflowRunResult } from "@murmur/agents-core";
 
-interface WorkflowRunBody {
+interface RunBody {
   workflowId: string;
-  goal: string;
+  objective: string;
   input: Record<string, unknown>;
+  projectId?: string;
 }
 
-interface WorkflowNotFoundReply {
-  message: string;
-}
+export const workflowRoutes: FastifyPluginAsync<{ runtime: Runtime }> = async (app, { runtime }) => {
+  app.get("/workflows", async () => ({ workflows: runtime.workflowRegistry.list() }));
 
-const workflowRunBodySchema = {
-  type: "object",
-  required: ["workflowId", "goal", "input"],
-  properties: {
-    workflowId: { type: "string", minLength: 1 },
-    goal: { type: "string", minLength: 1 },
-    input: { type: "object", additionalProperties: true }
-  },
-  additionalProperties: false
-} as const;
-
-export const workflowRoutes: FastifyPluginAsync<{ runtime: Runtime }> = async (
-  app,
-  { runtime }
-) => {
-  app.post<{
-    Body: WorkflowRunBody;
-    Reply: WorkflowRunResult | WorkflowNotFoundReply;
-  }>(
-    "/workflows/run",
-    { schema: { body: workflowRunBodySchema } },
-    async (request, reply) => {
-      const { workflowId, goal, input } = request.body;
-      try {
-        runtime.workflowRegistry.get(workflowId);
-      } catch {
-        return reply.code(404).send({
-          message: `Workflow not found: ${workflowId}`
-        });
-      }
-
-      const runResult = await runtime.workflowRunner.run({
-        workflowId,
-        runId: randomUUID(),
-        goal,
-        input
-      });
-
-      return reply.send(runResult);
-    }
-  );
+  app.post("/workflows/run", async (request: { body: RunBody }) => {
+    const runId = randomUUID();
+    return runtime.workflowRunner.run({
+      workflowId: request.body.workflowId,
+      runId,
+      objective: request.body.objective,
+      input: request.body.input,
+      projectId: request.body.projectId
+    });
+  });
 };

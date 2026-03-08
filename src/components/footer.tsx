@@ -5,15 +5,16 @@ export function Footer() {
     <footer className="mt-24 border-t border-white/10 py-10 text-sm text-ink">
       <div className="container-shell flex flex-col justify-between gap-6 md:flex-row">
         <div>
-          <p className="font-semibold tracking-[0.18em] text-white">MURMUR : A Learning Constellation</p>
-          <p className="mt-2 max-w-lg">
-            Skreddersydde læringsmoduler for selskaper og individer. Wellbeing-tilbudet er ikke medisinsk eller
-            diagnostisk.
-          </p>
+          <p className="font-semibold tracking-[0.18em] text-white">MURMUR : AI Art + NFT MVP</p>
+          <p className="mt-2 max-w-lg">Generate AI artwork, mint NFTs, list in marketplace, and share collector links.</p>
         </div>
         <div className="flex gap-6">
-          <Link href="/legal" className="hover:text-white">Juridisk</Link>
-          <Link href="/privacy" className="hover:text-white">Personvern</Link>
+          <Link href="/marketplace" className="hover:text-white">
+            Marketplace
+          </Link>
+          <Link href="/share" className="hover:text-white">
+            Share
+          </Link>
         </div>
       </div>
     </footer>

@@ -7,12 +7,12 @@ import { AnalyticsPlaceholder } from '@/components/analytics-placeholder';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://murmur-constellation.example.com'),
-  title: 'MURMUR : A Learning Constellation',
+  title: 'MURMUR | AI Art Marketplace MVP',
   description:
-    'Skreddersydde læringsmoduler for selskaper og individer. Strategisk, kreativt og operativt designet for varig effekt.',
+    'Generate AI artwork, upload metadata to IPFS, mint NFTs, and publish to the MurMur marketplace.',
   openGraph: {
-    title: 'MURMUR : A Learning Constellation',
-    description: 'Tailored modules for companies, individuals, and non-clinical wellbeing support.',
+    title: 'MURMUR | AI Art Marketplace MVP',
+    description: 'AI-generated art with wallet minting, IPFS metadata handling, and marketplace listings.',
     url: 'https://murmur-constellation.example.com',
     siteName: 'MURMUR',
     type: 'website',

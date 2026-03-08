@@ -1,13 +1,10 @@
 import Link from 'next/link';
 
 const links = [
-  ['Hjem', '/'],
-  ['Løsninger', '/solutions/companies'],
-  ['Moduler', '/modules'],
-  ['Wellbeing', '/wellbeing'],
-  ['Priser', '/pricing'],
-  ['Om', '/about'],
-  ['Kontakt', '/contact'],
+  ['Home', '/'],
+  ['Generate', '/generate'],
+  ['Marketplace', '/marketplace'],
+  ['Share', '/share'],
 ] as const;
 
 export function Navigation() {
@@ -25,10 +22,10 @@ export function Navigation() {
           ))}
         </nav>
         <Link
-          href="/contact"
-          className="rounded-full border border-accent/60 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-accent/20"
+          href="/generate"
+          className="gold-button rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-widest"
         >
-          Book call
+          Launch studio
         </Link>
       </div>
     </header>

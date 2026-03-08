@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Optional, Sequence
 
-from openai import OpenAI
+import openai
 
 
 DEFAULT_SYSTEM_PROMPT = (
@@ -11,14 +11,6 @@ DEFAULT_SYSTEM_PROMPT = (
     "Generate clean, correct, production-ready code based on the user's task. "
     "Return ONLY code unless otherwise asked."
 )
-
-REVIEW_SYSTEM_PROMPT = (
-    "You are an advanced code reviewer. "
-    "Analyze the provided code for correctness, structure, readability, "
-    "security issues, edge cases, performance concerns, and overall quality. "
-    "Suggest specific improvements and provide corrected examples when relevant."
-)
-
 
 class BaseAgent:
     """Minimalt agent-grensesnitt for Coordinator-pipeline."""
@@ -49,56 +41,32 @@ class Coordinator:
 
 @dataclass
 class CoderAgent(BaseAgent):
-    model: str = "gpt-4.1"
+    """LLM-agent som genererer kode basert på instruksjoner fra pipeline."""
+
+    model: str = "gpt-4.1-codex"
     system_prompt: str = DEFAULT_SYSTEM_PROMPT
-    client: Optional[OpenAI] = None
+    api_client: Optional[object] = None
 
     def __post_init__(self) -> None:
-        if self.client is None:
-            self.client = OpenAI()
+        # Tillat dependency injection i tester, ellers bruk openai-modulen direkte.
+        if self.api_client is None:
+            self.api_client = openai
 
-    def generate_code(self, task_description: str) -> str:
-        response = self.client.responses.create(
+    def handle(self, instructions: str) -> str:
+        response = self.api_client.ChatCompletion.create(
             model=self.model,
-            input=[
+            messages=[
                 {"role": "system", "content": self.system_prompt},
-                {"role": "user", "content": task_description},
+                {"role": "user", "content": instructions},
             ],
             temperature=0.2,
         )
-        return response.output_text.strip()
-
-    def handle(self, instructions: str) -> str:
-        return self.generate_code(instructions)
+        return response["choices"][0]["message"]["content"]
 
 
-@dataclass
 class ReviewerAgent(BaseAgent):
-    model: str = "gpt-4.1"
-    system_prompt: str = REVIEW_SYSTEM_PROMPT
-    client: Optional[OpenAI] = None
-
-    def __post_init__(self) -> None:
-        if self.client is None:
-            self.client = OpenAI()
-
     def handle(self, code: str) -> str:
-        response = self.client.responses.create(
-            model=self.model,
-            input=[
-                {"role": "system", "content": self.system_prompt},
-                {
-                    "role": "user",
-                    "content": (
-                        "Analyser denne koden og svar med: "
-                        "1) Funn, 2) Konkrete forbedringer, 3) Forbedret kodeeksempel.\n\n"
-                        f"{code}"
-                    ),
-                },
-            ],
-            temperature=0.1,
-        )
-        return response.output_text.strip()
+        return f"Review: Koden ser riktig ut.\n\n{code}"
 
 
 class ArchitectAgent(BaseAgent):

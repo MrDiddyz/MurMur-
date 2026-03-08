@@ -10,10 +10,11 @@ import { PlayerControls } from '../ui/playerControls';
 import { Playlist } from '../ui/playlist';
 import { UploadPanel } from '../ui/uploadPanel';
 import { VisualCanvas } from '../ui/visualCanvas';
+import { MintButton } from '@/components/MintButton';
 
 function MurmurLayerShell() {
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-  const { tracks, playback, eqBands, setMetrics, setPerformance, performance, trimOldestImage } = useStateBus();
+  const { tracks, images, playback, eqBands, setMetrics, setPerformance, performance, trimOldestImage } = useStateBus();
 
   const activeTrack = useMemo(() => tracks.find((track) => track.id === playback.activeTrackId) ?? null, [tracks, playback.activeTrackId]);
 
@@ -58,6 +59,7 @@ function MurmurLayerShell() {
         <PlayerControls onAudioReady={setAudioElement} />
         <Playlist />
         <EqPanel />
+        <MintButton files={images.map((image) => image.file)} />
       </div>
 
       <VisualCanvas

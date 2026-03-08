@@ -100,3 +100,13 @@ export type ContentPackInsert = Insertable<ContentPack>;
 export type PlaylistTargetInsert = Insertable<PlaylistTarget>;
 export type AnalyticsSnapshotInsert = Insertable<AnalyticsSnapshot>;
 export type ScheduledJobInsert = Insertable<ScheduledJob>;
+
+export type Mint = {
+  id: string;
+  metadataId: string;
+  walletAddress: string;
+  txHash: string;
+  tokenId: string;
+  status: "pending" | "confirmed" | "failed";
+  createdAt: string;
+};

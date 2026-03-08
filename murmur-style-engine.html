@@ -56,6 +56,12 @@
       border: none;
     }
 
+    .button-row {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
     button:hover {
       filter: brightness(1.08);
     }
@@ -73,7 +79,10 @@
     <input id="mood" placeholder="mood (dark, emotional, dreamy)" />
     <input id="artist" placeholder="artist style (Zimmer, Enya, synthwave)" />
 
-    <button id="generate-btn" type="button">Generate Prompt</button>
+    <div class="button-row">
+      <button id="generate-btn" type="button">Generate Prompt</button>
+      <button id="remix-btn" type="button">Remix Prompt</button>
+    </div>
 
     <textarea id="result" rows="8" placeholder="Your generated prompt appears here..."></textarea>
   </div>
@@ -139,7 +148,62 @@
       document.getElementById("result").value = prompt;
     }
 
+    function remixPrompt() {
+      const resultEl = document.getElementById("result");
+      const basePrompt = resultEl.value.trim();
+
+      if (!basePrompt) {
+        resultEl.value = "Generate or paste a prompt first, then click Remix Prompt.";
+        return;
+      }
+
+      const instrumentLayers = [
+        "minimal percussion and mellow electric piano",
+        "stacked synth arps with layered strings and sub bass",
+        "organic hand percussion, acoustic guitar, and soft choirs",
+        "granular pads, filtered plucks, and punchy drums",
+        "hybrid orchestral drums with analog lead textures"
+      ];
+
+      const energyLevels = [
+        "low and intimate",
+        "steady and uplifting",
+        "high and driving",
+        "slow-building cinematic swell",
+        "explosive and peak-hour intense"
+      ];
+
+      const atmospheres = [
+        "misty and nocturnal",
+        "warm sunrise glow",
+        "stormy and dramatic",
+        "spacey and futuristic",
+        "nostalgic and reflective"
+      ];
+
+      const compositionStyles = [
+        "through-composed narrative arc",
+        "loop-first groove construction",
+        "call-and-response motif design",
+        "minimalist repetition with subtle evolution",
+        "cinematic trailer-style rise and release"
+      ];
+
+      const variations = Array.from({ length: 5 }, (_, i) => {
+        return [
+          `Variation ${i + 1}: ${basePrompt}`,
+          `- Instrument layers: ${instrumentLayers[i]}`,
+          `- Energy level: ${energyLevels[i]}`,
+          `- Atmosphere: ${atmospheres[i]}`,
+          `- Composition style: ${compositionStyles[i]}`
+        ].join("\n");
+      });
+
+      resultEl.value = variations.join("\n\n");
+    }
+
     document.getElementById("generate-btn").addEventListener("click", generate);
+    document.getElementById("remix-btn").addEventListener("click", remixPrompt);
   </script>
 </body>
 </html>

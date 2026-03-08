@@ -1,3 +1,5 @@
+import WalletButton from '@/components/WalletButton';
+
 const partnershipPoints = [
   'stille bedre spørsmål',
   'oppdage skjulte sammenhenger',
@@ -30,6 +32,7 @@ export default function HomePage() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#826443]">🎛 MURMUR : EP Engine</p>
           <h1 className="text-4xl font-semibold leading-tight md:text-5xl">MURMUR : A Learning Constellation</h1>
           <p className="text-lg text-[#3c3329]">Konseptbeskrivelse</p>
+          <WalletButton />
         </header>
 
         <section className="space-y-5 text-lg leading-relaxed text-[#2f2922]">

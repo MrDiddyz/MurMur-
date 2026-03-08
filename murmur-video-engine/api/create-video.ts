@@ -1,8 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { runVideoCreation } from "../core/orchestrator";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { idea } = req.body as { idea?: string };
+type CreateVideoRequest = {
+  body?: {
+    idea?: string;
+  };
+};
+
+type CreateVideoResponse = {
+  status: (code: number) => {
+    json: (payload: unknown) => void;
+  };
+};
+
+export default async function handler(req: CreateVideoRequest, res: CreateVideoResponse) {
+  const { idea } = req.body ?? {};
 
   if (!idea) {
     res.status(400).json({ error: "idea is required" });

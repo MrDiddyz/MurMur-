@@ -45,6 +45,20 @@ export type PerformanceState = {
   complexityScale: number;
 };
 
+export type ScheduledCue = {
+  id: string;
+  atSeconds: number;
+};
+
+export type CueSchedulerState = {
+  scheduled: ScheduledCue[];
+};
+
+export const appendScheduledCue = (state: CueSchedulerState, nextCue: ScheduledCue): CueSchedulerState => ({
+  ...state,
+  scheduled: [...state.scheduled, nextCue],
+});
+
 type StateBusValue = {
   tracks: TrackItem[];
   images: ImageItem[];

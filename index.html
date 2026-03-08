@@ -1,69 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Murmur Security Map</title>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MurMur Prompt Lab</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <h1>MurMur Prompt Lab</h1>
+      <p class="subtitle">Generate and remix AI-ready music prompts in one click.</p>
 
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+      <section class="controls">
+        <button id="generateBtn">Generate Prompt</button>
+        <button id="remixBtn" disabled>Remix Prompt</button>
+        <button id="copyBtn" disabled>Copy Prompt</button>
+      </section>
 
-<script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
+      <section class="output" aria-live="polite">
+        <label for="promptOutput">Generated prompt</label>
+        <textarea id="promptOutput" readonly placeholder="Your music prompt appears here..."></textarea>
+      </section>
 
-<style>
-body{
-  margin:0;
-  background:#0b0f1a;
-  color:white;
-  font-family:system-ui;
-}
-#map{
-  width:100vw;
-  height:100vh;
-}
-.node{
-  fill:#1e2a44;
-  stroke:#4da3ff;
-  stroke-width:2;
-  cursor:pointer;
-}
-.node:hover{ fill:#2f4b7a; }
-</style>
-</head>
+      <p id="status" class="status"></p>
+    </main>
 
-<body>
-
-<svg id="map" viewBox="0 0 500 700">
-
-<rect class="node" x="150" y="20" width="200" height="50"/>
-<text x="210" y="50">CLIENT</text>
-
-<rect class="node" x="150" y="100" width="200" height="50"/>
-<text x="200" y="130">EDGE SECURITY</text>
-
-<rect class="node" x="150" y="180" width="200" height="50"/>
-<text x="220" y="210">AUTH</text>
-
-<rect class="node" x="150" y="260" width="200" height="50"/>
-<text x="200" y="290">EVENT API</text>
-
-<rect class="node" x="150" y="340" width="200" height="50"/>
-<text x="200" y="370">RISK ENGINE</text>
-
-<rect class="node" x="150" y="420" width="200" height="50"/>
-<text x="200" y="450">DATABASE</text>
-
-<rect class="node" x="150" y="500" width="200" height="50"/>
-<text x="210" y="530">RESPONSE</text>
-
-</svg>
-
-<script>
-svgPanZoom('#map', {
-  zoomEnabled: true,
-  controlIconsEnabled: true,
-  fit: true,
-  center: true
-});
-</script>
-
-</body>
+    <script src="app.js" defer></script>
+  </body>
 </html>

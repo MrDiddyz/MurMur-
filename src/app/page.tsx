@@ -14,6 +14,14 @@ const notPoints = [
   'et lukket system med ferdige svar',
 ];
 
+const murmurWorldLocations = [
+  'Aurora Gallery',
+  'Nova Gallery',
+  'Echo Gallery',
+  'Marketplace Plaza',
+  'AI Museum',
+];
+
 export default function HomePage() {
   return (
     <div className="-mx-6 -mt-6 min-h-screen bg-[#f5f1ea] px-6 pb-16 text-[#1f1f1f] md:-mx-10 md:px-10">
@@ -82,6 +90,21 @@ export default function HomePage() {
           <p className="mt-5 text-base leading-relaxed text-[#e8dccd]">
             Det er ikke bare et prosjekt. Det er et fundament for hvordan forståelse kan kultiveres i en kompleks verden.
           </p>
+        </section>
+
+        <section className="rounded-xl border border-[#d8c7ad] bg-[#fffaf3] p-6">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#826443]">MurMur World</p>
+          <h2 className="mt-2 text-2xl font-semibold text-[#1f1f1f]">Destinations</h2>
+          <ul className="mt-4 space-y-3 text-base leading-relaxed text-[#2f2922]">
+            {murmurWorldLocations.map((location) => (
+              <li key={location} className="flex items-center gap-3">
+                <span aria-hidden className="text-[#826443]">
+                  ├──
+                </span>
+                <span>{location}</span>
+              </li>
+            ))}
+          </ul>
         </section>
       </main>
     </div>

@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "required": ["track_id", "creator_profile", "generated_count", "top_score", "average_score"],
+  "properties": {
+    "track_id": {"type": "string"},
+    "creator_profile": {"type": "string", "pattern": "^@"},
+    "generated_count": {"type": "number"},
+    "top_score": {"type": "number"},
+    "average_score": {"type": "number"}
+  }
+}

@@ -1,3 +1,5 @@
+import { ShareCardGenerator } from "@/components/share-card-generator";
+
 const partnershipPoints = [
   'stille bedre spørsmål',
   'oppdage skjulte sammenhenger',
@@ -26,6 +28,7 @@ export default function HomePage() {
   return (
     <div className="-mx-6 -mt-6 min-h-screen bg-[#f5f1ea] px-6 pb-16 text-[#1f1f1f] md:-mx-10 md:px-10">
       <main className="mx-auto max-w-4xl space-y-10 py-14">
+        <ShareCardGenerator />
         <header className="space-y-4 border-b border-[#d8c7ad] pb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#826443]">🎛 MURMUR : EP Engine</p>
           <h1 className="text-4xl font-semibold leading-tight md:text-5xl">MURMUR : A Learning Constellation</h1>

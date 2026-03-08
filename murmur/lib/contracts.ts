@@ -1,0 +1,2 @@
+export const MURMUR_NFT_ADDRESS = process.env.NEXT_PUBLIC_MURMUR_NFT_ADDRESS ?? '';
+export const MURMUR_MARKET_ADDRESS = process.env.NEXT_PUBLIC_MURMUR_MARKET_ADDRESS ?? '';

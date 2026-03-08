@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trending Prompts</title>
+  <style>
+    :root {
+      --bg: #080d1b;
+      --surface: #11192c;
+      --surface-2: #1a2440;
+      --text: #ecf2ff;
+      --muted: #a7b7da;
+      --accent: #65b4ff;
+      --accent-strong: #3f95f0;
+      --border: rgba(136, 178, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #142447 0%, var(--bg) 40%, #050812 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 32px 18px 48px;
+    }
+
+    .container {
+      width: min(980px, 100%);
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      margin: 10px 0 24px;
+      color: var(--muted);
+      max-width: 64ch;
+      line-height: 1.5;
+    }
+
+    .prompt-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .prompt-card {
+      background: linear-gradient(150deg, rgba(17, 25, 44, 0.95), rgba(11, 18, 33, 0.95));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      box-shadow: 0 10px 24px rgba(4, 9, 20, 0.45);
+    }
+
+    .prompt-title {
+      margin: 0;
+      font-size: 1.04rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .prompt-preview {
+      margin: 0;
+      color: #d6e2ff;
+      line-height: 1.45;
+      font-size: 0.94rem;
+    }
+
+    .copy-button {
+      justify-self: start;
+      border: 1px solid rgba(101, 180, 255, 0.5);
+      border-radius: 10px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+      color: #061227;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.2s ease;
+    }
+
+    .copy-button:hover {
+      filter: brightness(1.06);
+    }
+
+    .copy-button:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Trending Prompts</h1>
+    <p class="subtitle">Explore what creators are using right now. Copy a prompt and customize it for your next session.</p>
+
+    <section id="prompt-grid" class="prompt-grid" aria-label="List of trending prompts"></section>
+  </main>
+
+  <script>
+    const trendingPrompts = [
+      {
+        title: 'Hook Writer Pro',
+        preview: 'Generate 10 punchy chorus hooks for a chill-pop track about late-night city drives. Keep each hook under 9 words.'
+      },
+      {
+        title: 'Moodboard to Lyrics',
+        preview: 'Turn this moodboard into verse concepts with cinematic imagery, emotional contrast, and one recurring metaphor.'
+      },
+      {
+        title: 'Beat Arrangement Blueprint',
+        preview: 'Create a 2:30 arrangement map for an Afro-house groove with breakdown timings, transitions, and FX suggestions.'
+      },
+      {
+        title: 'Story Arc Songwriting',
+        preview: 'Outline a three-act story arc for a song about rebuilding confidence after failure, with line-level writing prompts.'
+      },
+      {
+        title: 'Vocal Warmup Generator',
+        preview: 'Build a 12-minute vocal warmup sequence for alto range, focusing on breath support, resonance, and agility.'
+      },
+      {
+        title: 'Mix Critique Assistant',
+        preview: 'Analyze this mix description and return likely issues in low-end, vocal placement, and stereo image with quick fixes.'
+      }
+    ];
+
+    const promptGrid = document.getElementById('prompt-grid');
+
+    function copyPrompt(prompt, button) {
+      navigator.clipboard.writeText(prompt)
+        .then(() => {
+          const original = button.textContent;
+          button.textContent = 'Copied!';
+          setTimeout(() => { button.textContent = original; }, 1200);
+        })
+        .catch(() => {
+          const helper = document.createElement('textarea');
+          helper.value = prompt;
+          document.body.appendChild(helper);
+          helper.select();
+          document.execCommand('copy');
+          document.body.removeChild(helper);
+          const original = button.textContent;
+          button.textContent = 'Copied!';
+          setTimeout(() => { button.textContent = original; }, 1200);
+        });
+    }
+
+    trendingPrompts.forEach(({ title, preview }) => {
+      const card = document.createElement('article');
+      card.className = 'prompt-card';
+
+      const heading = document.createElement('h2');
+      heading.className = 'prompt-title';
+      heading.textContent = title;
+
+      const snippet = document.createElement('p');
+      snippet.className = 'prompt-preview';
+      snippet.textContent = preview;
+
+      const copyButton = document.createElement('button');
+      copyButton.type = 'button';
+      copyButton.className = 'copy-button';
+      copyButton.textContent = 'Copy prompt';
+      copyButton.addEventListener('click', () => copyPrompt(`${title}\n\n${preview}`, copyButton));
+
+      card.append(heading, snippet, copyButton);
+      promptGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>

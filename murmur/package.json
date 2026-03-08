@@ -4,9 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel --filter @murmur/api --filter @murmur/worker dev",
+    "dev": "pnpm --parallel --filter @murmur/api --filter @murmur/dashboard dev",
     "build": "turbo run build",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "seed": "tsx scripts/seed.ts"
   },
   "devDependencies": {
     "@types/node": "^20.17.19",

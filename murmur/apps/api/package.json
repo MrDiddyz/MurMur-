@@ -11,6 +11,9 @@
   "dependencies": {
     "@murmur/agents-core": "workspace:*",
     "@murmur/core": "workspace:*",
-    "fastify": "^5.2.1"
+    "fastify": "^5.2.1",
+    "@murmur/config": "workspace:*",
+    "@murmur/types": "workspace:*",
+    "@murmur/engine": "workspace:*"
   }
 }

@@ -7,6 +7,7 @@
 // Assumes you have Tailwind set up. No extra deps required.
 
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import Constellation from "../components/Constellation";
 
 export default function Page() {
@@ -240,50 +241,136 @@ export default function Page() {
 /* --------------------------- UI Components --------------------------- */
 
 function SiteHeader() {
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const slider = nav.querySelector<HTMLElement>(".js-portfolio-nav-slider");
+    const links = Array.from(
+      nav.querySelectorAll<HTMLAnchorElement>(".js-portfolio-nav-link"),
+    );
+
+    if (!slider || !links.length) return;
+
+    const currentHash =
+      (window.location.hash && links.find((link) => link.getAttribute("href") === window.location.hash)?.getAttribute("href")) ||
+      "#demo";
+
+    let activeLink =
+      links.find((link) => link.getAttribute("href") === currentHash) ||
+      links.find((link) => link.dataset.active === "true") ||
+      links[0];
+
+    links.forEach((link) => link.classList.remove("is-current"));
+    activeLink.classList.add("is-current");
+
+    const getMetrics = (element: Element) => {
+      const navRect = nav.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+      return {
+        x: rect.left - navRect.left,
+        w: rect.width,
+      };
+    };
+
+    const moveTo = (element: Element) => {
+      const { x, w } = getMetrics(element);
+      slider.style.transform = `translateX(${x}px)`;
+      slider.style.width = `${w}px`;
+    };
+
+    moveTo(activeLink);
+
+    const removeListeners = links.flatMap((link) => {
+      const handleEnter = () => moveTo(link);
+      const handleFocus = () => moveTo(link);
+      const handleClick = () => {
+        links.forEach((item) => item.classList.remove("is-current"));
+        link.classList.add("is-current");
+        activeLink = link;
+        moveTo(link);
+      };
+
+      link.addEventListener("mouseenter", handleEnter);
+      link.addEventListener("focus", handleFocus);
+      link.addEventListener("click", handleClick);
+
+      return [
+        () => link.removeEventListener("mouseenter", handleEnter),
+        () => link.removeEventListener("focus", handleFocus),
+        () => link.removeEventListener("click", handleClick),
+      ];
+    });
+
+    const handleMouseLeave = () => moveTo(activeLink);
+    const handleFocusOut = (event: FocusEvent) => {
+      if (!nav.contains(event.relatedTarget as Node | null)) {
+        moveTo(activeLink);
+      }
+    };
+    const handleResize = () => moveTo(activeLink);
+
+    nav.addEventListener("mouseleave", handleMouseLeave);
+    nav.addEventListener("focusout", handleFocusOut);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      removeListeners.forEach((remove) => remove());
+      nav.removeEventListener("mouseleave", handleMouseLeave);
+      nav.removeEventListener("focusout", handleFocusOut);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
-    <header className="relative mx-auto max-w-6xl px-4 pt-6">
-      <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#E6C15A] text-[#0B0616] shadow-[0_20px_60px_rgba(230,193,90,0.14)]">
-            🜚⚡A7
-          </div>
-          <div>
-            <div className="text-sm font-semibold tracking-wide">MURMUR</div>
-            <div className="text-xs text-white/60">A Learning Constellation</div>
-          </div>
+    <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <Link
+            href="/"
+            className="text-2xl font-bold tracking-tight text-stone-900"
+          >
+            MurMurLab
+          </Link>
+          <p className="text-sm text-stone-500">
+            Digitalt galleri for visuelle eksperimenter
+          </p>
         </div>
 
-        <nav className="hidden items-center gap-2 md:flex">
-          <NavLink href="#demo" label="Demo" />
-          <NavLink href="#pricing" label="Prising" />
-          <NavLink href="#modules" label="Moduler" />
-          <Link
-            href="#"
-            className="rounded-xl bg-white/5 px-4 py-2 text-sm font-semibold text-white/90 hover:bg-white/10"
-          >
-            Docs (coming)
-          </Link>
-        </nav>
-
-        <a
-          href="mailto:MurMurAi@proton.me"
-          className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+        <nav
+          ref={navRef}
+          className="js-portfolio-nav relative inline-flex items-center gap-1 overflow-hidden rounded-full border border-stone-200 bg-white/80 p-1 shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-md"
+          aria-label="Hovednavigasjon"
         >
-          Kontakt
-        </a>
+          <span
+            className="js-portfolio-nav-slider pointer-events-none absolute left-1 top-1 rounded-full bg-stone-900/[0.07] shadow-sm"
+            aria-hidden="true"
+          ></span>
+
+          <a
+            href="#demo"
+            className="js-portfolio-nav-link relative z-10 rounded-full px-4 py-2.5 text-sm font-medium text-stone-700 transition-colors duration-200"
+            data-active="true"
+          >
+            Galleri
+          </a>
+          <a
+            href="#modules"
+            className="js-portfolio-nav-link relative z-10 rounded-full px-4 py-2.5 text-sm font-medium text-stone-700 transition-colors duration-200"
+          >
+            Last opp
+          </a>
+          <a
+            href="#pricing"
+            className="js-portfolio-nav-link relative z-10 rounded-full px-4 py-2.5 text-sm font-medium text-stone-700 transition-colors duration-200"
+          >
+            Min profil
+          </a>
+        </nav>
       </div>
     </header>
-  );
-}
-
-function NavLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="rounded-xl px-4 py-2 text-sm font-semibold text-white/80 hover:bg-white/5 hover:text-white"
-    >
-      {label}
-    </a>
   );
 }
 

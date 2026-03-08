@@ -1,18 +1,42 @@
-# MurMur Base Stack
+# MurMur
 
-Minimal 1-server skeleton with FastAPI + Postgres + Nginx using Docker Compose.
+TypeScript-first Next.js (App Router) starter structure for structured MVP development.
 
-## Run
+## Stack
+- Next.js 14 (App Router)
+- React 18
+- TypeScript
+- Tailwind CSS
 
-1. Copy environment file:
+## Project Structure
+
+```text
+app/          # App Router pages, layouts, global styles
+components/   # Reusable UI and feature components
+lib/          # Shared server/client utilities and domain logic
+contracts/    # Shared TypeScript types/interfaces for API and domain contracts
+public/       # Static assets
+```
+
+## Getting Started
+
+1. Install dependencies:
    ```bash
-   cp .env.example .env
+   npm install
    ```
-2. Build and start services:
+2. Create your local env file:
    ```bash
-   docker compose up -d --build
+   cp .env.example .env.local
    ```
-3. Check health endpoint via Nginx:
+3. Run dev server:
    ```bash
-   curl http://localhost/health
+   npm run dev
    ```
+4. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## Notes
+- Use `@/*` imports from the repository root (for example: `@/components/...`, `@/lib/...`).
+- Keep secrets in server-side env variables only (never hardcode secrets into client components).

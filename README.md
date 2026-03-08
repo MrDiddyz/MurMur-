@@ -1,18 +1,27 @@
-# MurMur Base Stack
+# MurMur AI
 
-Minimal 1-server skeleton with FastAPI + Postgres + Nginx using Docker Compose.
+MurMur is an AI art platform + NFT marketplace built with Next.js, Tailwind, Ethers, IPFS, and Solidity.
 
-## Run
+## Features
 
-1. Copy environment file:
-   ```bash
-   cp .env.example .env
-   ```
-2. Build and start services:
-   ```bash
-   docker compose up -d --build
-   ```
-3. Check health endpoint via Nginx:
-   ```bash
-   curl http://localhost/health
-   ```
+- AI artwork generation
+- IPFS upload through a server-side route
+- NFT minting
+- basic marketplace foundation
+- wallet connection
+
+## Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Ethers v6
+- Pinata IPFS
+- Solidity
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```

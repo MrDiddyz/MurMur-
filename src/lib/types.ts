@@ -9,3 +9,15 @@ export type LearningModule = {
   timeline: string;
   priceFrom: string;
 };
+
+export type MetadataArtifact = {
+  id: string;
+  artworkId: string;
+  userId: string;
+  name: string;
+  description: string;
+  metadataJson: unknown;
+  cid: string;
+  ipfsUri: string;
+  createdAt: string;
+};

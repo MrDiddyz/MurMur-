@@ -155,13 +155,25 @@
       const severity = eventData.severity || 'low';
       const details = eventData.details || eventData.message || '-';
 
-      row.innerHTML = `
-        <td>${date.toLocaleString()}</td>
-        <td>${source}</td>
-        <td>${name}</td>
-        <td><span class="badge ${severityClass(severity)}">${String(severity).toUpperCase()}</span></td>
-        <td>${details}</td>
-      `;
+      const timestampCell = document.createElement('td');
+      timestampCell.textContent = date.toLocaleString();
+
+      const sourceCell = document.createElement('td');
+      sourceCell.textContent = String(source);
+
+      const nameCell = document.createElement('td');
+      nameCell.textContent = String(name);
+
+      const severityCell = document.createElement('td');
+      const badge = document.createElement('span');
+      badge.className = `badge ${severityClass(severity)}`;
+      badge.textContent = String(severity).toUpperCase();
+      severityCell.appendChild(badge);
+
+      const detailsCell = document.createElement('td');
+      detailsCell.textContent = String(details);
+
+      row.append(timestampCell, sourceCell, nameCell, severityCell, detailsCell);
 
       eventBody.prepend(row);
 

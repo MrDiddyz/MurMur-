@@ -2,7 +2,7 @@ import Fastify from "fastify"
 import Stripe from "stripe"
 import pkg from "pg"
 import Redis from "ioredis"
-import { requireStripeSignature, verifyWebhookSignature } from "./auth.js"
+import { ReplayProtector, requireStripeSignature, requireWebhookAuth, verifyWebhookSignature } from "./auth.js"
 
 const { Pool } = pkg
 const fastify = Fastify({ logger: true, bodyLimit: 1024 * 1024 })
@@ -14,6 +14,7 @@ const redis = new Redis({ host: process.env.REDIS_HOST })
 const rateLimitWindowMs = 60_000
 const rateLimitMaxPerIp = 60
 const requestCounter = new Map()
+const tiktokReplayProtector = new ReplayProtector()
 
 setInterval(() => {
   const now = Date.now()
@@ -48,10 +49,23 @@ fastify.addContentTypeParser("application/json", { parseAs: "buffer" }, (req, bo
 })
 
 fastify.post("/webhooks/tiktok", async (req, res) => {
+  const authResult = requireWebhookAuth(req)
+  if (!authResult.valid) {
+    req.log.warn({ reason: authResult.reason }, "tiktok webhook rejected")
+    return res.code(401).send({ error: "unauthorized" })
+  }
+
   const signature = req.headers["x-tt-signature"]
   const timestamp = req.headers["x-tt-timestamp"]
+  const nonce = req.headers["x-tt-nonce"]
 
-  const verification = verifyWebhookSignature(req.rawBody, signature, timestamp)
+  const verification = verifyWebhookSignature(
+    req.rawBody,
+    signature,
+    timestamp,
+    nonce,
+    tiktokReplayProtector
+  )
   if (!verification.valid) {
     req.log.warn({ reason: verification.reason }, "tiktok webhook rejected")
     return res.code(401).send({ error: "invalid signature" })

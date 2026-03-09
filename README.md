@@ -1,27 +1,46 @@
-# MurMur AI
+# MurMur (Next.js App Router, TypeScript-first)
 
-MurMur is an AI art platform + NFT marketplace built with Next.js, Tailwind, Ethers, IPFS, and Solidity.
+This repository is prepared for structured MVP development with a minimal, modular layout.
 
-## Features
+## Target structure
 
-- AI artwork generation
-- IPFS upload through a server-side route
-- NFT minting
-- basic marketplace foundation
-- wallet connection
+- `app/` — Next.js App Router routes and layouts
+- `components/` — reusable UI components
+- `lib/` — server/client utilities, domain logic, helpers
+- `contracts/` — smart contract sources, ABIs, and contract-related types
+- `public/` — static assets
 
-## Stack
+> Note: Existing legacy code still lives in `src/` and continues to work. New MVP work should be added to the root folders above.
 
-- Next.js App Router
+## Tech stack
+
+- Next.js (App Router)
 - TypeScript
 - Tailwind CSS
-- Ethers v6
-- Pinata IPFS
-- Solidity
 
-## Getting Started
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
+
+Open http://localhost:3000
+
+## Scripts
+
+- `npm run dev` — run the development server
+- `npm run build` — production build
+- `npm run start` — run the production server
+- `npm run lint` — Next.js lint
+- `npm run typecheck` — TypeScript type check
+
+## Environment variables
+
+Copy the template and fill values locally:
+
+```bash
+cp .env.example .env.local
+```
+
+Do **not** expose secrets in client-side code (`NEXT_PUBLIC_*` is public).

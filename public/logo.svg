@@ -1,0 +1,5 @@
+<svg width="240" height="64" viewBox="0 0 240 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="64" rx="12" fill="#0F172A"/>
+  <path d="M22 44V20H29.2L36.8 34.2L44.4 20H51.6V44H45.2V30.8L39.6 41.2H33.8L28.4 30.8V44H22Z" fill="#A78BFA"/>
+  <text x="66" y="40" fill="#F8FAFC" font-size="28" font-family="Inter, Arial, sans-serif" font-weight="700">MurMur</text>
+</svg>

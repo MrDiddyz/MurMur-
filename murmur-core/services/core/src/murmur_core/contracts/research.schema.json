@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["insights", "questions", "claims", "evidence"],
+  "properties": {
+    "insights": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "questions": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "claims": {"type": "array", "items": {"type": "string"}},
+    "evidence": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

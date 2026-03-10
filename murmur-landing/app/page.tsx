@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import Constellation from "../components/Constellation";
+import { MurmurGraphView } from "../components/MurmurGraphView";
 
 export default function Page() {
   return (
@@ -430,20 +431,28 @@ function SectionHeading({
 function DemoPanel() {
   const mockSteps = [
     {
-      k: "Plan",
-      v: "Velg Growth Constellation → mål: øk CTR på 14 dager",
+      id: "planner-1",
+      agent: "planner" as const,
+      status: "completed" as const,
+      summary: "Velg Growth Constellation → mål: øk CTR på 14 dager",
     },
     {
-      k: "Handling",
-      v: "Genererte 3 hooks og 2 varianter per hook, foreslo publisering",
+      id: "builder-1",
+      agent: "builder" as const,
+      status: "completed" as const,
+      summary: "Genererte 3 hooks og 2 varianter per hook, foreslo publisering",
     },
     {
-      k: "Resultat",
-      v: "Variant B ga +22% CTR på 1 100 visninger (mock data)",
+      id: "reviewer-1",
+      agent: "reviewer" as const,
+      status: "running" as const,
+      summary: "Variant B ga +22% CTR på 1 100 visninger (mock data)",
     },
     {
-      k: "Læring",
-      v: "Oppdaterte hook-pattern: «konkret payoff tidlig» → prioritet ↑",
+      id: "optimizer-1",
+      agent: "optimizer" as const,
+      status: "pending" as const,
+      summary: "Oppdaterer hook-pattern: «konkret payoff tidlig» → prioritet ↑",
     },
   ];
 
@@ -463,18 +472,8 @@ function DemoPanel() {
         </div>
       </div>
 
-      <div className="mt-5 space-y-3">
-        {mockSteps.map((s) => (
-          <div
-            key={s.k}
-            className="rounded-2xl border border-white/10 bg-[#0B0616]/40 p-4"
-          >
-            <div className="text-xs font-semibold tracking-wide text-[#E6C15A]/90">
-              {s.k.toUpperCase()}
-            </div>
-            <div className="mt-1 text-sm text-white/80">{s.v}</div>
-          </div>
-        ))}
+      <div className="mt-5">
+        <MurmurGraphView steps={mockSteps} />
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row">

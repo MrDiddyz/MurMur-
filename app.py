@@ -93,6 +93,62 @@ class AvatarOperateRequest(BaseModel):
     telemetry: Dict[str, Any]
 
 
+class ArtistStudioRequest(BaseModel):
+    user: str = Field(..., min_length=1)
+    modules: List[str] = Field(default_factory=list)
+    genres: List[str] = Field(default_factory=list)
+    genre: Optional[str] = None
+    language: str = Field(default="en", min_length=2, max_length=5)
+    project: Optional[str] = None
+    tempo_bpm: Optional[int] = Field(default=None, ge=40, le=240)
+
+
+def run_artist_studio(req: ArtistStudioRequest) -> Dict[str, Any]:
+    module_actions = {
+        "beat_generator": "Generate 3 beat seeds and 1 arrangement variation per genre.",
+        "lyrics_ai": "Draft 2 lyrical concepts per genre and keep phrasing natural to the selected language.",
+        "voice_trainer": "Produce breathing, articulation, and range warmups aligned with requested genres.",
+        "mixing_ai": "Prepare a balance-first mix pass, then deliver loudness-safe master previews.",
+    }
+    module_labels = {
+        "beat_generator": "Beat Generator",
+        "lyrics_ai": "Lyrics AI",
+        "voice_trainer": "Voice Trainer",
+        "mixing_ai": "Mixing AI",
+    }
+
+    selected_genres = req.genres or ([req.genre] if req.genre else [])
+
+    enabled_modules = [m for m in req.modules if m in module_actions]
+    unknown_modules = [m for m in req.modules if m not in module_actions]
+
+    plan = [
+        {
+            "module": module,
+            "label": module_labels[module],
+            "action": module_actions[module],
+            "genres": selected_genres,
+            "language": req.language,
+            "project": req.project,
+            "tempoBpm": req.tempo_bpm,
+        }
+        for module in enabled_modules
+    ]
+
+    return {
+        "artistId": req.user,
+        "studio": "MurMur Studio",
+        "status": "ready",
+        "project": req.project,
+        "genre": req.genre or (selected_genres[0] if selected_genres else None),
+        "tempoBpm": req.tempo_bpm,
+        "enabledModules": enabled_modules,
+        "moduleCards": [f"[ {module_labels[m]} ]" for m in enabled_modules],
+        "unknownModules": unknown_modules,
+        "plan": plan,
+    }
+
+
 
 def _base_avatar_output(task: AvatarTask) -> Dict[str, Any]:
     return {
@@ -366,5 +422,10 @@ def ingest_event(evt: IntegrationEvent):
 @app.post("/v1/avatar/operate")
 def avatar_operate(req: AvatarOperateRequest):
     return run_avatar_operator(req)
+
+
+@app.post("/v1/artist/studio")
+def artist_studio(req: ArtistStudioRequest):
+    return run_artist_studio(req)
 
 # Run: uvicorn app:app --reload

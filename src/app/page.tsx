@@ -1,3 +1,5 @@
+import { DropPreview } from '@/components/drop-preview';
+
 const partnershipPoints = [
   'stille bedre spørsmål',
   'oppdage skjulte sammenhenger',
@@ -81,6 +83,8 @@ export default function HomePage() {
           </ul>
           <p>MURMUR er et rom for pågående forståelse.</p>
         </section>
+
+        <DropPreview />
 
         <section className="rounded-xl bg-[#1f1b16] p-6 text-[#f5efe6]">
           <p className="text-sm uppercase tracking-[0.18em] text-[#d7b98d]">MURMUR representerer et skifte</p>

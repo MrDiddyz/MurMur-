@@ -15,7 +15,9 @@
     "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml",
     "game:build": "node scripts/build-game.mjs",
     "game:preview": "python3 -m http.server 4173 --directory game/dist",
-    "game:dev": "python3 -m http.server 4173 --directory game"
+    "game:dev": "python3 -m http.server 4173 --directory game",
+    "test": "vitest run",
+    "test:intelligence": "vitest run tests/intelligence"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.0",
@@ -32,6 +34,7 @@
     "eslint-config-next": "14.2.32",
     "postcss": "8.4.39",
     "tailwindcss": "3.4.6",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "vitest": "^2.1.9"
   }
 }

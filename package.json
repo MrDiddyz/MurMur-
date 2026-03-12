@@ -15,13 +15,16 @@
     "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml",
     "game:build": "node scripts/build-game.mjs",
     "game:preview": "python3 -m http.server 4173 --directory game/dist",
-    "game:dev": "python3 -m http.server 4173 --directory game"
+    "game:dev": "python3 -m http.server 4173 --directory game",
+    "video:generate": "node scripts/generate-video.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.0",
     "next": "14.2.32",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "ai": "^4.3.19",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "@types/node": "20.14.10",

@@ -1,26 +1,41 @@
-const stats = [
-  { label: 'MRR', value: 'NOK 182,400', detail: '+8.4% vs last month' },
-  { label: 'ARR', value: 'NOK 2,188,800', detail: 'Projected from current MRR' },
-  { label: 'Churn', value: '2.1%', detail: '-0.3pp vs last month' },
-];
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getDashboardAccess } from '@/lib/server/billing';
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const access = await getDashboardAccess();
+
+  if (!access.allowed) {
+    redirect('/?access=inactive');
+  }
+
   return (
-    <div className="space-y-8 pb-10">
-      <header className="space-y-2">
-        <h1 className="text-4xl font-semibold">Revenue dashboard (mock)</h1>
-        <p className="text-white/70">Placeholder metrics for internal tracking and layout validation.</p>
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-14">
+      <header>
+        <h1 className="text-3xl font-semibold text-slate-900">Customer dashboard</h1>
+        <p className="mt-2 text-slate-600">Subscription status: {access.subscription.status}</p>
       </header>
 
-      <section className="grid gap-5 md:grid-cols-3">
-        {stats.map((stat) => (
-          <article key={stat.label} className="card">
-            <p className="text-sm uppercase tracking-wider text-white/60">{stat.label}</p>
-            <p className="mt-3 text-3xl font-semibold text-cyan-300">{stat.value}</p>
-            <p className="mt-2 text-sm text-white/70">{stat.detail}</p>
-          </article>
-        ))}
+      <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-xl font-medium text-slate-900">Billing</h2>
+        <p className="mt-2 text-sm text-slate-600">
+          Plan: <span className="font-medium">{access.subscription.plan_code}</span>
+        </p>
+        <p className="text-sm text-slate-600">
+          Current period end:{' '}
+          <span className="font-medium">{access.subscription.current_period_end ?? 'No expiration date'}</span>
+        </p>
+
+        <form action="/api/billing/portal" method="post" className="mt-4">
+          <button className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white" type="submit">
+            Open Stripe customer portal
+          </button>
+        </form>
       </section>
+
+      <Link href="/" className="text-sm font-medium text-sky-700 underline">
+        Back to marketing page
+      </Link>
     </div>
   );
 }

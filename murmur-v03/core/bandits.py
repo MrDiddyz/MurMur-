@@ -44,6 +44,8 @@ def sample_arm(session, run_id: str):
 
 def assign_reward(session, arm_id: str, score: float):
     arm = session.get(BanditArm, arm_id)
+    if arm is None:
+        raise ValueError(f"BanditArm with arm_id '{arm_id}' not found in database")
     reward = 1 if score >= 0.75 else 0
     if reward:
         arm.alpha += 1

@@ -2,7 +2,7 @@ from hashlib import sha256
 
 from core import eval as eval_core
 from core.agent_factory import select_council
-from core.bandits import ARM_CATALOG, assign_reward, sample_arm
+from core.bandits import ARM_CATALOG, assign_reward, ensure_arms, sample_arm
 from core.ids import event_id, gen_id, utc_now
 from core.llm import MockLLM
 from core.prompts import PROMPT_VERSIONS
@@ -48,6 +48,9 @@ class Orchestrator:
     def run_job(self, job_id: str, run_id: str, req: dict):
         self.session.add(JobRun(run_id=run_id, job_id=job_id, status="running"))
         self.emit(job_id, run_id, RUN_STARTED, "worker", {})
+        
+        # Ensure all bandit arms exist in the database for reward assignment
+        ensure_arms(self.session)
 
         if req.get("mode") == "auto":
             council_id, agents, rationale = select_council(req["task"])

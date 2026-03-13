@@ -139,6 +139,13 @@ class Orchestrator:
                         "tool_name": "web.search",
                         "reason": web.get("reason", "disabled"),
                     })
+                else:
+                    self.emit(job_id, run_id, TOOL_CALL_COMPLETED, "tool_registry", {
+                        "tool_name": "web.search",
+                        "ok": web.get("ok"),
+                        "results": web.get("results", []),
+                        "duration_ms": web.get("duration_ms", 0),
+                    })
 
             text = self.llm.generate(role, req["task"], req.get("context", {}))
             artifacts[role.lower()] = text

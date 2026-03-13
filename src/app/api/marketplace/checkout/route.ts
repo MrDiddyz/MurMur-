@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { getAuthenticatedUserId } from '@/lib/server/auth';
 import {
   MAX_PRICE_NOK,
   calculateCheckoutTotalNok,
@@ -12,6 +13,11 @@ type CheckoutPayload = {
 };
 
 export async function POST(request: Request) {
+  const userId = await getAuthenticatedUserId();
+  if (!userId) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const payload = (await request.json()) as CheckoutPayload;
 
   if (!payload.listingId) {
@@ -33,9 +39,10 @@ export async function POST(request: Request) {
   }
 
   const checkoutUrl = new URL(paymentLink);
-  checkoutUrl.searchParams.set('client_reference_id', listing.id);
+  checkoutUrl.searchParams.set('client_reference_id', userId);
   checkoutUrl.searchParams.set('prefilled_promo_code', 'MURMUR10');
   checkoutUrl.searchParams.set('locale', 'nb');
+  checkoutUrl.searchParams.set('metadata_listing_id', listing.id);
   checkoutUrl.searchParams.set('metadata_listing_price_nok', String(listing.priceNok));
   checkoutUrl.searchParams.set('metadata_platform_fee_nok', String(calculatePlatformFeeNok(listing.priceNok)));
   checkoutUrl.searchParams.set('metadata_checkout_total_nok', String(calculateCheckoutTotalNok(listing.priceNok)));

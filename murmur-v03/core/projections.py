@@ -23,7 +23,19 @@ def apply_projection(session, event):
                 context_json=payload.get("context", {}),
             )
             session.add(job)
-    elif job:
+    else:
+        # For non-TASK_RECEIVED events, ensure job exists (handles out-of-order events)
+        if not job:
+            job = JobProjection(
+                job_id=event.job_id,
+                latest_run_id=event.run_id,
+                status="queued",
+                task="",
+                context_json={},
+            )
+            session.add(job)
+        
+        # Apply event-specific updates
         job.latest_run_id = event.run_id
         if evt == types.RUN_STARTED:
             job.status = "running"

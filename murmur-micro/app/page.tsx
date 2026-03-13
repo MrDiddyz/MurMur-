@@ -28,12 +28,19 @@ export default function HomePage() {
         body: JSON.stringify({ prompt })
       });
 
-      const payload = (await response.json()) as RunApiResponse | { error: string };
       if (!response.ok) {
-        throw new Error("error" in payload ? payload.error : "Run failed");
+        let errorMessage = "Run failed";
+        try {
+          const payload = (await response.json()) as { error?: string };
+          errorMessage = payload.error || errorMessage;
+        } catch {
+          // If error response isn't valid JSON, use default message
+        }
+        throw new Error(errorMessage);
       }
 
-      setResult(payload as RunApiResponse);
+      const payload = (await response.json()) as RunApiResponse;
+      setResult(payload);
     } catch (runError) {
       setError(runError instanceof Error ? runError.message : "Unknown error");
     } finally {

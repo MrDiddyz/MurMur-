@@ -21,8 +21,16 @@ export function FeedbackBar({ episodeId }: FeedbackBarProps) {
       });
 
       if (!response.ok) {
-        const payload = (await response.json().catch(() => null)) as { error?: string } | null;
-        throw new Error(payload?.error || "Failed to submit feedback");
+        let errorMessage = `Failed to submit feedback (${response.status})`;
+        try {
+          const payload = (await response.json()) as { error?: string };
+          if (payload?.error) {
+            errorMessage = payload.error;
+          }
+        } catch {
+          // JSON parsing failed, use status-based error message
+        }
+        throw new Error(errorMessage);
       }
 
       setSubmitted(feedback);

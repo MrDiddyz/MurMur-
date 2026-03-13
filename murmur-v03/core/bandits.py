@@ -39,6 +39,8 @@ def sample_arm(session, run_id: str):
         score = _det_sample(run_id, arm.arm_id, arm.alpha, arm.beta)
         if best is None or score > best[1]:
             best = (arm, score)
+    if best is None:
+        raise RuntimeError("No bandit arms available. Database may be corrupted or transaction failed.")
     return best[0], best[1]
 
 

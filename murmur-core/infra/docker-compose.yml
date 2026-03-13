@@ -1,4 +1,47 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=murmur
+      - POSTGRES_USER=murmur
+      - POSTGRES_PASSWORD=murmur
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+
+  session-gateway:
+    build:
+      context: ../services/session-gateway
+    working_dir: /app
+    command: sh -lc "npm install && npx prisma generate && npm run dev"
+    ports:
+      - "8787:8787"
+    environment:
+      - PORT=8787
+      - DATABASE_URL=postgresql://murmur:murmur@postgres:5432/murmur?schema=public
+    volumes:
+      - ../services/session-gateway:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - postgres
+
+  terminal-web:
+    build:
+      context: ../apps/terminal-web
+    working_dir: /app
+    command: sh -lc "npm install && npm run dev"
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_WS_URL=ws://localhost:8787/ws
+      - NEXT_PUBLIC_USER_EMAIL=admin@murmur.local
+    volumes:
+      - ../apps/terminal-web:/app
+    depends_on:
+      - session-gateway
+
   murmur-core:
     build:
       context: ../services/core
@@ -12,3 +55,4 @@ services:
 
 volumes:
   murmur_data:
+  pg_data:

@@ -1,0 +1,9 @@
+{
+  "name": "@murmur/cli",
+  "version": "0.1.0",
+  "private": true,
+  "bin": {
+    "murmur": "bin/murmur.js"
+  },
+  "type": "module"
+}

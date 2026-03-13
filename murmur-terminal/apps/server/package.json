@@ -1,0 +1,15 @@
+{
+  "name": "@murmur/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "node-pty": "^1.0.0",
+    "ws": "^8.18.0"
+  }
+}

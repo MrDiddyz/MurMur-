@@ -39,16 +39,26 @@ export async function runMurmur(prompt: string): Promise<MurmurRunResult> {
 
   // Use both judge output and deterministic score. If the score gap is meaningful,
   // trust the heuristic; otherwise prefer the judge's pick when available.
+  const judgeProvidedWinner = judgeParsed.winner !== undefined;
+  const useHeuristicDueToGap = scoreGap >= 2;
+  
   const winner: "idea" | "synth" =
     scoreGap >= 2 ? heuristicWinner : judgeParsed.winner ?? heuristicWinner;
 
   const score = winner === "idea" ? ideaScore : synthScore;
   const final = winner === "idea" ? ideaOutput : synthOutput;
 
-  const rationale =
-    winner === heuristicWinner
-      ? judgeParsed.rationale
-      : `${judgeParsed.rationale} Heuristic score override applied due to larger quality gap.`;
+  let rationale: string;
+  if (winner === heuristicWinner && useHeuristicDueToGap) {
+    // Heuristic was used because score gap was large
+    rationale = `${judgeParsed.rationale} Heuristic score override applied due to larger quality gap.`;
+  } else if (winner === heuristicWinner && !judgeProvidedWinner) {
+    // Heuristic was used because judge failed to provide a decision
+    rationale = `${judgeParsed.rationale} Judge did not provide a clear winner; heuristic score determined the outcome.`;
+  } else {
+    // Judge provided a winner and score gap was small enough to trust the judge
+    rationale = judgeParsed.rationale;
+  }
 
   const trace: AgentResult[] = [
     { agent: "idea", input: ideaInput, output: ideaOutput, score: ideaScore },

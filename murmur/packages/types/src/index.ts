@@ -66,6 +66,12 @@ export interface AnalyticsSnapshot {
   created_at: string;
 }
 
+export type ScheduledJobType =
+  | "generate_content"
+  | "publish_post"
+  | "fetch_analytics"
+  | "send_playlist_pitch";
+
 export interface ScheduledJob {
   id: string;
   campaign_id: string;
@@ -76,27 +82,35 @@ export interface ScheduledJob {
   created_at: string;
 }
 
-export type ScheduledJobType =
-  | "generate_content"
-  | "publish_post"
-  | "fetch_analytics"
-  | "send_playlist_pitch";
+type Insertable<T extends { id: string; created_at: string }> = Omit<T, "id" | "created_at">;
+type Updatable<T extends { id: string; created_at: string }> = Partial<Insertable<T>>;
 
-export type Insertable<T extends { id: string; created_at: string }> = Omit<
-  T,
-  "id" | "created_at"
->;
-export type Updatable<T extends { id: string; created_at: string }> = Partial<
-  Insertable<T>
->;
+type Selectable<T> = T;
 
+export type ArtistSelect = Selectable<Artist>;
 export type ArtistInsert = Insertable<Artist>;
 export type ArtistUpdate = Updatable<Artist>;
+
+export type ReleaseSelect = Selectable<Release>;
 export type ReleaseInsert = Insertable<Release>;
 export type ReleaseUpdate = Updatable<Release>;
+
+export type CampaignSelect = Selectable<Campaign>;
 export type CampaignInsert = Insertable<Campaign>;
 export type CampaignUpdate = Updatable<Campaign>;
+
+export type ContentPackSelect = Selectable<ContentPack>;
 export type ContentPackInsert = Insertable<ContentPack>;
+export type ContentPackUpdate = Updatable<ContentPack>;
+
+export type PlaylistTargetSelect = Selectable<PlaylistTarget>;
 export type PlaylistTargetInsert = Insertable<PlaylistTarget>;
+export type PlaylistTargetUpdate = Updatable<PlaylistTarget>;
+
+export type AnalyticsSnapshotSelect = Selectable<AnalyticsSnapshot>;
 export type AnalyticsSnapshotInsert = Insertable<AnalyticsSnapshot>;
+export type AnalyticsSnapshotUpdate = Updatable<AnalyticsSnapshot>;
+
+export type ScheduledJobSelect = Selectable<ScheduledJob>;
 export type ScheduledJobInsert = Insertable<ScheduledJob>;
+export type ScheduledJobUpdate = Updatable<ScheduledJob>;

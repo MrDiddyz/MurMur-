@@ -3,6 +3,7 @@ import { workflowRoutes } from "./routes/workflows.js";
 import { releaseRoutes } from "./routes/releases.js";
 import { campaignRoutes } from "./routes/campaigns.js";
 import { analyticsRoutes } from "./routes/analytics.js";
+import { scheduledJobRoutes } from "./routes/scheduled-jobs.js";
 import type { Runtime } from "@murmur/core";
 import { ApiError } from "./lib/errors.js";
 
@@ -25,6 +26,7 @@ export function buildApi(runtime: Runtime): FastifyInstance {
   app.register(releaseRoutes, { prefix: "/v1" });
   app.register(campaignRoutes, { prefix: "/v1" });
   app.register(analyticsRoutes, { prefix: "/v1" });
+  app.register(scheduledJobRoutes, { prefix: "/v1" });
 
   return app;
 }

@@ -1,0 +1,217 @@
+{
+  "cosmology": {
+    "origin_model": {
+      "name": "The Veilflare Emergence",
+      "description": "Reality began when an unknown cosmic phenomenon called the Veilflare condensed possibility into three coupled strata: the Material Expanse, the Resonant Lattice, and the Deep Interval.",
+      "creation_dynamics": [
+        "The Material Expanse carries matter-like states and conventional causality windows.",
+        "The Resonant Lattice stores pattern-memory and probability tension.",
+        "The Deep Interval acts as a null-pressure sink that stabilizes both upper strata."
+      ]
+    },
+    "reality_layers": [
+      {
+        "name": "Material Expanse",
+        "properties": [
+          "Mass-phase structures form stars, oceans, and solid bodies.",
+          "Time flows in directional streams that can braid but never reverse locally.",
+          "Chemical-like complexity emerges from charge-vectored bonds."
+        ]
+      },
+      {
+        "name": "Resonant Lattice",
+        "properties": [
+          "Information-bearing field where intentions, histories, and quantum-like states interfere.",
+          "Acts as a medium for long-range synchronization and consciousness coupling.",
+          "Can be engineered through harmonic machines."
+        ]
+      },
+      {
+        "name": "Deep Interval",
+        "properties": [
+          "Sparse layer of near-zero event density.",
+          "Absorbs excess entropy-equivalent pressure from other layers.",
+          "Transit through it is possible only via interval folding and exact phase locks."
+        ]
+      }
+    ],
+    "energy_source": {
+      "type": "Unknown cosmic phenomenon",
+      "designation": "Veilflare",
+      "behavior": "Appears as non-local surges that increase coherence between layers; extractable indirectly as flux gradients rather than as a fuel.",
+      "constraints": [
+        "Direct containment collapses the extraction apparatus.",
+        "Veilflare intensity follows cyclical harmonics tied to galactic-scale resonance basins.",
+        "Overuse in one region triggers compensatory dampening nearby."
+      ]
+    }
+  },
+  "fundamental_forces": [
+    {
+      "name": "Cohesion",
+      "role": "Binds mass-phase particles into stable structures.",
+      "range": "Short to intermediate",
+      "carrier": "Bond quanta",
+      "notes": "Strength increases in high-density lattice zones."
+    },
+    {
+      "name": "Vector Drift",
+      "role": "Controls motion, inertia-like persistence, and orbital patterning.",
+      "range": "Universal",
+      "carrier": "Directional tensor waves",
+      "notes": "Sets local speed ceilings based on ambient resonance pressure."
+    },
+    {
+      "name": "Lumen Exchange",
+      "role": "Mediates radiation, thermal transfer, and signal propagation.",
+      "range": "Universal",
+      "carrier": "Lumen packets",
+      "notes": "Permits superluminal signaling only through pre-entangled lattice channels."
+    },
+    {
+      "name": "Resonance Coupling",
+      "role": "Links physical states with information patterns in the Resonant Lattice.",
+      "range": "Non-local",
+      "carrier": "Phase harmonics",
+      "notes": "Enables memory fields, predictive modeling, and consciousness-transfer artifacts."
+    },
+    {
+      "name": "Null Shear",
+      "role": "Draws disorder pressure into the Deep Interval, preventing runaway chaos.",
+      "range": "Background",
+      "carrier": "Interval gradients",
+      "notes": "Failure of Null Shear regionally causes anomaly blooms."
+    }
+  ],
+  "civilizations": [
+    {
+      "name": "The Auric Spiral Clans",
+      "home_layer": "Material Expanse",
+      "origin_environment": "Helical megastorm belts around a bright gas giant",
+      "biocognitive_profile": "Distributed neural colonies inhabiting bio-mineral flotillas",
+      "societal_structure": "Consensus through storm-song frequency voting",
+      "evolutionary_path": {
+        "driver": "Adaptation to rapidly shifting electromagnetic weather",
+        "milestones": [
+          "Mastery of atmospheric buoyancy architecture",
+          "Development of resonance weather forecasting via living sensors",
+          "Construction of floating city-rings synchronized to storm cycles"
+        ]
+      },
+      "post_industrial_state": {
+        "energy": "Veilflare-assisted vortex harvesters",
+        "industry": "Self-healing bioforges grown from mineral spores",
+        "mobility": "Cyclone slings and lattice-skip gliders",
+        "governance_technology": "Real-time harmonic referendum networks"
+      }
+    },
+    {
+      "name": "The Basalt Archive Directorate",
+      "home_layer": "Resonant Lattice interface zones",
+      "origin_environment": "Subsurface crystal caverns on tectonically active worlds",
+      "biocognitive_profile": "Silicate-bodied entities with phase-encoded memory cores",
+      "societal_structure": "Merit-chronicles ranked by depth and fidelity of recorded knowledge",
+      "evolutionary_path": {
+        "driver": "Survival through geological catastrophes and data preservation",
+        "milestones": [
+          "Invention of quake-predictive harmonic columns",
+          "Transition from oral memory to crystalline total archives",
+          "Emergence of sentient archival intelligences"
+        ]
+      },
+      "post_industrial_state": {
+        "energy": "Geothermal resonance taps coupled to lattice condensers",
+        "industry": "Matter-printing from silicate feedstock and pattern libraries",
+        "mobility": "Deep-bore interval elevators and phased tunnelways",
+        "governance_technology": "Algorithmic jurisprudence audited by living historians"
+      }
+    },
+    {
+      "name": "The Pelagic Continuum",
+      "home_layer": "Material Expanse with Deep Interval access",
+      "origin_environment": "Abyssal ocean planets with bioluminescent trench networks",
+      "biocognitive_profile": "Amphibious swarms linked by electrosonic cognition",
+      "societal_structure": "Seasonal federations formed around migratory knowledge currents",
+      "evolutionary_path": {
+        "driver": "Predator pressure and resource variability across depth bands",
+        "milestones": [
+          "Development of pressure-adaptive habitats",
+          "Creation of sonic computation reefs",
+          "Controlled dives into micro-interval pockets for resource extraction"
+        ]
+      },
+      "post_industrial_state": {
+        "energy": "Thermocline engines and biolattice capacitors",
+        "industry": "Organic nanofabrication seeded in reef-foundries",
+        "mobility": "Current-riding arc fleets and interval bubble gates",
+        "governance_technology": "Fluid constitutions recalibrated each migration epoch"
+      }
+    }
+  ],
+  "technological_progression": {
+    "baseline_state": "Post-industrial",
+    "stages": [
+      {
+        "stage": "Mechanization",
+        "description": "Civilizations develop automation, extraction systems, and macro-scale infrastructure."
+      },
+      {
+        "stage": "Networked Intelligence",
+        "description": "Planetary communication webs and synthetic cognition accelerate science and governance."
+      },
+      {
+        "stage": "Resonant Engineering",
+        "description": "Practical manipulation of the Resonant Lattice enables predictive systems and non-local coordination."
+      },
+      {
+        "stage": "Layer Transit",
+        "description": "Stable travel between cosmological layers through phase-lock and interval folding technologies."
+      },
+      {
+        "stage": "Veilflare Stewardship",
+        "description": "Civilizations shift from energy extraction to harmonic balancing to avoid regional collapse and anomaly proliferation."
+      }
+    ],
+    "cross_civilization_differences": [
+      "Spiral Clans prioritize adaptive bioengineering and meteorological control.",
+      "Archive Directorate prioritizes information permanence and lithic computation.",
+      "Pelagic Continuum prioritizes ecological integration and distributed swarm cognition."
+    ]
+  },
+  "anomalies": [
+    {
+      "name": "Mirror Bloom",
+      "type": "Temporal-resonant event",
+      "description": "Localized duplication of possible presents, creating parallel outcome pockets that eventually recombine.",
+      "trigger_conditions": [
+        "High Resonance Coupling",
+        "Suppressed Null Shear",
+        "Rapid Veilflare surge"
+      ],
+      "risk_level": "High",
+      "containment": "Tri-layer phase anchors and decision dampening fields"
+    },
+    {
+      "name": "Hollow Choir",
+      "type": "Cognitive-field infection",
+      "description": "Self-amplifying signal pattern in the Resonant Lattice that overwrites consensus systems with recursive directives.",
+      "trigger_conditions": [
+        "Unfiltered long-range synchronization",
+        "Damaged archival intelligences"
+      ],
+      "risk_level": "Severe",
+      "containment": "Isolated lattice quarantine shells and mnemonic firebreak protocols"
+    },
+    {
+      "name": "Interval Glass",
+      "type": "Topological crystallization",
+      "description": "Deep Interval regions harden into impassable geometry, trapping transit corridors and distorting nearby force behavior.",
+      "trigger_conditions": [
+        "Overconcentrated interval travel",
+        "Sustained entropy dumping beyond local tolerance"
+      ],
+      "risk_level": "Moderate to High",
+      "containment": "Route cycling, entropy budgeting, and controlled Null Shear venting"
+    }
+  ]
+}

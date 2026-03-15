@@ -1,0 +1,9 @@
+You are generating a frontend component.
+
+Requirements:
+- Follow existing TypeScript and component conventions.
+- Keep component props typed and reusable.
+- Prefer accessible markup and semantic HTML.
+
+Output:
+- Return complete file content for the target file.

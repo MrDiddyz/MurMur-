@@ -7,6 +7,13 @@ interface FeedbackRequest {
   feedback?: FeedbackValue;
 }
 
+// UUID v4 regex pattern
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isValidUUID(uuid: string): boolean {
+  return UUID_PATTERN.test(uuid);
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as FeedbackRequest;
@@ -15,6 +22,10 @@ export async function POST(request: Request) {
 
     if (!episodeId) {
       return NextResponse.json({ error: "episodeId is required" }, { status: 400 });
+    }
+
+    if (!isValidUUID(episodeId)) {
+      return NextResponse.json({ error: "episodeId must be a valid UUID" }, { status: 400 });
     }
 
     if (feedback !== 1 && feedback !== -1) {

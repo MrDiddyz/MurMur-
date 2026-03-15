@@ -10,6 +10,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
+from fastapi import APIRouter
+
 from app.models.person import Person
 
 router = APIRouter()
@@ -68,3 +70,6 @@ def search_persons(
             status_code=500,
             detail="Kunne ikke hente personer fra databasen.",
         ) from exc
+@router.get("/", response_model=list[Person])
+def list_persons() -> list[Person]:
+    return []

@@ -20,3 +20,11 @@ class Person(Base):
     last_name: Mapped[str] = mapped_column(String(100), nullable=False)
     birth_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     place: Mapped[str | None] = mapped_column(String(255), nullable=True)
+from pydantic import BaseModel
+
+
+class Person(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    birth_year: int | None = None

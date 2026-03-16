@@ -9,7 +9,7 @@ const navItems = [
   { href: '/fragments', label: 'Fragments' },
   { href: '/agents', label: 'Agents' },
   { href: '/export', label: 'Export' },
-];
+] as const;
 
 export function BottomNav() {
   const pathname = usePathname();

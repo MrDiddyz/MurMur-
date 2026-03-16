@@ -1,69 +1,71 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Murmur Security Map</title>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MurMur — AI Music Prompt Composer</title>
+    <meta
+      name="description"
+      content="Generate polished music prompts and production blueprints in seconds with MurMur."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero card">
+        <p class="eyebrow">MurMur Prompt Composer</p>
+        <h1>Write better AI music prompts in under 30 seconds.</h1>
+        <p class="subheadline">
+          Describe your genre, mood, and artist style once. MurMur returns a ready-to-use
+          prompt + structure blueprint you can drop into your AI music workflow instantly.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#composer">Start generating</a>
+          <a class="btn btn-ghost" href="trending.html">See trending prompts</a>
+        </div>
+        <p class="microcopy">No signup required • Fast, focused, and creator-friendly</p>
+      </section>
 
-<script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+      <section id="composer" class="card composer" aria-label="Prompt composer">
+        <div class="field-grid">
+          <label class="field">
+            <span>Genre</span>
+            <input id="genre" type="text" placeholder="e.g. Cinematic trap" />
+          </label>
 
-<script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript"></script>
+          <label class="field">
+            <span>Mood</span>
+            <input id="mood" type="text" placeholder="e.g. Dark but hopeful" />
+          </label>
 
-<style>
-body{
-  margin:0;
-  background:#0b0f1a;
-  color:white;
-  font-family:system-ui;
-}
-#map{
-  width:100vw;
-  height:100vh;
-}
-.node{
-  fill:#1e2a44;
-  stroke:#4da3ff;
-  stroke-width:2;
-  cursor:pointer;
-}
-.node:hover{ fill:#2f4b7a; }
-</style>
-</head>
+          <label class="field">
+            <span>Artist style</span>
+            <input id="artist" type="text" placeholder="e.g. Hans Zimmer" />
+          </label>
+        </div>
 
-<body>
+        <div class="actions">
+          <button id="generateBtn" class="btn btn-primary" type="button">Generate</button>
+          <button id="remixBtn" class="btn btn-ghost" type="button">Remix ×5</button>
+          <span id="status" class="status" aria-live="polite"></span>
+        </div>
 
-<svg id="map" viewBox="0 0 500 700">
+        <label class="field output-field">
+          <span>Generated prompt</span>
+          <textarea id="output" rows="5" readonly placeholder="Your generated prompt appears here..."></textarea>
+        </label>
 
-<rect class="node" x="150" y="20" width="200" height="50"/>
-<text x="210" y="50">CLIENT</text>
+        <section id="blueprint" class="result" aria-live="polite"></section>
+        <section id="remixes" class="result" aria-live="polite"></section>
+      </section>
 
-<rect class="node" x="150" y="100" width="200" height="50"/>
-<text x="200" y="130">EDGE SECURITY</text>
+      <section class="card history-wrap">
+        <h2>Recent prompts</h2>
+        <p class="history-sub">Your last 10 sessions are saved locally on this device.</p>
+        <ul id="historyList" class="history-list"></ul>
+      </section>
+    </main>
 
-<rect class="node" x="150" y="180" width="200" height="50"/>
-<text x="220" y="210">AUTH</text>
-
-<rect class="node" x="150" y="260" width="200" height="50"/>
-<text x="200" y="290">EVENT API</text>
-
-<rect class="node" x="150" y="340" width="200" height="50"/>
-<text x="200" y="370">RISK ENGINE</text>
-
-<rect class="node" x="150" y="420" width="200" height="50"/>
-<text x="200" y="450">DATABASE</text>
-
-<rect class="node" x="150" y="500" width="200" height="50"/>
-<text x="210" y="530">RESPONSE</text>
-
-</svg>
-
-<script>
-svgPanZoom('#map', {
-  zoomEnabled: true,
-  controlIconsEnabled: true,
-  fit: true,
-  center: true
-});
-</script>
-
-</body>
+    <script src="app.js" defer></script>
+  </body>
 </html>

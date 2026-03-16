@@ -1,0 +1,2 @@
+-- MurMur Codex Factory seed placeholder
+-- Add seed statements here.

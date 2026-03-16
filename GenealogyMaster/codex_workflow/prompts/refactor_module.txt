@@ -1,0 +1,9 @@
+You are refactoring an existing module.
+
+Requirements:
+- Preserve current behavior unless context explicitly requests changes.
+- Improve readability, structure, and maintainability.
+- Remove dead code and simplify conditionals when safe.
+
+Output:
+- Return complete file content for the target file.

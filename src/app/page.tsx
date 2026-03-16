@@ -10,6 +10,24 @@ export default function DashboardPage() {
   const stats = getDashboardStats();
   const actions = getSuggestedActions();
 
+const plans = [
+  {
+    name: 'Starter',
+    price: '€49 / mnd',
+    description: 'For små team som trenger trygg AI-automatisering og rapportering.',
+  },
+  {
+    name: 'Growth',
+    price: '€149 / mnd',
+    description: 'For selskaper som trenger integrasjoner, prioritet og avansert innsikt.',
+  },
+  {
+    name: 'Vipps Startpakke',
+    price: 'NOK 1490 (engang)',
+    description: 'Lav terskel onboarding med oppsett, kvalitetssikring og første sprint.',
+  },
+];
+
   return (
     <AppShell
       title="Archive Dashboard"

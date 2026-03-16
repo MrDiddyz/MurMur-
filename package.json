@@ -1,37 +1,14 @@
 {
-  "name": "murmur-learning-constellation",
-  "version": "0.1.0",
+  "name": "murmur-motion-avatar-v0-2",
+  "version": "0.2.0",
   "private": true,
+  "packageManager": "pnpm@9.12.0",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "simulate:agents": "node scripts/agent-simulation.mjs",
-    "verify:e2e": "bash scripts/verify_e2e.sh",
-    "verify:webhook": "node scripts/send_test_webhook.js",
-    "verify:ml": "node scripts/ml_sanity.js",
-    "verify:all": "npm run verify:e2e && npm run verify:webhook && npm run verify:ml",
-    "game:build": "node scripts/build-game.mjs",
-    "game:preview": "python3 -m http.server 4173 --directory game/dist",
-    "game:dev": "python3 -m http.server 4173 --directory game"
-  },
-  "dependencies": {
-    "@vercel/analytics": "^2.0.0",
-    "next": "14.2.32",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck"
   },
   "devDependencies": {
-    "@types/node": "20.14.10",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
-    "autoprefixer": "10.4.19",
-    "eslint": "8.57.0",
-    "eslint-config-next": "14.2.32",
-    "postcss": "8.4.39",
-    "tailwindcss": "3.4.6",
-    "typescript": "5.5.3"
+    "typescript": "^5.6.3"
   }
 }

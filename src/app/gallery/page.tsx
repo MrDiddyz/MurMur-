@@ -28,7 +28,7 @@ async function getGalleryWorks(): Promise<{ works: WorkRow[]; error: string | nu
   }
 
   const params = new URLSearchParams({
-    select: 'id,title,image_url,prompt,price,creator:creator_id(name)',
+    select: 'id,title,image_url,prompt,price,creator:profiles(name)',
     order: 'created_at.desc',
   });
 

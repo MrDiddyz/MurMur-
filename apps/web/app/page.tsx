@@ -147,6 +147,7 @@ export default function LandingPage() {
     <main className="landing">
       <section className="hero">
         <canvas ref={canvasRef} className="starfield" aria-hidden="true" />
+        <div className="directionalLight" aria-hidden="true" />
         <div className="veil" aria-hidden="true" />
         <div className="heroContent">
           <p className="kicker">Murmur Constellation</p>
@@ -201,6 +202,7 @@ export default function LandingPage() {
         }
 
         .starfield,
+        .directionalLight,
         .veil {
           position: absolute;
           inset: 0;
@@ -217,6 +219,18 @@ export default function LandingPage() {
           background:
             linear-gradient(180deg, rgba(4, 8, 22, 0.1) 0%, rgba(4, 8, 22, 0.72) 90%),
             radial-gradient(circle at 50% 40%, rgba(109, 176, 255, 0.18), transparent 55%);
+        }
+
+        .directionalLight {
+          z-index: -2;
+          background: linear-gradient(
+            115deg,
+            rgba(120, 179, 255, 0.28) 6%,
+            rgba(120, 179, 255, 0.08) 26%,
+            transparent 55%
+          );
+          mix-blend-mode: screen;
+          opacity: 0.78;
         }
 
         .heroContent {

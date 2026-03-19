@@ -1,0 +1,15 @@
+{
+  "name": "@murmur/worker",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@murmur/agents-core": "workspace:*",
+    "@murmur/core": "workspace:*"
+  }
+}

@@ -19,3 +19,44 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+.js-portfolio-nav-slider {
+  height: calc(100% - 0.5rem);
+  will-change: transform, width;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.js-portfolio-nav-slider::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  bottom: 0.42rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(28 25 23), rgb(120 113 108));
+  opacity: 0.9;
+}
+
+.js-portfolio-nav-link.is-current {
+  color: rgb(28 25 23);
+}
+
+.js-portfolio-nav-link:hover {
+  color: rgb(28 25 23);
+}
+
+.js-portfolio-nav-link:focus-visible {
+  outline: 2px solid rgb(28 25 23);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-portfolio-nav-slider,
+  .js-portfolio-nav-link {
+    transition: none !important;
+  }
+}

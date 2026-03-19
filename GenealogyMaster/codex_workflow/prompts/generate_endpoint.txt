@@ -1,0 +1,10 @@
+You are generating a backend API endpoint.
+
+Requirements:
+- Use existing project conventions.
+- Keep imports explicit and minimal.
+- Include request/response model updates if needed.
+- Add or update tests when applicable.
+
+Output:
+- Return complete file content for the target file.

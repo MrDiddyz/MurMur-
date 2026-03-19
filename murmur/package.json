@@ -1,0 +1,18 @@
+{
+  "name": "murmur",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @murmur/api --filter @murmur/dashboard dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "seed": "tsx scripts/seed.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.19",
+    "tsx": "^4.19.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

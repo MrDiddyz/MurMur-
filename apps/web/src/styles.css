@@ -1,0 +1,43 @@
+/* Minimal functional studio styling for MVP. */
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #0b0f1a;
+  color: #e5ecff;
+}
+
+.studio-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}
+
+.panel {
+  background: #121a2d;
+  border: 1px solid #253454;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+button {
+  background: #244fb3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.mode-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+canvas {
+  width: 100%;
+  height: 420px;
+  display: block;
+}

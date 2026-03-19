@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "spectre-system"
+version = "0.1.0"
+description = "Spectre simulation engine bootstrap"
+authors = ["Spectre Team <team@example.com>"]
+readme = "README.md"
+packages = [
+  { include = "shared" },
+  { include = "simulation" },
+  { include = "modules" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.8.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

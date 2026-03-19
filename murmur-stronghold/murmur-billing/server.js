@@ -2,7 +2,7 @@ import Fastify from "fastify"
 import Stripe from "stripe"
 import pkg from "pg"
 import Redis from "ioredis"
-import { requireStripeSignature } from "./auth.js"
+import { requireStripeSignature, verifyWebhookSignature } from "./auth.js"
 
 const { Pool } = pkg
 const fastify = Fastify({ logger: true, bodyLimit: 1024 * 1024 })
@@ -44,11 +44,79 @@ fastify.addHook("onRequest", async (req, res) => {
 
 fastify.addContentTypeParser("application/json", { parseAs: "buffer" }, (req, body, done) => {
   req.rawBody = body
-  try {
-    done(null, JSON.parse(body.toString("utf8")))
-  } catch (err) {
-    done(err)
+  done(null, body)
+})
+
+fastify.post("/webhooks/tiktok", async (req, res) => {
+  const signature = req.headers["x-tt-signature"]
+  const timestamp = req.headers["x-tt-timestamp"]
+
+  const verification = verifyWebhookSignature(req.rawBody, signature, timestamp)
+  if (!verification.valid) {
+    req.log.warn({ reason: verification.reason }, "tiktok webhook rejected")
+    return res.code(401).send({ error: "invalid signature" })
   }
+
+  let payload
+  try {
+    payload = JSON.parse(req.rawBody.toString("utf8"))
+  } catch {
+    return res.code(400).send({ error: "invalid payload" })
+  }
+
+  const eventId = payload?.event_id
+  if (!eventId) {
+    return res.code(400).send({ error: "missing event_id" })
+  }
+
+  try {
+    const result = await db.query(
+      `INSERT INTO webhook_events(event_id, received_at, payload)
+       VALUES ($1, NOW(), $2)
+       ON CONFLICT (event_id) DO NOTHING`,
+      [eventId, payload]
+    )
+
+    if (result.rowCount === 0) {
+      req.log.info({ eventId }, "duplicate tiktok webhook ignored")
+      return res.send({ ok: true, duplicate: true })
+    }
+
+    if (payload?.type === "publish.status_change") {
+      const publishId = payload?.data?.tiktok_publish_id ?? payload?.data?.publish_id
+      const publishStatus = payload?.data?.status
+      const errorMessage = payload?.data?.error_message ?? null
+
+      if (!publishId || !publishStatus) {
+        return res.code(400).send({ error: "missing publish metadata" })
+      }
+
+      const updateResult = await db.query(
+        `UPDATE posts
+         SET status = $1,
+             error_message = $2,
+             updated_at = NOW()
+         WHERE tiktok_publish_id = $3`,
+        [publishStatus, errorMessage, publishId]
+      )
+
+      req.log.info(
+        { eventId, eventType: payload.type, publishId, updatedRows: updateResult.rowCount },
+        "tiktok webhook processed"
+      )
+    } else {
+      req.log.info({ eventId, eventType: payload?.type }, "tiktok webhook ignored")
+    }
+
+    return res.send({ ok: true })
+  } catch (error) {
+    req.log.error({ err: error, eventId }, "failed processing tiktok webhook")
+    return res.code(500).send({ ok: false })
+  }
+})
+
+fastify.get("/webhooks/tiktok/health", async () => {
+  return { ok: true }
 })
 
 fastify.post("/webhook", async (req, res) => {

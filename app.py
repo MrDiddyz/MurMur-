@@ -76,6 +76,96 @@ class IntegrationEvent(BaseModel):
     runId: Optional[str] = None
     payload: Dict[str, Any] = Field(default_factory=dict)
 
+
+class AvatarTask(str, Enum):
+    CONTENT_CREATOR = "content_creator"
+    OFFER_SELLER = "offer_seller"
+    DECISION_ENGINE = "decision_engine"
+    DAILY_OPERATOR = "daily_operator"
+
+
+class AvatarOperateRequest(BaseModel):
+    avatar_core: Dict[str, Any]
+    context: Dict[str, Any]
+    memory: Dict[str, Any]
+    task: AvatarTask
+    constraints: Dict[str, Any]
+    telemetry: Dict[str, Any]
+
+
+
+def _base_avatar_output(task: AvatarTask) -> Dict[str, Any]:
+    return {
+        "task": task.value,
+        "version": "1.0",
+        "assumptions": [],
+        "outputs": {"content": [], "dm_replies": [], "decisions": [], "ops": []},
+        "events": ["avatar.run.completed"],
+        "quality": {"style_score": 90, "brand_risk": "low", "notes": ["AvatarCore respected as source of truth."]},
+    }
+
+
+def _validate_avatar_core(avatar_core: Dict[str, Any]) -> None:
+    if not avatar_core:
+        raise HTTPException(status_code=400, detail="avatar_core is required and cannot be empty")
+
+
+def _avatar_content_creator(payload: Dict[str, Any]) -> None:
+    payload["outputs"]["content"] = [
+        {
+            "format": "post",
+            "copy": "Value-led post draft aligned with AvatarCore voice and campaign context.",
+            "cta_variations": ["Reply \"PLAN\"", "Comment your biggest blocker", "DM for details"],
+        }
+    ]
+
+
+def _avatar_offer_seller(payload: Dict[str, Any]) -> None:
+    payload["outputs"]["dm_replies"] = [
+        {
+            "short": "Great question—want the 2-step version?",
+            "medium": "Happy to help. Based on your goal, the fastest next step is a short diagnostic and one focused offer.",
+            "long": "Thanks for sharing context. To keep this practical, I recommend we map one immediate win and one measurable milestone before expanding scope.",
+            "next_step_question": "What outcome do you want in the next 14 days?",
+        }
+    ]
+
+
+def _avatar_decision_engine(payload: Dict[str, Any]) -> None:
+    payload["outputs"]["decisions"] = [
+        {
+            "priority_order": ["Scale current winner", "Ship one experiment", "Tighten follow-up loop"],
+            "not_to_do": ["Launch a new offer without signal", "Change voice/style outside AvatarCore"],
+        }
+    ]
+
+
+def _avatar_daily_operator(payload: Dict[str, Any]) -> None:
+    payload["outputs"]["ops"] = [
+        {
+            "run_plan": ["Review KPIs", "Queue today's content", "Handle inbound DMs", "Log learnings"],
+            "queue_items": ["1 primary post", "3 story frames", "5 DM follow-ups"],
+            "analysis": "Maintain current winning angle and test one CTA variable.",
+            "next_experiments": ["Hook variant A/B", "CTA tone test"],
+        }
+    ]
+
+
+def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
+    _validate_avatar_core(req.avatar_core)
+    payload = _base_avatar_output(req.task)
+
+    if req.task == AvatarTask.CONTENT_CREATOR:
+        _avatar_content_creator(payload)
+    elif req.task == AvatarTask.OFFER_SELLER:
+        _avatar_offer_seller(payload)
+    elif req.task == AvatarTask.DECISION_ENGINE:
+        _avatar_decision_engine(payload)
+    elif req.task == AvatarTask.DAILY_OPERATOR:
+        _avatar_daily_operator(payload)
+
+    return payload
+
 # ----------------------------
 # In-memory "DB" (swap later)
 # ----------------------------
@@ -271,5 +361,10 @@ def ingest_event(evt: IntegrationEvent):
     save_run(run)
 
     return {"ok": True, "runId": evt.runId, "state": run["state"]}
+
+
+@app.post("/v1/avatar/operate")
+def avatar_operate(req: AvatarOperateRequest):
+    return run_avatar_operator(req)
 
 # Run: uvicorn app:app --reload

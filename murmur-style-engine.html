@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MurMur Style Engine</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at top, #1f2937, #020617 60%);
+      color: #e2e8f0;
+    }
+
+    .murmur-style-engine {
+      width: min(720px, 92vw);
+      padding: 1.5rem;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      background: rgba(15, 23, 42, 0.85);
+      box-shadow: 0 24px 44px rgba(2, 6, 23, 0.45);
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    input,
+    button,
+    textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 0.8rem 0.9rem;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border: none;
+    }
+
+    .button-row {
+      display: grid;
+      gap: 0.65rem;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 10rem;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <div class="murmur-style-engine">
+    <input id="genre" placeholder="genre (lofi, cinematic, trap)" />
+    <input id="mood" placeholder="mood (dark, emotional, dreamy)" />
+    <input id="artist" placeholder="artist style (Zimmer, Enya, synthwave)" />
+
+    <div class="button-row">
+      <button id="generate-btn" type="button">Generate Prompt</button>
+      <button id="remix-btn" type="button">Remix Prompt</button>
+    </div>
+
+    <textarea id="result" rows="8" placeholder="Your generated prompt appears here..."></textarea>
+  </div>
+
+  <script>
+    const orchestral = [
+      "massive orchestral strings",
+      "powerful brass section",
+      "cinematic hybrid percussion",
+      "angelic choir layers",
+      "dramatic orchestral build"
+    ];
+
+    const ambient = [
+      "ethereal vocal pads",
+      "dreamy synth atmospheres",
+      "floating ambient textures",
+      "celestial reverb space",
+      "soft cinematic ambience"
+    ];
+
+    const lofi = [
+      "dusty boom bap drums",
+      "vinyl crackle texture",
+      "warm jazz piano chords",
+      "analog bass groove",
+      "cozy late night atmosphere"
+    ];
+
+    function random(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getStylePack(genreValue) {
+      const genre = genreValue.toLowerCase();
+
+      if (genre.includes("cinematic")) return orchestral;
+      if (genre.includes("ambient")) return ambient;
+      if (genre.includes("lofi")) return lofi;
+
+      return [
+        "textured drums",
+        "wide cinematic pads",
+        "expressive melodic phrasing",
+        "carefully layered harmonics",
+        "dynamic modern production"
+      ];
+    }
+
+    function generate() {
+      const genre = document.getElementById("genre").value.trim() || "genre-fluid";
+      const mood = document.getElementById("mood").value.trim() || "evocative";
+      const artist = document.getElementById("artist").value.trim() || "signature";
+      const stylePack = getStylePack(genre);
+
+      const prompt =
+        genre + " music, " +
+        mood + " atmosphere, " +
+        random(stylePack) + ", " +
+        random(stylePack) + ", " +
+        "in the style spirit of " + artist + ", cinematic mix, immersive sound design";
+
+      document.getElementById("result").value = prompt;
+    }
+
+    function remixPrompt() {
+      const resultEl = document.getElementById("result");
+      const basePrompt = resultEl.value.trim();
+
+      if (!basePrompt) {
+        resultEl.value = "Generate or paste a prompt first, then click Remix Prompt.";
+        return;
+      }
+
+      const instrumentLayers = [
+        "minimal percussion and mellow electric piano",
+        "stacked synth arps with layered strings and sub bass",
+        "organic hand percussion, acoustic guitar, and soft choirs",
+        "granular pads, filtered plucks, and punchy drums",
+        "hybrid orchestral drums with analog lead textures"
+      ];
+
+      const energyLevels = [
+        "low and intimate",
+        "steady and uplifting",
+        "high and driving",
+        "slow-building cinematic swell",
+        "explosive and peak-hour intense"
+      ];
+
+      const atmospheres = [
+        "misty and nocturnal",
+        "warm sunrise glow",
+        "stormy and dramatic",
+        "spacey and futuristic",
+        "nostalgic and reflective"
+      ];
+
+      const compositionStyles = [
+        "through-composed narrative arc",
+        "loop-first groove construction",
+        "call-and-response motif design",
+        "minimalist repetition with subtle evolution",
+        "cinematic trailer-style rise and release"
+      ];
+
+      const variations = Array.from({ length: 5 }, (_, i) => {
+        return [
+          `Variation ${i + 1}: ${basePrompt}`,
+          `- Instrument layers: ${instrumentLayers[i]}`,
+          `- Energy level: ${energyLevels[i]}`,
+          `- Atmosphere: ${atmospheres[i]}`,
+          `- Composition style: ${compositionStyles[i]}`
+        ].join("\n");
+      });
+
+      resultEl.value = variations.join("\n\n");
+    }
+
+    document.getElementById("generate-btn").addEventListener("click", generate);
+    document.getElementById("remix-btn").addEventListener("click", remixPrompt);
+  </script>
+</body>
+</html>

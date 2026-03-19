@@ -1,64 +1,73 @@
-# MurMur
+# MurMur SaaS (Marketing + Billing Core)
 
-MurMur is a modular intelligence platform for operating high-consequence workflows with auditable AI assistance. It combines orchestration, persistent memory, simulation, and policy enforcement so teams can move from one-off prompts to repeatable decision systems.
+Production-ready foundation for **murmurapp.no** with Next.js App Router, Stripe subscriptions, Vipps Startpakke onboarding, Supabase persistence, protected dashboard access, and operational endpoints.
 
-This repository is a multi-surface codebase: product interfaces, orchestration services, intelligence assets, security tooling, and deployment scaffolding.
+## Stack
 
-## Vision
+- Next.js 14 (App Router) + TypeScript + Tailwind CSS
+- Stripe Checkout / Payment Links + Billing Portal
+- Vipps Startpakke (one-time, NOK 1490) via payment link
+- Supabase Auth + Postgres (customers, subscriptions, events, audit log)
+- Vercel deployment flow from GitHub
 
-MurMur is built for organizations that require **operationally reliable AI**, not just conversational output. The platform vision is to:
+## Delivered Modules
 
-- Turn fragmented AI usage into governed, end-to-end workflows.
-- Create memory-backed systems that improve with every execution cycle.
-- Support simulation-first planning before expensive real-world action.
-- Preserve human control through explicit policies, review paths, and traceability.
+- Marketing pages (NO + EN): `/` and `/en`
+- Protected customer dashboard: `/dashboard`
+- Stripe webhook endpoint with signature verification + idempotency: `/api/webhooks/stripe`
+- Stripe customer portal endpoint: `/api/billing/portal`
+- Subscription sync cron job endpoint: `/api/jobs/subscription-sync`
+- Health endpoint: `/api/health`
+- Supabase SQL schema: `supabase/schema.sql`
 
-## Architecture
+## Environment Variables
 
-MurMur is designed as a layered system:
+Copy `.env.example` to `.env.local` and fill values:
 
-1. **Experience Layer** — Next.js applications and dashboards for operators and stakeholders.
-2. **Orchestration Layer** — task routing, execution lifecycle management, and agent coordination.
-3. **Intelligence Layer** — prompt registry, decision templates, reflective loops, and simulation assets.
-4. **Memory + Data Layer** — durable stores for observations, decisions, outcomes, and policy state.
-5. **Security + Policy Layer** — authorization checks, secret management, audit logging, and hardening controls.
-6. **Infrastructure Layer** — cloud runtime, CI/CD, observability, and deployment automation.
+```bash
+cp .env.example .env.local
+```
 
-For detailed diagrams and deployment topologies, see [`docs/architecture.md`](docs/architecture.md).
+> `DEV_FALLBACK_USER_ID` is only for local testing and should not be enabled in production.
 
-## Modules
+## Local Run
 
-The repository is intentionally modular. Key areas include:
+```bash
+npm install
+npm run dev
+```
 
-- `src/` — primary application routes and UI surfaces (including dashboard, solutions, and product modules).
-- `core/` — memory and event bus primitives used by orchestration logic.
-- `agents/` — specialized agent definitions and runtime behavior components.
-- `modules/` — domain extensions and packaged capability units.
-- `murmur-intelligence-core/` — prompt registry, decision schemas, and validation scripts.
-- `murmur-stronghold/` and `murmur-security-interactive/` — security-focused assets and hardening artifacts.
-- `docs/` — architecture records, strategy docs, and operational guidance.
-- `tests/` — automated checks and validation scaffolding.
+Open `http://localhost:3000`.
 
-## Roadmap
+## Required Checks
 
-### Near-term (0-2 quarters)
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
 
-- Consolidate orchestration interfaces behind stable service contracts.
-- Expand decision schema coverage for product, security, and operations workflows.
-- Harden deployment baselines with stricter identity boundaries and audit retention defaults.
-- Publish operator runbooks for incident handling and model rollback.
+## Stripe Setup
 
-### Mid-term (2-4 quarters)
+1. Create products/prices:
+   - Starter (€49/month)
+   - Growth (€149/month)
+2. Create Checkout links (or use API) and include `client_reference_id=<supabase_user_id>`.
+3. Configure webhook endpoint:
+   - URL: `https://<your-domain>/api/webhooks/stripe`
+   - Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
+4. Add webhook signing secret to `STRIPE_WEBHOOK_SECRET`.
+5. Enable billing portal in Stripe and keep `BILLING_PORTAL_RETURN_URL` aligned with `/dashboard`.
 
-- Introduce simulation-driven planning loops tied directly to production policy gates.
-- Improve multi-tenant isolation and per-tenant memory partitioning.
-- Add deeper observability: latency budgets, decision-quality metrics, and failure taxonomies.
+## Vipps Startpakke Setup
 
-### Long-term (4+ quarters)
+1. Create Vipps payment link for **NOK 1490** (one-time).
+2. Map successful purchases into `subscriptions` with:
+   - `provider = 'vipps'`
+   - `plan_code = 'vipps_startpakke'`
+3. Store customer reference in `customers.vipps_customer_ref`.
 
-- Build adaptive optimization loops that continuously refine workflows with policy-safe reinforcement.
-- Support regulated deployment profiles (e.g., sector-specific controls and reporting templates).
-- Enable hybrid cloud + edge execution for latency-sensitive environments.
+## Supabase Setup
 
 
 ## Codex bootstrap + PR workflow
@@ -71,12 +80,33 @@ To support autonomous execution in this repository:
 
 ## Security
 
-MurMur follows a defense-in-depth operating model:
 
-- **Identity-first access control**: least privilege for users, services, and automation.
-- **Secret hygiene**: environment-level secret isolation and rotation-ready integration points.
-- **Data governance**: scoped persistence, explicit retention strategy, and deletion workflows.
-- **Execution safety**: policy checks before high-impact actions and explicit audit trails.
-- **Supply-chain awareness**: dependency scanning, CI validation, and reproducible build targets.
+## Vercel Configuration
 
-Security implementation details evolve as the platform matures; current hardening references are tracked in `docs/` and security-focused submodules.
+The repo now includes `vercel.json` with:
+
+- framework detection for Next.js
+- cron schedule (`*/30 * * * *`) for `/api/jobs/subscription-sync`
+- baseline security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`)
+
+For cron auth, set `CRON_SECRET` in Vercel project environment variables. Vercel will send it as `Authorization: Bearer <CRON_SECRET>` to the job endpoint.
+
+## Deployment (GitHub → Vercel → Domeneshop)
+
+1. Push repository to GitHub.
+2. Import project in Vercel.
+3. Add all environment variables in Vercel Project Settings.
+4. Configure cron call to `POST /api/jobs/subscription-sync` with `Authorization: Bearer <CRON_SECRET>`.
+5. Domeneshop DNS:
+   - `A` record root (`@`) → Vercel IP (as documented by Vercel at setup time)
+   - `CNAME` `www` → cname.vercel-dns.com
+6. Set primary domain to `murmurapp.no` in Vercel.
+
+## Safety / Production Disclaimers
+
+- Never expose `SUPABASE_SERVICE_ROLE_KEY` client-side.
+- Verify Stripe webhook signatures against raw request body only.
+- Keep webhook processing idempotent using unique event keys.
+- Restrict cron endpoint with a strong `CRON_SECRET`.
+- Add rate limiting/WAF and alerting before full production rollout.
+- Regularly audit `audit_log` and failed webhook responses.

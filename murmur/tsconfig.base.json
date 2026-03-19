@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": [
+      "ES2023"
+    ],
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@murmur/agents-core": [
+        "packages/agents-core/src/index.ts"
+      ],
+      "@murmur/agents-teacher": [
+        "packages/agents-teacher/src/index.ts"
+      ],
+      "@murmur/agents-experimental": [
+        "packages/agents-experimental/src/index.ts"
+      ],
+      "@murmur/agents-thinktank": [
+        "packages/agents-thinktank/src/index.ts"
+      ],
+      "@murmur/agents-reflective": [
+        "packages/agents-reflective/src/index.ts"
+      ],
+      "@murmur/orchestration": [
+        "packages/orchestration/src/index.ts"
+      ],
+      "@murmur/workflows": [
+        "packages/workflows/src/index.ts"
+      ],
+      "@murmur/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@murmur/types": [
+        "packages/types/src/index.ts"
+      ],
+      "@murmur/config": [
+        "packages/config/src/index.ts"
+      ],
+      "@murmur/engine": [
+        "packages/engine/src/index.ts"
+      ]
+    }
+  }
+}

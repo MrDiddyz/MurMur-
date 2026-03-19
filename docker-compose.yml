@@ -1,0 +1,196 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: murmur-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: murmur
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: murmur
+    ports:
+      - "5432:5432"
+    volumes:
+      - murmur_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murmur -d murmur"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: murmur-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - murmur_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    container_name: murmur-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 10000
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      APP_URL: http://localhost:10000
+      WEB_URL: http://localhost:3000
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      VIPPS_CLIENT_ID: ${VIPPS_CLIENT_ID:-}
+      VIPPS_CLIENT_SECRET: ${VIPPS_CLIENT_SECRET:-}
+      VIPPS_SUBSCRIPTION_KEY: ${VIPPS_SUBSCRIPTION_KEY:-}
+      VIPPS_MERCHANT_SERIAL_NUMBER: ${VIPPS_MERCHANT_SERIAL_NUMBER:-}
+      SESSION_SECRET: ${SESSION_SECRET:-local-dev-session-secret}
+    ports:
+      - "10000:10000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:10000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: murmur-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 10000
+      NEXT_TELEMETRY_DISABLED: 1
+      API_BASE_URL: http://api:10000
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+    ports:
+      - "3000:10000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:10000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    build:
+      context: .
+      dockerfile: ./apps/worker/Dockerfile
+    container_name: murmur-worker
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      API_BASE_URL: http://api:10000
+
+  planner-agent:
+    build:
+      context: .
+      dockerfile: ./agents/planner-agent/Dockerfile
+    container_name: murmur-planner-agent
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      API_BASE_URL: http://api:10000
+
+  builder-agent:
+    build:
+      context: .
+      dockerfile: ./agents/builder-agent/Dockerfile
+    container_name: murmur-builder-agent
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      API_BASE_URL: http://api:10000
+
+  reviewer-agent:
+    build:
+      context: .
+      dockerfile: ./agents/reviewer-agent/Dockerfile
+    container_name: murmur-reviewer-agent
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      API_BASE_URL: http://api:10000
+
+  optimizer-agent:
+    build:
+      context: .
+      dockerfile: ./agents/optimizer-agent/Dockerfile
+    container_name: murmur-optimizer-agent
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://murmur:murmur@postgres:5432/murmur
+      REDIS_URL: redis://redis:6379
+      API_BASE_URL: http://api:10000
+
+volumes:
+  murmur_postgres_data:
+  murmur_redis_data:

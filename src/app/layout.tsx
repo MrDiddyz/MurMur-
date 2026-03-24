@@ -1,9 +1,14 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
 import { Analytics } from '@vercel/analytics/react';
+
+
+export const viewport: Viewport = {
+  themeColor: '#05070f',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://murmur-constellation.example.com'),
@@ -18,6 +23,7 @@ export const metadata: Metadata = {
     type: 'website',
   },
   alternates: { canonical: '/' },
+  manifest: '/manifest.webmanifest',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

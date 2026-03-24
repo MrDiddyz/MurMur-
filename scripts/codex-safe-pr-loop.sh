@@ -22,4 +22,4 @@ fi
 printf '\n[Codex PR loop] 4/4 - Git status summary\n'
 git status --short
 
-echo "\nCodex safe PR loop completed successfully."
+printf "\nCodex safe PR loop completed successfully.\n"

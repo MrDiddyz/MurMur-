@@ -133,6 +133,33 @@ create table if not exists public.certificates (
   status text not null default 'active' check (status in ('active','revoked'))
 );
 
+
+create table if not exists public.customers (
+  id uuid primary key default gen_random_uuid(),
+  email text,
+  stripe_customer_id text unique,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.payments (
+  id uuid primary key default gen_random_uuid(),
+  stripe_session_id text unique,
+  stripe_customer_id text,
+  amount integer,
+  currency text,
+  status text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.executions (
+  id uuid primary key default gen_random_uuid(),
+  goal text,
+  status text,
+  output text,
+  payment_id uuid references public.payments(id),
+  created_at timestamptz not null default now()
+);
+
 alter table public.profiles enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.entitlements enable row level security;

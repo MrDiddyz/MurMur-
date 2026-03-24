@@ -13,9 +13,9 @@ printf '\n[Codex PR loop] 2/4 - Script checks\n'
 node --test scripts/codex-task-spec.test.mjs
 
 printf '\n[Codex PR loop] 3/4 - Standard validation loop\n'
-npm run lint
-npm run typecheck
-if ! npm run simulate:agents; then
+pnpm run lint
+pnpm run typecheck
+if ! pnpm run simulate:agents; then
   echo "[WARN] simulate:agents reported findings (non-blocking advisory)."
 fi
 

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MurMur – Mental Wellbeing & Signature A7</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f6f6f6;
+        color: #333;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      header {
+        background: #0059b3;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 22px;
+        letter-spacing: 0.5px;
+        animation: fadeIn 1.2s ease forwards;
+      }
+
+      .hero {
+        background: url("https://picsum.photos/1200/600?blur=2") center/cover;
+        padding: 140px 20px;
+        text-align: center;
+        color: white;
+        animation: fadeIn 1.4s ease forwards;
+      }
+
+      .hero h1 {
+        font-size: 52px;
+        margin-bottom: 12px;
+        animation: slideUp 1.3s ease forwards;
+      }
+
+      .hero p {
+        font-size: 20px;
+        animation: slideUp 1.6s ease forwards;
+      }
+
+      .cta-btn {
+        background: #ffcc00;
+        color: #003366;
+        padding: 14px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-top: 25px;
+        display: inline-block;
+        text-decoration: none;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .cta-btn:hover {
+        transform: scale(1.075);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+      }
+
+      .section {
+        max-width: 1000px;
+        margin: auto;
+        padding: 50px 20px;
+        background: white;
+        margin-top: 40px;
+        border-radius: 12px;
+        animation: fadeIn 1.2s ease forwards;
+      }
+
+      .service-box {
+        background: #eef5ff;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+
+      .service-box:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, 0.15);
+      }
+
+      .price {
+        font-size: 22px;
+        font-weight: bold;
+        color: #0059b3;
+        margin-top: 10px;
+      }
+
+      .testimonials {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+      }
+
+      .testimonial {
+        background: #fafafa;
+        padding: 22px;
+        border-left: 5px solid #0059b3;
+        border-radius: 6px;
+        font-style: italic;
+        transition: transform 0.25s ease;
+      }
+
+      .testimonial:hover {
+        transform: translateX(6px);
+      }
+
+      .signature {
+        border: 2px solid #e7d9ff;
+        background: linear-gradient(135deg, #ffffff 0%, #f7f0ff 100%);
+        box-shadow: 0 10px 35px rgba(80, 0, 120, 0.09);
+      }
+
+      .signature-box {
+        background: #fbf7ff;
+        padding: 30px;
+        border-radius: 12px;
+        border-left: 6px solid #a566ff;
+        transition: transform 0.3s ease, box-shadow 0.4s ease;
+      }
+
+      .signature-box:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 36px rgba(120, 0, 180, 0.18);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(25px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      footer {
+        text-align: center;
+        padding: 25px;
+        background: #ddd;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>MurMur – Mental Wellbeing & Signature Innovation</header>
+
+    <div class="hero">
+      <h1>Moderne mental støtte – for mennesker og organisasjoner</h1>
+      <p>Trygg · Anonym · Alltid tilgjengelig</p>
+      <a class="cta-btn" href="mailto:MurMurAI@proton.me?subject=Kom%20i%20gang">Kom i gang</a>
+    </div>
+
+    <div class="section">
+      <h2>Hvorfor MurMur?</h2>
+      <p>
+        MurMur kombinerer smart teknologi, anonym støtte og moderne psykisk egenomsorg.
+        Skapt for å redusere stress, styrke trivsel og gjøre hjelp tilgjengelig – når du trenger det.
+      </p>
+    </div>
+
+    <div class="section">
+      <h2>Våre tjenester</h2>
+
+      <div class="service-box">
+        <h3>1. MurMur Pilot for Bedrifter</h3>
+        <p>En komplett løsning for mental støtte i bedrifter (10–20 ansatte i pilot).</p>
+        <p class="price">Fra 7 900 kr/mnd</p>
+      </div>
+
+      <div class="service-box">
+        <h3>2. MurMur Mental Wellbeing – Lavterskel</h3>
+        <p>Ubegrenset støtte, refleksjoner og øvelser – alltid tilgjengelig.</p>
+        <p class="price">299 kr/mnd per bruker</p>
+      </div>
+
+      <div class="service-box">
+        <h3>3. Privat Medlemskap – Light</h3>
+        <p>En enkel og rimelig løsning for privatpersoner.</p>
+        <p class="price">99 kr/mnd</p>
+      </div>
+    </div>
+
+    <div class="section signature">
+      <h2 style="text-align: center; font-size: 38px; margin-bottom: 10px">🜚⚡A7 – MurMur Signature</h2>
+
+      <p style="text-align: center; max-width: 760px; margin: auto">
+        Vår mest eksklusive premium‑tjeneste. For organisasjoner og privatkunder som ønsker
+        maksimal kvalitet, personlig tilpasning og full enterprise‑støtte.
+      </p>
+
+      <div class="signature-box" style="margin-top: 30px">
+        <h3 style="font-size: 26px; margin-top: 0; color: #5a2bb4">Innhold i Signature A7</h3>
+
+        <ul style="font-size: 17px; line-height: 1.8">
+          <li>Full enterprise wellbeing‑motor</li>
+          <li>Skreddersydde kognitive modeller for bedriften</li>
+          <li>Dype anonymiserte innsiktsdashboards til ledelse</li>
+          <li>Avansert AI‑drevet emosjonell restitusjon</li>
+          <li>Prioritert tilgang til all ny MurMur‑teknologi</li>
+          <li>Eksklusiv onboarding og kontinuerlig optimalisering</li>
+        </ul>
+
+        <p style="font-weight: bold; font-size: 23px; color: #5a2bb4; margin-top: 20px">
+          Fra 19 900 kr/mnd (begrenset tilgjengelighet)
+        </p>
+      </div>
+
+      <div style="text-align: center; margin-top: 25px">
+        <a class="cta-btn" href="mailto:MurMurAI@proton.me?subject=A7%20Signature%20tilgang">Be om tilgang til A7 Signature</a>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Kundehistorier</h2>
+
+      <div class="testimonials">
+        <div class="testimonial">
+          “Stressnivå gikk ned markant etter seks uker. MurMur brukes daglig av teamet.”
+          <br /><strong>– HR‑leder, teknologibransjen</strong>
+        </div>
+
+        <div class="testimonial">
+          “Jeg får perspektiv og ro når jeg trenger det mest.”
+          <br /><strong>– Privatmedlem</strong>
+        </div>
+
+        <div class="testimonial">
+          “Endelig en løsning folk faktisk bruker. Anonymt og tilgjengelig hele tiden.”
+          <br /><strong>– Teamleder, helsesektor</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Kontakt & betaling</h2>
+
+      <p>
+        Første kontakt og branding: <br />
+        <strong>MurMurAI@proton.me</strong>
+      </p>
+
+      <h3>Betalingsmetoder</h3>
+      <ul>
+        <li>Vipps (SaaS)</li>
+        <li>Stripe / Kortbetaling</li>
+        <li>Krypto (BTC, ETH, USDT, USDC)</li>
+      </ul>
+
+      <a class="cta-btn" href="mailto:MurMurAI@proton.me?subject=Kontakt%20oss">Kontakt oss</a>
+    </div>
+
+    <footer>© 2026 MurMur – Alle rettigheter reservert</footer>
+  </body>
+</html>

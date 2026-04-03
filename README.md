@@ -120,12 +120,20 @@ A deterministic multi-agent narrative intelligence pipeline with modular service
 - **Daily AI Generator** (`src/dailyAIGeneration.ts`): produces daily summary, short insights, and “what matters now”.
 - **Store + Reliability Layer** (`src/murmurMediaEngine/*`): JSON structured logs, correlation IDs, retry logic, and dead-letter capture.
 - **API Server** (`backend/k/server.ts`):
-  - `POST /api/run`
+  - `POST /api/run` (supports optional `correlationId` for replay/debug)
   - `GET /api/reports`
   - `GET /api/narratives`
   - `GET /api/signals`
   - `POST /api/feedback`
+  - `GET /api/feedback/stats`
 - **Light Dashboard** (`frontend/*`): dark, mobile-first UI for latest report, active narratives, and signal feed.
+
+### Weakness hardening added
+
+- Input validation (max article count/size + required title/body) to avoid malformed runs.
+- More stable signal extraction (stopword filtering + z-score anomaly detection + deterministic tie-break sorting).
+- Learning loop improved: historical theme feedback now influences future confidence in clustering.
+- Replay friendliness improved: caller can provide `correlationId` on `/api/run`.
 
 ### Minimal setup
 

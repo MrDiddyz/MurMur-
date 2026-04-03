@@ -13,7 +13,7 @@ export const tokenize = (text: string) =>
 
 export const topN = (counts: Record<string, number>, n = 5): string[] =>
   Object.entries(counts)
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => (b[1]-a[1]) || a[0].localeCompare(b[0]))
     .slice(0, n)
     .map(([key]) => key);
 

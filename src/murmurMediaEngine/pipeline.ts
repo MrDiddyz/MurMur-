@@ -6,6 +6,7 @@ import { withRetry } from "./retry";
 import { MurmurStore } from "./store";
 import { PipelineInput, PipelineStep } from "./types";
 import { makeId } from "./utils";
+import { validatePipelineInput } from "./validation";
 
 export type PipelineResult = {
   correlationId: string;
@@ -28,6 +29,7 @@ async function runStep<T>(
       status: "ok",
       details: {
         replayable: true,
+        resultType: typeof result,
       },
     });
     logJson("info", `pipeline.${step}.ok`, { correlationId, step });
@@ -49,21 +51,23 @@ async function runStep<T>(
 export async function runMurmurPipeline(
   input: PipelineInput,
   store: MurmurStore,
+  providedCorrelationId?: string,
 ): Promise<PipelineResult> {
-  const correlationId = makeId("corr");
+  const validInput = validatePipelineInput(input);
+  const correlationId = providedCorrelationId ?? makeId("corr");
 
   const source = await runStep(store, correlationId, "fetch", () =>
     store.upsertSource({
       correlationId,
-      name: input.source?.name ?? "manual-ingest",
-      kind: input.source?.kind ?? "manual",
-      url: input.source?.url,
+      name: validInput.source?.name ?? "manual-ingest",
+      kind: validInput.source?.kind ?? "manual",
+      url: validInput.source?.url,
     }),
   );
 
   const parsedArticles = await runStep(store, correlationId, "parse", () =>
     store.addRawArticles(
-      input.articles.map((article) => ({
+      validInput.articles.map((article) => ({
         correlationId,
         sourceId: source.id,
         title: article.title,
@@ -85,7 +89,10 @@ export async function runMurmurPipeline(
     ),
   );
 
-  const clustered = await runStep(store, correlationId, "cluster", () => buildNarratives(scannedSignals));
+  const clustered = await runStep(store, correlationId, "cluster", () => {
+    const feedbackStatsByTheme = store.getFeedbackStatsByTheme();
+    return buildNarratives(scannedSignals, feedbackStatsByTheme);
+  });
 
   const analyzed = await runStep(store, correlationId, "analyze", () => store.addNarratives(clustered));
 

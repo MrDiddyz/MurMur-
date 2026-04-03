@@ -127,6 +127,34 @@ export class MurmurStore {
     return record;
   }
 
+
+  getFeedbackStatsByTheme(): Record<string, { avgScore: number; total: number }> {
+    const tables = this.read();
+    const byTheme = new Map<string, { sum: number; total: number }>();
+
+    for (const narrative of tables.narratives) {
+      if (!narrative.feedback && narrative.score === 0.5) {
+        continue;
+      }
+
+      const current = byTheme.get(narrative.theme) ?? { sum: 0, total: 0 };
+      current.sum += narrative.score;
+      current.total += 1;
+      byTheme.set(narrative.theme, current);
+    }
+
+    return Array.from(byTheme.entries()).reduce<Record<string, { avgScore: number; total: number }>>(
+      (acc, [theme, values]) => {
+        acc[theme] = {
+          avgScore: values.sum / Math.max(values.total, 1),
+          total: values.total,
+        };
+        return acc;
+      },
+      {},
+    );
+  }
+
   listReports(limit = 10): Report[] {
     return this.read().reports.slice(-limit).reverse();
   }

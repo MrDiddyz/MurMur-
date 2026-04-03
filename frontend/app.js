@@ -6,6 +6,7 @@ const narrativesEl = document.getElementById("narratives");
 const signalsEl = document.getElementById("signals");
 
 const demoPayload = {
+  correlationId: `corr-demo-${Date.now()}`,
   source: { name: "demo-feed", kind: "manual" },
   articles: [
     {
@@ -36,10 +37,11 @@ function renderList(el, items, formatter) {
 }
 
 async function refresh() {
-  const [{ reports }, { narratives }, { signals }] = await Promise.all([
+  const [{ reports }, { narratives }, { signals }, { stats }] = await Promise.all([
     fetchJson(`${API_BASE}/api/reports`),
     fetchJson(`${API_BASE}/api/narratives`),
     fetchJson(`${API_BASE}/api/signals`),
+    fetchJson(`${API_BASE}/api/feedback/stats`),
   ]);
 
   latestReportEl.textContent = reports[0]
@@ -49,7 +51,10 @@ async function refresh() {
   renderList(
     narrativesEl,
     narratives.slice(0, 5),
-    (n) => `<strong>${n.title}</strong><br/>confidence: ${(n.confidence * 100).toFixed(1)}%`,
+    (n) => {
+      const learned = stats?.[n.theme]?.avgScore;
+      return `<strong>${n.title}</strong><br/>confidence: ${(n.confidence * 100).toFixed(1)}%<br/>learned score: ${learned ? learned.toFixed(2) : "n/a"}`;
+    },
   );
 
   renderList(signalsEl, signals.slice(0, 8), (s) => {

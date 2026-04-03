@@ -29,8 +29,10 @@ createServer(async (req, res) => {
   try {
     if (req.url === "/api/run" && req.method === "POST") {
       const body = await readBody(req);
-      const payload = (body ? JSON.parse(body) : { articles: [] }) as PipelineInput;
-      const result = await runMurmurPipeline(payload, store);
+      const payload = (body ? JSON.parse(body) : { articles: [] }) as PipelineInput & {
+        correlationId?: string;
+      };
+      const result = await runMurmurPipeline(payload, store, payload.correlationId);
       return json(res, 200, { ok: true, result });
     }
 
@@ -57,6 +59,10 @@ createServer(async (req, res) => {
       const updated = store.applyFeedback(narrativeId, score, feedback ?? "");
       if (!updated) return json(res, 404, { error: "Narrative not found" });
       return json(res, 200, { narrative: updated });
+    }
+
+    if (req.url === "/api/feedback/stats" && req.method === "GET") {
+      return json(res, 200, { stats: store.getFeedbackStatsByTheme() });
     }
 
     return json(res, 404, { error: "Not found" });

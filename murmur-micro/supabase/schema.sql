@@ -1,26 +1,36 @@
-create extension if not exists pgcrypto;
+create extension if not exists "pgcrypto";
 
-create table if not exists episodes (
+create table if not exists runs (
   id uuid primary key default gen_random_uuid(),
-  user_prompt text not null,
-  final_output text not null,
-  winner_agent text not null,
-  rationale text,
-  score numeric,
-  feedback integer,
-  created_at timestamptz default now(),
-  constraint episodes_feedback_check check (feedback in (-1, 1) or feedback is null)
+  input text not null,
+  outputs jsonb not null,
+  scores jsonb not null,
+  winner text not null,
+  created_at timestamptz not null default now()
 );
 
-create table if not exists agent_runs (
-  id uuid primary key default gen_random_uuid(),
-  episode_id uuid references episodes(id) on delete cascade,
-  agent_name text not null,
-  input_text text not null,
-  output_text text not null,
-  score numeric,
-  created_at timestamptz default now()
+create table if not exists agent_stats (
+  agent text primary key,
+  wins int not null default 0,
+  weight float not null default 1
 );
 
-create index if not exists idx_agent_runs_episode_id on agent_runs(episode_id);
-create index if not exists idx_episodes_created_at on episodes(created_at desc);
+insert into agent_stats (agent, wins, weight)
+values
+  ('TeacherAgent', 0, 1),
+  ('ExperimentalAgent', 0, 1),
+  ('ThinkTankAgent', 0, 1),
+  ('ReflectiveAgent', 0, 1)
+on conflict (agent) do nothing;
+
+create or replace function increment_agent_win(agent_name text)
+returns void
+language plpgsql
+as $$
+begin
+  update agent_stats
+  set wins = wins + 1,
+      weight = least(5, weight + 0.1)
+  where agent = agent_name;
+end;
+$$;

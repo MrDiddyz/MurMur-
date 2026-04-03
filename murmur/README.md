@@ -1,66 +1,87 @@
-# murmur-marketing-ai-v2 (Phase 2)
+# MURMUR LOCAL AI ENGINE
 
-Phase 2 introduces real persistence, Supabase auth foundations, analytics storage, and a dashboard wired to API data.
+MURMUR LOCAL AI ENGINE is a minimal, production-style local AI project built with Python and Ollama.
+It provides a simple CLI, a modular prompt system, and structured output logging.
 
-## Required environment variables
+## Features
 
-Copy `.env.example` to `.env` and set:
+- Local inference using Ollama (`llama3.2`)
+- CLI interface for one-shot prompts
+- Prompt modules (`system` and `creative`)
+- Timestamped output files in `outputs/`
+- JSON logging (`outputs/log.json`)
+- Clean structure ready for future multi-agent, API, and dashboard expansion
 
-- `SUPABASE_URL`
-- `SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY` (server-only secret)
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_API_URL` (defaults to `http://localhost:3001/v1`)
+## Project Structure
 
-## Supabase setup
+```
+murmur/
+  app.py
+  cli.py
+  config.py
+  requirements.txt
+  README.md
 
-1. Create a Supabase project.
-2. Pull your project URL and keys from **Project Settings → API**.
-3. Set all required env vars.
-4. Ensure your local API uses the service role key only on server-side processes.
+  prompts/
+    system.txt
+    creative.txt
 
-## Run migrations
+  core/
+    engine.py
+    logger.py
 
-```bash
-supabase db push
+  outputs/
+    .gitkeep
+
+  scripts/
+    run.bat
+    setup.sh
+
+  .env.example
 ```
 
-This applies all SQL in `supabase/migrations`, including Phase 2 tables:
-`artists`, `releases`, `campaigns`, `content_packs`, `playlist_targets`,
-`analytics_snapshots`, and `scheduled_jobs`.
+## Install Ollama
 
-## Seed development data
-
-```bash
-pnpm seed
-```
-
-This creates:
-- 1 artist
-- 1 release
-- 1 campaign
-- sample content packs
-- sample analytics snapshots
-
-## Run locally
-
-Install dependencies:
+1. Install Ollama from [https://ollama.com](https://ollama.com)
+2. Start the Ollama runtime:
 
 ```bash
-pnpm install
+ollama serve
 ```
 
-Start API and dashboard together:
+3. Pull the model:
 
 ```bash
-pnpm dev
+ollama pull llama3.2
 ```
 
-- Dashboard: `http://localhost:3000`
-- API: `http://localhost:3001`
+## Setup
 
-## Notes
+From the `murmur/` directory:
 
-- External connectors (Spotify/TikTok publish integrations) are intentionally left as future connectors.
-- Scheduler support currently provides typed job creation primitives for future cron/queue orchestration.
+```bash
+bash scripts/setup.sh
+```
+
+## Run
+
+```bash
+python cli.py "Explain local-first AI architecture in 3 bullets"
+```
+
+or:
+
+```bash
+python app.py "Explain local-first AI architecture in 3 bullets"
+```
+
+On each run, MurMur:
+- prints the model response
+- writes `outputs/response_YYYYMMDD_HHMMSS.txt`
+- appends a log entry to `outputs/log.json`
+
+## Example
+
+```bash
+python cli.py "Write a short plan for building a multi-agent local AI stack"
+```

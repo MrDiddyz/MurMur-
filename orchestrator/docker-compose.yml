@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orchestrator
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  migrate:
+    image: postgres:15
+    depends_on:
+      - postgres
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./db/migrations:/migrations:ro
+    command: >
+      bash -lc '
+      until pg_isready -h postgres -U postgres -d orchestrator; do sleep 1; done;
+      psql -h postgres -U postgres -d orchestrator -f /migrations/0001_init_orchestrator.sql;
+      psql -h postgres -U postgres -d orchestrator -f /migrations/0002_optional_pgvector.sql || true;
+      psql -h postgres -U postgres -d orchestrator -f /migrations/0003_state_transition_guard.sql;
+      psql -h postgres -U postgres -d orchestrator -f /migrations/0004_transition_fn.sql;
+      '
+
+  fastapi:
+    build: ./api/fastapi
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/orchestrator
+    ports:
+      - "8000:8000"
+
+  node:
+    build: ./api/node
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/orchestrator
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

@@ -30,13 +30,14 @@ jobs:
         run: |
           cp package-lock.json package-lock.json.bak
           npm install --package-lock-only --silent
-          if ! diff -q package-lock.json package-lock.json.bak > /dev/null 2>&1; then
+          diff -q package-lock.json package-lock.json.bak > /dev/null 2>&1 && IN_SYNC=true || IN_SYNC=false
+          cp package-lock.json.bak package-lock.json
+          rm package-lock.json.bak
+          if [ "$IN_SYNC" = "false" ]; then
             echo "::error::package-lock.json is out of sync with package.json."
             echo "::error::Run 'npm install --package-lock-only' locally and commit the updated package-lock.json."
-            cp package-lock.json.bak package-lock.json
             exit 1
           fi
-          rm package-lock.json.bak
 
       - name: Install
         run: npm ci

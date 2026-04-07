@@ -1,51 +1,84 @@
-import Image from 'next/image';
 import Link from 'next/link';
 
-import { MAX_PRICE_NOK, PLATFORM_FEE_RATE, marketplaceListings } from '@/lib/marketplace/listings';
+const features = [
+  {
+    title: 'Gratis å legge ut',
+    description:
+      'Foreldre kan publisere annonser for barneklær uten oppstartsgebyr. Du trenger bare bilder, størrelse og pris.',
+  },
+  {
+    title: 'Kjøp eller bytt',
+    description:
+      'Velg mellom vanlig salg eller direkte bytte. Perfekt når barna vokser ut av klær før sesongen er over.',
+  },
+  {
+    title: 'Miljøvennlig utkjøring',
+    description:
+      'Levering samkjøres i nabolag med faste hentepunkter for å kutte utslipp og gjøre logistikk enkelt.',
+  },
+];
+
+const steps = [
+  'Opprett profil og verifiser adresse på under 2 minutter.',
+  'Legg ut klær med bilder og velg “Selg” eller “Bytt”.',
+  'Motta betaling eller godta bytteforslag direkte i meldinger.',
+  'Bestill grønn utkjøring med lokal rute eller hent selv.',
+];
 
 export default function MarketplacePage() {
   return (
-    <div className="space-y-10 pb-10">
-      <header className="space-y-3">
-        <p className="inline-flex rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-cyan-200">
-          MurMur Marketplace
+    <div className="space-y-12 pb-14">
+      <header className="space-y-5 rounded-2xl border border-emerald-300/30 bg-emerald-400/10 p-8">
+        <p className="inline-flex rounded-full border border-emerald-300/30 bg-emerald-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-100">
+          Nytt konsept
         </p>
-        <h1 className="text-4xl font-semibold">Discover curated artworks</h1>
-        <p className="max-w-2xl text-white/80">
-          Every listing is capped at {MAX_PRICE_NOK.toLocaleString('nb-NO')} NOK and includes a
-          {(PLATFORM_FEE_RATE * 100).toFixed(0)}% platform fee at checkout.
+        <h1 className="text-4xl font-semibold">Enkel markedsplass for barneklær</h1>
+        <p className="max-w-3xl text-white/85">
+          En gratis nettside der folk kan selge og bytte barneklær, med en tydelig og rettferdig
+          andel per transaksjon til drift og miljøvennlig utkjøring.
         </p>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-white/80">
+          <span className="rounded-lg border border-white/20 px-3 py-2">0 kr for annonser</span>
+          <span className="rounded-lg border border-white/20 px-3 py-2">12% serviceandel ved salg</span>
+          <span className="rounded-lg border border-white/20 px-3 py-2">Grønn levering som standard</span>
+        </div>
       </header>
 
-      <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {marketplaceListings.map((listing) => (
-          <article key={listing.id} className="card flex h-full flex-col overflow-hidden p-0">
-            <Image
-              src={listing.imageUrl}
-              alt={listing.title}
-              width={1200}
-              height={800}
-              className="h-56 w-full object-cover"
-            />
-            <div className="flex flex-1 flex-col space-y-3 p-5">
-              <div>
-                <p className="text-xs uppercase tracking-[0.16em] text-cyan-200/80">{listing.artist}</p>
-                <h2 className="mt-1 text-2xl font-semibold">{listing.title}</h2>
-                <p className="text-sm text-white/70">{listing.medium}</p>
-              </div>
-              <p className="text-sm text-white/80">{listing.description}</p>
-              <div className="mt-auto flex items-center justify-between">
-                <p className="text-lg font-semibold text-cyan-300">{listing.priceNok.toLocaleString('nb-NO')} NOK</p>
-                <Link
-                  href={`/listing/${listing.id}`}
-                  className="rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:border-cyan-300 hover:text-cyan-200"
-                >
-                  View listing
-                </Link>
-              </div>
-            </div>
+      <section className="grid gap-4 md:grid-cols-3">
+        {features.map((feature) => (
+          <article key={feature.title} className="card h-full space-y-3 p-6">
+            <h2 className="text-xl font-semibold text-emerald-200">{feature.title}</h2>
+            <p className="text-sm text-white/80">{feature.description}</p>
           </article>
         ))}
+      </section>
+
+      <section className="card space-y-5 p-6">
+        <h2 className="text-2xl font-semibold">Slik fungerer det</h2>
+        <ol className="space-y-3 text-sm text-white/80">
+          {steps.map((step, index) => (
+            <li key={step} className="flex gap-3">
+              <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full border border-emerald-200/40 text-xs font-semibold text-emerald-200">
+                {index + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+        <div className="flex flex-wrap gap-3 pt-2">
+          <Link
+            href="/contact"
+            className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-semibold text-black hover:bg-emerald-200"
+          >
+            Bli med som pilotfamilie
+          </Link>
+          <Link
+            href="/about"
+            className="rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white hover:border-emerald-300 hover:text-emerald-200"
+          >
+            Les mer
+          </Link>
+        </div>
       </section>
     </div>
   );

@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: orchestrator
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/migrations:/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orchestrator"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: postgres:15
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./db/migrations:/migrations:ro
+    entrypoint: ["bash","-lc"]
+    command: >
+      "for f in /migrations/*.sql; do
+        echo applying $f;
+        psql -h postgres -U postgres -d orchestrator -v ON_ERROR_STOP=1 -f \"$f\";
+      done"
+
+  fastapi:
+    build: ./api/fastapi
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/orchestrator
+    ports:
+      - "8080:8080"
+
+  node:
+    build: ./api/node
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/orchestrator
+      PORT: 8081
+    ports:
+      - "8081:8081"

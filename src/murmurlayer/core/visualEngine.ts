@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { SceneManager } from "./SceneManager";
 import type { AudioMetrics, ImageItem } from './stateBus';
 
 export type VisualQuality = {
@@ -26,8 +27,7 @@ export function useVisualEngine({
   metrics: AudioMetrics;
   quality: Partial<VisualQuality>;
 }) {
-  const rafRef = useRef<number>();
-  const frameRef = useRef(0);
+  const sceneManagerRef = useRef<SceneManager>(new SceneManager());
 
   useEffect(() => {
     if (!canvas) {
@@ -46,11 +46,13 @@ export function useVisualEngine({
     canvas.height = Math.floor(height * devicePixelRatio);
     ctx.scale(devicePixelRatio, devicePixelRatio);
 
-    const selected = images.length > 0 ? images[frameRef.current % images.length] : null;
+    const sceneManager = sceneManagerRef.current;
+    const selected = images.length > 0 ? images[0] : null;
     const resolvedQuality = { ...DEFAULT_QUALITY, ...quality };
 
     const draw = () => {
-      frameRef.current += 1;
+      const frame = sceneManager.nextFrame();
+      const frameImage = images.length > 0 ? images[frame % images.length] : selected;
       const { bassEnergy, midEnergy, trebleEnergy, rms } = metrics;
       const speed = 0.9 + rms * 1.8;
       const time = performance.now() * 0.001 * speed;
@@ -65,8 +67,8 @@ export function useVisualEngine({
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, width, height);
 
-      if (selected?.bitmap) {
-        const shouldWarp = !resolvedQuality.skipWarpEveryOtherFrame || frameRef.current % 2 === 0;
+      if (frameImage?.bitmap) {
+        const shouldWarp = !resolvedQuality.skipWarpEveryOtherFrame || frame % 2 === 0;
         const slices = Math.max(6, Math.round(resolvedQuality.sliceCount));
         const sliceHeight = height / slices;
 
@@ -75,11 +77,11 @@ export function useVisualEngine({
           const warpShift = shouldWarp ? Math.sin(time * 2.4 + i * 0.34 + midEnergy * 4) * (16 + bassEnergy * 44) : 0;
 
           ctx.drawImage(
-            selected.bitmap,
+            frameImage.bitmap,
             0,
-            (selected.bitmap.height / slices) * i,
-            selected.bitmap.width,
-            selected.bitmap.height / slices,
+            (frameImage.bitmap.height / slices) * i,
+            frameImage.bitmap.width,
+            frameImage.bitmap.height / slices,
             warpShift,
             y,
             width,
@@ -108,15 +110,13 @@ export function useVisualEngine({
       ctx.lineWidth = 2;
       ctx.strokeRect(4, 4, width - 8, height - 8);
 
-      rafRef.current = requestAnimationFrame(draw);
+      sceneManager.schedule(draw);
     };
 
-    rafRef.current = requestAnimationFrame(draw);
+    sceneManager.schedule(draw);
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
+      sceneManager.cancel();
     };
   }, [canvas, images, metrics, quality]);
 }

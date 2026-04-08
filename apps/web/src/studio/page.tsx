@@ -1,6 +1,7 @@
 // Studio UI page for MurMur Motion Avatar v0.2.
 import { useEffect, useMemo, useState } from "react";
 import type { StudioMode } from "@murmur/shared";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { AvatarCanvas } from "../components/AvatarCanvas";
 import { EventMonitor } from "../components/EventMonitor";
 import { ModeSwitcher } from "../components/ModeSwitcher";
@@ -74,6 +75,7 @@ export function StudioPage() {
         <h3>{monitorTitle}</h3>
         <EventMonitor events={feed} />
       </div>
+      <SpeedInsights />
     </div>
   );
 }

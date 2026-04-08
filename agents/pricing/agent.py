@@ -1,6 +1,8 @@
 import random
 from core.memory.store import memory
 
+from economic_meta_policy import meta_economic_step
+
 
 class PricingAgent:
     def price(self, base_price):
@@ -18,6 +20,9 @@ class PricingAgent:
         )
 
         return round(new_price, 2)
+
+    def meta_price(self, belief, prices, demand):
+        return meta_economic_step(belief, prices, demand)
 
 
 pricing_agent = PricingAgent()

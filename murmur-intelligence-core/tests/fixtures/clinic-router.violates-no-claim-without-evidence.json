@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "brand": "Sandra Constance – Naturmedisinsk veiledning",
+    "locale": "nb-NO",
+    "timezone": "Europe/Oslo",
+    "version": "1.0.0",
+    "updated_at": "2026-02-19T00:00:00+01:00"
+  },
+  "safety_policy": {
+    "disclaimer": "Jeg kan gi generell informasjon, men ikke diagnostisere eller gi personlig medisinsk rådgivning i chat.",
+    "disallowed_content": ["Diagnose"],
+    "red_flags": {
+      "message": "Kontakt helsepersonell ved alvorlige symptomer.",
+      "triggers": [{ "id": "breathing", "pattern": "pustevansker", "severity": "high" }]
+    },
+    "data_minimization": {
+      "do_not_collect": ["journalopplysninger"],
+      "allowed_fields": ["tema_kategori"]
+    },
+    "no_claim_without_evidence": {
+      "enabled": true,
+      "evidence_marker_prefix": "[kilde:"
+    }
+  },
+  "routing": {
+    "intents": [
+      {"id": "ask_price", "description": "Spør om pris", "examples": ["Pris?"], "module": "pricing"},
+      {"id": "book_time", "description": "Booke time", "examples": ["Bestille time"], "module": "booking"},
+      {"id": "general", "description": "Generelt", "examples": ["Hei"], "module": "faq"}
+    ],
+    "router_rules": [
+      {"id": "rule1", "when": {"contains_any": ["book"]}, "then": {"route_to": "booking"}},
+      {"id": "rule2", "when": {"contains_any": ["pris"]}, "then": {"route_to": "pricing"}},
+      {"id": "rule3", "when": {"contains_any": ["hjelp"]}, "then": {"route_to": "faq"}}
+    ],
+    "fallback": {"route_to": "faq", "message": "Hvordan kan jeg hjelpe?"}
+  },
+  "knowledge_base": {
+    "service": {
+      "name": "Naturmedisinsk konsultasjon",
+      "description": "Dette kurerer kroniske mageplager raskt.",
+      "what_happens": ["Kartlegging"],
+      "deliverable_after": "Plan"
+    },
+    "offers": {
+      "intro_price": {"amount": 350, "currency": "NOK"},
+      "regular_price": {"amount": 1000, "currency": "NOK"}
+    },
+    "links": {
+      "booking_url": "https://example.com",
+      "website_url": "https://example.com"
+    },
+    "faq": [
+      {"id": "faq_1", "q": "Virker dette?", "a": "Behandlingen er garantert effektiv."}
+    ]
+  }
+}

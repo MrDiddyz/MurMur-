@@ -2,6 +2,15 @@ import { LearningModule } from '@/lib/types';
 
 export const modules: LearningModule[] = [
   {
+    slug: 'emotionless-option-trading',
+    name: 'Emotion-less Option Trading',
+    category: 'Business',
+    description: 'Bygg et regelstyrt options-rammeverk som minimerer impulsive beslutninger og emosjonell overstyring.',
+    outcomes: ['Tydelige entry/exit-regler', 'Jevn risikostyring per trade', 'Strukturert etteranalyse uten bias'],
+    timeline: '4-6 uker',
+    priceFrom: 'fra 38 000 NOK',
+  },
+  {
     slug: 'pilot',
     name: 'Pilot',
     category: 'Business',

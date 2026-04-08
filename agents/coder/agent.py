@@ -49,7 +49,7 @@ class Coordinator:
 
 @dataclass
 class CoderAgent(BaseAgent):
-    model: str = "gpt-4.1"
+    model: str = "gpt-4.1-codex"
     system_prompt: str = DEFAULT_SYSTEM_PROMPT
     client: Optional[OpenAI] = None
 
@@ -115,7 +115,12 @@ if __name__ == "__main__":
         }
     )
 
-    task = "Lag en klasse UserManager som kan opprette og hente brukere."
+    task = (
+        "Lag en Python-klasse 'UserManager' som kan:\n"
+        "- opprette brukere\n"
+        "- hente brukere\n"
+        "- lagre data i minne"
+    )
 
     # Full pipeline med arkitektur -> kode -> review
     full_sequence = ["architect", "coder", "reviewer"]

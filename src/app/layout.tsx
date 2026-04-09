@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import './globals.css';
 import { Navigation } from '@/components/navigation';
 import { Footer } from '@/components/footer';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 
 
 export const viewport: Viewport = {

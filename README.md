@@ -104,3 +104,55 @@ For cron auth, set `CRON_SECRET` in Vercel project environment variables. Vercel
 - Restrict cron endpoint with a strong `CRON_SECRET`.
 - Add rate limiting/WAF and alerting before full production rollout.
 - Regularly audit `audit_log` and failed webhook responses.
+
+---
+
+## Murmur Media Engine
+
+A deterministic multi-agent narrative intelligence pipeline with modular services and replayable logs.
+
+### Architecture (pipeline)
+
+`fetch -> parse -> scan -> cluster -> analyze -> generate -> store`
+
+- **Signal Scanner** (`src/signalScanner.ts`): extracts trend keywords, anomaly flags, emotional tone, and repetition patterns.
+- **Narrative Architect** (`src/narrativeArchitect.ts`): clusters signals into themes and assigns confidence.
+- **Daily AI Generator** (`src/dailyAIGeneration.ts`): produces daily summary, short insights, and “what matters now”.
+- **Store + Reliability Layer** (`src/murmurMediaEngine/*`): JSON structured logs, correlation IDs, retry logic, and dead-letter capture.
+- **API Server** (`backend/k/server.ts`):
+  - `POST /api/run` (supports optional `correlationId` for replay/debug)
+  - `GET /api/reports`
+  - `GET /api/narratives`
+  - `GET /api/signals`
+  - `POST /api/feedback`
+  - `GET /api/feedback/stats`
+- **Light Dashboard** (`frontend/*`): dark, mobile-first UI for latest report, active narratives, and signal feed.
+
+### Weakness hardening added
+
+- Input validation (max article count/size + required title/body) to avoid malformed runs.
+- More stable signal extraction (stopword filtering + z-score anomaly detection + deterministic tie-break sorting).
+- Learning loop improved: historical theme feedback now influences future confidence in clustering.
+- Replay friendliness improved: caller can provide `correlationId` on `/api/run`.
+
+### Minimal setup
+
+```bash
+# backend
+cd backend/k
+npm install
+npm run dev
+
+# frontend (static)
+cd ../../frontend
+python3 -m http.server 8080
+```
+
+Open:
+- API: `http://localhost:7070`
+- Dashboard: `http://localhost:8080`
+
+### Deployment notes
+
+- **Frontend on Vercel:** deploy `frontend/` as a static project.
+- **Backend on Node host:** run `backend/k/server.ts` (or compiled `dist/server.js`) with env from `.env.example`.

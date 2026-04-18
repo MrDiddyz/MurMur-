@@ -2,11 +2,19 @@
   "name": "murmur-motion-avatar-v0-2",
   "version": "0.2.0",
   "private": true,
-  "packageManager": "pnpm@9.12.0",
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/api",
+    "apps/web",
+    "packages/agents",
+    "packages/cognitive-core",
+    "packages/motion-planner",
+    "packages/shared"
+  ],
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "dev": "npm --workspaces run dev",
+    "build": "npm run build -w @murmur/api -w @murmur/agents -w @murmur/cognitive-core -w @murmur/motion-planner -w @murmur/shared",
+    "typecheck": "npm --workspaces run typecheck"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

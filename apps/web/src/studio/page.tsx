@@ -1,10 +1,10 @@
 // Studio UI page for MurMur Motion Avatar v0.2.
 import { useEffect, useMemo, useState } from "react";
 import type { StudioMode } from "@murmur/shared";
-import { AvatarCanvas } from "../components/AvatarCanvas";
-import { EventMonitor } from "../components/EventMonitor";
-import { ModeSwitcher } from "../components/ModeSwitcher";
-import { createSession, ingestMockAudioEvent, updateSessionMode, wsUrl } from "../lib/api";
+import { AvatarCanvas } from "../components/AvatarCanvas.js";
+import { EventMonitor } from "../components/EventMonitor.js";
+import { ModeSwitcher } from "../components/ModeSwitcher.js";
+import { createSession, ingestMockAudioEvent, updateSessionMode, wsUrl } from "../lib/api.js";
 
 export function StudioPage() {
   const [mode, setMode] = useState<StudioMode>("ID");
@@ -14,7 +14,7 @@ export function StudioPage() {
   const [wsState, setWsState] = useState<"connecting" | "open" | "closed">("connecting");
 
   useEffect(() => {
-    createSession(mode).then((session) => setSessionId(session.id));
+    createSession(mode).then((session: { id: string }) => setSessionId(session.id));
   }, []);
 
   useEffect(() => {

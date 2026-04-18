@@ -12,18 +12,20 @@ type EventMap = {
 type Listener<T extends EventType> = (event: EventMap[T]) => void;
 
 export class TypedEventBus {
-  private listeners: Partial<Record<EventType, Array<(event: StudioEvent) => void>>> = {};
+  private listeners: { [K in EventType]?: Listener<K>[] } = {};
 
   on<T extends EventType>(type: T, listener: Listener<T>): () => void {
-    const stack = (this.listeners[type] ??= [] as Array<(event: StudioEvent) => void>);
-    stack.push(listener as (event: StudioEvent) => void);
+    const stack = (this.listeners[type] ?? []) as Listener<T>[];
+    stack.push(listener);
+    this.listeners[type] = stack as (typeof this.listeners)[T];
     return () => {
-      this.listeners[type] = stack.filter((item) => item !== listener);
+      const current = (this.listeners[type] ?? []) as Listener<T>[];
+      this.listeners[type] = current.filter((item) => item !== listener) as (typeof this.listeners)[T];
     };
   }
 
   emit(event: StudioEvent): void {
-    const stack = this.listeners[event.type];
-    stack?.forEach((listener) => listener(event));
+    const stack = this.listeners[event.type] as Listener<typeof event.type>[] | undefined;
+    stack?.forEach((listener) => listener(event as EventMap[typeof event.type]));
   }
 }

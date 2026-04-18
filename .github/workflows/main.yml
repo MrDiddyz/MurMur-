@@ -30,7 +30,11 @@ jobs:
         run: |
           cp package-lock.json package-lock.json.bak
           npm install --package-lock-only --silent
-          diff -q package-lock.json package-lock.json.bak > /dev/null 2>&1 && IN_SYNC=true || IN_SYNC=false
+          if diff -q package-lock.json package-lock.json.bak > /dev/null 2>&1; then
+            IN_SYNC=true
+          else
+            IN_SYNC=false
+          fi
           cp package-lock.json.bak package-lock.json
           rm package-lock.json.bak
           if [ "$IN_SYNC" = "false" ]; then

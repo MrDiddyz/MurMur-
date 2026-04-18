@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "dev": "npm --workspaces run dev",
-    "build": "npm run build -w @murmur/api -w @murmur/agents -w @murmur/cognitive-core -w @murmur/motion-planner -w @murmur/shared",
+    "build": "npm --workspaces run build",
     "typecheck": "npm --workspaces run typecheck"
   },
   "devDependencies": {

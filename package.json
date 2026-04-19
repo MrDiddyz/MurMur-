@@ -15,6 +15,8 @@
     "dev": "npm --workspaces run dev",
     "build": "npm --workspaces run build",
     "typecheck": "npm --workspaces run typecheck",
+    "verify:web": "npm --workspace @murmur/web run build && npm --prefix apps/web/next-app run lint && npm --prefix apps/web/next-app run typecheck && npm --prefix apps/web/next-app run build",
+    "verify": "npm run build && npm --prefix apps/web/next-app run lint && npm --prefix apps/web/next-app run typecheck && npm --prefix apps/web/next-app run build",
     "breach:scan": "python scripts/breach_watch.py",
     "breach:watch": "python scripts/breach_watch.py"
   },

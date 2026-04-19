@@ -1,8 +1,9 @@
 // /profiles/:artistId/style endpoint for style profile retrieval.
 import { Router } from "express";
+import type { Router as ExpressRouter } from "express";
 import { db } from "../core/store.js";
 
-export const profilesRouter = Router();
+export const profilesRouter: ExpressRouter = Router();
 
 profilesRouter.get("/:artistId/style", (req, res) => {
   const profile = db.styleProfiles.get(req.params.artistId) ?? {

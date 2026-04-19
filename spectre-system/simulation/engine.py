@@ -1,6 +1,6 @@
 import argparse
 
-from modules.decision_engine import make_decision
+from modules.decision_engine import make_decision, reset_ema
 from modules.edge_monitor import evaluate_edge
 from modules.execution_simulator import execute
 from modules.feature_pipeline import build_features
@@ -18,16 +18,26 @@ def run_simulation(data_path: str) -> dict[str, float | int]:
     metrics = MetricsCollector()
     portfolio = Portfolio()
 
+    # Ensure deterministic runs in the same process by resetting EMA state.
+    reset_ema()
+
     for idx, raw_event in enumerate(events):
         event = apply_scenario(raw_event)
         features = build_features(event)
-        _regime = classify_regime(features)
-        decision = make_decision(features, idx)
+        regime = classify_regime(features).upper()
+        stress = evaluate_stress(features)
+        edge = evaluate_edge(features)
+
+        decision = make_decision(
+            features,
+            idx,
+            regime=regime,
+            stress_level=stress.get("stress_score", 0.0),
+            edge_score=edge.get("edge_score", 0.0),
+        )
         fill = execute(decision, event)
         portfolio.apply_fill(fill)
         state = portfolio.mark(event)
-        _stress = evaluate_stress(features)
-        _edge = evaluate_edge(features)
 
         metrics.on_tick()
         metrics.on_fill(fill is not None)

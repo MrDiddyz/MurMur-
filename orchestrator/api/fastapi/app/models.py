@@ -1,5 +1,27 @@
 from typing import Any
+from typing import Literal
+from uuid import UUID
+
 from pydantic import BaseModel
+
+
+RunState = Literal[
+    "RECEIVED",
+    "CONTEXT_ASSEMBLED",
+    "PLAN_CREATED",
+    "AGENTS_RUNNING",
+    "EVALUATING",
+    "NEEDS_HUMAN_REVIEW",
+    "REVISING",
+    "APPROVED",
+    "COMMITTED",
+    "SCHEDULED",
+    "EXECUTED",
+    "MEASURING",
+    "COMPLETED",
+    "FAILED",
+    "CANCELLED",
+]
 
 
 class CreateRunRequest(BaseModel):
@@ -17,8 +39,8 @@ class TransitionRequest(BaseModel):
 
 
 class EventRequest(BaseModel):
-    run_id: str
-    to_state: str
+    run_id: UUID
+    to_state: RunState
     event_type: str
     actor: str | None = "system"
     payload: dict[str, Any] | None = None

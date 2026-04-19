@@ -14,11 +14,17 @@ class AdminLoginRequest(BaseModel):
 
 
 async def get_db():
-    raise NotImplementedError
+    raise HTTPException(
+        status_code=501,
+        detail="Database adapter not implemented. Wire up a real DB dependency.",
+    )
 
 
 async def authenticate_admin(db, email: str, password: str):
-    raise NotImplementedError
+    raise HTTPException(
+        status_code=501,
+        detail="authenticate_admin not implemented.",
+    )
 
 
 @router.post("/login")

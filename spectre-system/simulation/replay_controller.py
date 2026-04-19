@@ -15,8 +15,10 @@ def load_events(csv_path: str) -> list[Event]:
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         required = {"event_time", "symbol", "bid", "ask", "last", "volume"}
-        if set(reader.fieldnames or []) != required:
-            raise ValueError(f"CSV headers must match exactly: {sorted(required)}")
+        actual = set(reader.fieldnames or [])
+        missing = required - actual
+        if missing:
+            raise ValueError(f"CSV is missing required headers: {sorted(missing)}")
         for idx, row in enumerate(reader):
             try:
                 event_time = datetime.fromisoformat(row["event_time"])

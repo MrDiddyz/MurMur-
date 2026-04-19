@@ -3,7 +3,13 @@ from contextlib import contextmanager
 from psycopg import Connection
 from psycopg.rows import dict_row
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@postgres:5432/orchestrator")
+_DATABASE_URL = os.getenv("DATABASE_URL")
+if not _DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is not set. "
+        "Refusing to start with a hardcoded default credential."
+    )
+DATABASE_URL: str = _DATABASE_URL
 
 
 @contextmanager

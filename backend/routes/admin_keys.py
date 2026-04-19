@@ -1,18 +1,32 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Request
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 
 from backend.audit import log_audit_event
 
 router = APIRouter(prefix="/admin/api-keys", tags=["admin-api-keys"])
 
 
+class CreateApiKeyRequest(BaseModel):
+    name: str
+    scopes: list[str] = []
+
+
 async def get_db():
-    raise NotImplementedError
+    raise HTTPException(
+        status_code=501,
+        detail="Database adapter not implemented. Wire up a real DB dependency.",
+    )
 
 
 async def get_admin_actor():
-    raise NotImplementedError
+    raise HTTPException(
+        status_code=501,
+        detail="Admin actor dependency not implemented.",
+    )
 
 
 @router.get("")
@@ -30,7 +44,7 @@ async def list_api_keys(request: Request, db=Depends(get_db), admin=Depends(get_
 @router.post("")
 async def create_api_key(
     request: Request,
-    payload: dict,
+    payload: CreateApiKeyRequest,
     db=Depends(get_db),
     admin=Depends(get_admin_actor),
 ):
@@ -40,8 +54,8 @@ async def create_api_key(
         VALUES ($1, $2)
         RETURNING id, name, scopes, is_active, created_at, last_used_at, revoked_at
         """,
-        payload.get("name"),
-        payload.get("scopes", []),
+        payload.name,
+        payload.scopes,
     )
     await log_audit_event(
         db=db,

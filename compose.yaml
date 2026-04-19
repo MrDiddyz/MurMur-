@@ -1,0 +1,10 @@
+services:
+  murmurweb:
+    image: murmurweb
+    build:
+      context: murmur-stronghold/murmur-web
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000

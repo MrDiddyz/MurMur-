@@ -1,6 +1,7 @@
 'use client';
 
 import { useStateBus } from '../core/stateBus';
+import type { EqBand } from '../core/stateBus';
 
 export function EqPanel() {
   const { eqBands, setEqBandGain } = useStateBus();
@@ -9,7 +10,7 @@ export function EqPanel() {
     <section className="murmur-panel">
       <h3>10-Band EQ</h3>
       <div className="murmur-eq-grid">
-        {eqBands.map((band, index) => (
+        {eqBands.map((band: EqBand, index: number) => (
           <label key={band.frequency}>
             <span>{band.frequency >= 1000 ? `${band.frequency / 1000}k` : band.frequency}Hz</span>
             <input

@@ -3,13 +3,14 @@
 import { useEffect, useRef } from 'react';
 import { useVisualEngine, type VisualQuality } from '../core/visualEngine';
 import { useStateBus } from '../core/stateBus';
+import type { ImageItem } from '../core/stateBus';
 
 export function VisualCanvas({ quality }: { quality: Partial<VisualQuality> }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { images, metrics, setImageBitmap } = useStateBus();
 
   useEffect(() => {
-    images.forEach((image) => {
+    images.forEach((image: ImageItem) => {
       if (image.bitmap) {
         return;
       }

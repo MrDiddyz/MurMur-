@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useAudioEngine } from '../core/audioEngine';
-import { usePerformanceMonitor } from '../core/performanceMonitor';
-import { StateBusProvider, useStateBus } from '../core/stateBus';
+import { usePerformanceMonitor, type PerformanceSnapshot } from '../core/performanceMonitor';
+import { StateBusProvider, type TrackItem, useStateBus } from '../core/stateBus';
 import { EqPanel } from '../ui/eqPanel';
 import { PlayerControls } from '../ui/playerControls';
 import { Playlist } from '../ui/playlist';
@@ -15,7 +15,7 @@ function MurmurLayerShell() {
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const { tracks, playback, eqBands, setMetrics, setPerformance, performance, trimOldestImage } = useStateBus();
 
-  const activeTrack = useMemo(() => tracks.find((track) => track.id === playback.activeTrackId) ?? null, [tracks, playback.activeTrackId]);
+  const activeTrack = useMemo(() => tracks.find((track: TrackItem) => track.id === playback.activeTrackId) ?? null, [tracks, playback.activeTrackId]);
 
   const audioEngine = useAudioEngine({
     audioElement,
@@ -32,7 +32,7 @@ function MurmurLayerShell() {
     }
   }, [performance.estimatedMemoryMB, trimOldestImage]);
 
-  usePerformanceMonitor((snapshot) => {
+  usePerformanceMonitor((snapshot: PerformanceSnapshot) => {
     setPerformance({
       fps: snapshot.fps,
       estimatedMemoryMB: snapshot.estimatedMemoryMB,

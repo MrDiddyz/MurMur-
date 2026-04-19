@@ -13,7 +13,7 @@ interface CategoryScore {
 
 function scoreCategory(fragment: Fragment, category: FragmentCategory): CategoryScore {
   const content = fragment.metadata?.normalizedContent ?? fragment.content.toLowerCase();
-  const tags = fragment.tags.map((tag) => tag.toLowerCase());
+  const tags = fragment.tags.map((tag: string) => tag.toLowerCase());
   const reasoning: string[] = [];
   let score = 0;
 

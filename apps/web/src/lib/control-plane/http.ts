@@ -38,5 +38,5 @@ export function toErrorResponse(error: unknown): NextResponse {
     return NextResponse.json({ error: error.message }, { status: 429 });
   }
 
-  return NextResponse.json({ error: 'Unexpected control plane error.' }, { status: 500 });
+  return NextResponse.json({ error: error instanceof Error ? error.message : 'An unexpected control plane error occurred.' }, { status: 500 });
 }

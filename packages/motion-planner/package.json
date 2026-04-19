@@ -11,7 +11,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@murmur/shared": "workspace:*",
-    "@murmur/cognitive-core": "workspace:*"
+    "@murmur/shared": "file:../shared",
+    "@murmur/cognitive-core": "file:../cognitive-core"
   }
 }

@@ -9,10 +9,10 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@murmur/agents": "workspace:*",
-    "@murmur/cognitive-core": "workspace:*",
-    "@murmur/motion-planner": "workspace:*",
-    "@murmur/shared": "workspace:*",
+    "@murmur/agents": "file:../../packages/agents",
+    "@murmur/cognitive-core": "file:../../packages/cognitive-core",
+    "@murmur/motion-planner": "file:../../packages/motion-planner",
+    "@murmur/shared": "file:../../packages/shared",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "ws": "^8.18.0",

@@ -1,5 +1,6 @@
 import { getAuthenticatedUserId } from '@/lib/server/auth';
 import { getActiveSubscriptionsByCustomerId, getCustomerByUserId } from '@/lib/server/supabase-admin';
+import type { SubscriptionRecord } from '@/lib/server/supabase-admin';
 
 const ACTIVE_STATUSES = new Set(['active', 'trialing', 'past_due']);
 
@@ -16,7 +17,7 @@ export async function getDashboardAccess() {
 
   const subscriptions = await getActiveSubscriptionsByCustomerId(customer.id);
   const now = Date.now();
-  const active = subscriptions.find((subscription) => {
+  const active = subscriptions.find((subscription: SubscriptionRecord) => {
     if (!ACTIVE_STATUSES.has(subscription.status)) {
       return false;
     }

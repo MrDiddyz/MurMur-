@@ -2,11 +2,12 @@
 
 import { useMemo } from 'react';
 import { useStateBus } from '../core/stateBus';
+import type { TrackItem } from '../core/stateBus';
 
 export function Playlist() {
   const { tracks, playback, setActiveTrack, removeTrack } = useStateBus();
 
-  const activeName = useMemo(() => tracks.find((track) => track.id === playback.activeTrackId)?.name ?? 'No track', [tracks, playback.activeTrackId]);
+  const activeName = useMemo(() => tracks.find((track: TrackItem) => track.id === playback.activeTrackId)?.name ?? 'No track', [tracks, playback.activeTrackId]);
 
   return (
     <section className="murmur-panel">
@@ -16,7 +17,7 @@ export function Playlist() {
         <p className="murmur-muted">Upload tracks to start playback.</p>
       ) : (
         <ul className="murmur-list">
-          {tracks.map((track) => (
+          {tracks.map((track: TrackItem) => (
             <li key={track.id} className={track.id === playback.activeTrackId ? 'active' : ''}>
               <button type="button" onClick={() => setActiveTrack(track.id)}>
                 {track.name}

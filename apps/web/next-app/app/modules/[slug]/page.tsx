@@ -2,15 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { modules } from '@/data/modules';
 
+export const dynamic = 'force-dynamic';
+
 type ModulePageProps = {
   params: {
     slug: string;
   };
 };
-
-export function generateStaticParams() {
-  return modules.map((module) => ({ slug: module.slug }));
-}
 
 export default function ModuleDetailPage({ params }: ModulePageProps) {
   const selectedModule = modules.find((item) => item.slug === params.slug);

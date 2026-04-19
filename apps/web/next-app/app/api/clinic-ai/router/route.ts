@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
-import schema from '../../../../../murmur-intelligence-core/schemas/clinic-ai-knowledge-router.schema.json';
-import config from '../../../../../murmur-intelligence-core/knowledge-base/clinic-ai-knowledge-router.sandra-constance.nb-NO.json';
+import schema from '../../../../../../../murmur-intelligence-core/schemas/clinic-ai-knowledge-router.schema.json';
+import config from '../../../../../../../murmur-intelligence-core/knowledge-base/clinic-ai-knowledge-router.sandra-constance.nb-NO.json';
 
 export const dynamic = 'force-static';
 

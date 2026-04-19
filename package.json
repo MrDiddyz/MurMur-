@@ -7,6 +7,8 @@
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
+    "verify:web": "pnpm --filter @murmur/web build && pnpm --dir apps/web/next-app verify",
+    "verify": "pnpm build && pnpm --dir apps/web/next-app verify",
     "breach:scan": "python scripts/breach_watch.py",
     "breach:watch": "python scripts/breach_watch.py"
   },

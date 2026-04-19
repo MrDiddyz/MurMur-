@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { normalizeAgentId, runAgent } from "@core/agents";
 
 interface AgentRunBody {
   agentId?: string;
@@ -15,12 +14,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Malformed JSON body." }, { status: 400 });
   }
 
-  const agentId = normalizeAgentId(body.agentId ?? "");
+  const agentId = (body.agentId ?? "").trim();
   const input = body.input?.trim();
   const sessionId = body.sessionId?.trim();
 
   if (!agentId) {
-    return NextResponse.json({ error: "Invalid agentId. Use Pilot, Weaver, or Mirror." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid agentId." }, { status: 400 });
   }
 
   if (!input) {
@@ -31,6 +30,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "sessionId is required." }, { status: 400 });
   }
 
-  const result = await runAgent(agentId, { input, sessionId });
-  return NextResponse.json({ output: result.output, events: result.events });
+  return NextResponse.json(
+    {
+      error: "Agent runtime module is not wired in next-app yet.",
+      hint: "Connect route to your preferred agent backend and replace this placeholder.",
+      received: { agentId, input, sessionId },
+    },
+    { status: 501 },
+  );
 }

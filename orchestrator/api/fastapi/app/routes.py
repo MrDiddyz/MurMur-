@@ -63,7 +63,10 @@ def get_run(run_id: str):
 @router.post("/runs/{run_id}/approve")
 def approve_run(run_id: str, req: TransitionRequest):
     try:
-        return _transition(run_id, "APPROVED", "run.approved", req.actor or "system", req.payload)
+        result = _transition(run_id, "APPROVED", "run.approved", req.actor or "system", req.payload)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+        return result
     except CheckViolation as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
 
@@ -71,7 +74,10 @@ def approve_run(run_id: str, req: TransitionRequest):
 @router.post("/runs/{run_id}/deny")
 def deny_run(run_id: str, req: TransitionRequest):
     try:
-        return _transition(run_id, "CANCELLED", "run.denied", req.actor or "system", req.payload)
+        result = _transition(run_id, "CANCELLED", "run.denied", req.actor or "system", req.payload)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+        return result
     except CheckViolation as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
 
@@ -79,6 +85,9 @@ def deny_run(run_id: str, req: TransitionRequest):
 @router.post("/events")
 def post_event(req: EventRequest):
     try:
-        return _transition(req.run_id, req.to_state, req.event_type, req.actor or "system", req.payload)
+        result = _transition(req.run_id, req.to_state, req.event_type, req.actor or "system", req.payload)
+        if result is None:
+            raise HTTPException(status_code=404, detail=f"Run {req.run_id} not found")
+        return result
     except CheckViolation as e:
         raise HTTPException(status_code=409, detail=str(e)) from e

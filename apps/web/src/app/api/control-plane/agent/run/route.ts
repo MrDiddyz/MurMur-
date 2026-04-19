@@ -7,9 +7,19 @@ export async function POST(request: NextRequest) {
     const { tenantId, role } = resolveTenantFromRequest(request);
     controlPlaneStore.authorize(tenantId, role, 'run_agents');
 
-    const body = await request.json().catch(() => ({}));
-    const actor = body.actor ?? 'api_user';
+    let body: Record<string, unknown>;
+    try {
+      body = (await request.json()) as Record<string, unknown>;
+    } catch {
+      return NextResponse.json({ error: 'Malformed JSON body.' }, { status: 400 });
+    }
+
+    const actor = typeof body.actor === 'string' && body.actor.trim() ? body.actor : 'api_user';
     const requestedTokens = Number(body.tokens ?? 1000);
+
+    if (!Number.isFinite(requestedTokens) || requestedTokens <= 0) {
+      return NextResponse.json({ error: 'tokens must be a positive number.' }, { status: 400 });
+    }
 
     controlPlaneStore.enforceQuota(tenantId, 'agent_runs', 1);
     controlPlaneStore.enforceQuota(tenantId, 'tokens_generated', requestedTokens);

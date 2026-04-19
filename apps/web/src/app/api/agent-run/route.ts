@@ -8,7 +8,12 @@ interface AgentRunBody {
 }
 
 export async function POST(request: NextRequest) {
-  const body = (await request.json().catch(() => ({}))) as AgentRunBody;
+  let body: AgentRunBody;
+  try {
+    body = (await request.json()) as AgentRunBody;
+  } catch {
+    return NextResponse.json({ error: "Malformed JSON body." }, { status: 400 });
+  }
 
   const agentId = normalizeAgentId(body.agentId ?? "");
   const input = body.input?.trim();

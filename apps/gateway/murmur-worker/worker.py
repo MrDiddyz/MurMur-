@@ -8,7 +8,20 @@ import psycopg2
 import redis
 import requests
 
-r = redis.Redis(host=os.getenv("REDIS_HOST"), decode_responses=True)
+
+def require_env(name):
+    value = os.getenv(name)
+    if value is None or value.strip() == "":
+        raise RuntimeError(f"Missing required environment variable: {name}")
+    return value
+
+
+DATABASE_URL = require_env("DATABASE_URL")
+REDIS_HOST = require_env("REDIS_HOST")
+CORE_URL = require_env("CORE_URL").rstrip("/")
+JWT_SECRET = require_env("JWT_SECRET")
+
+r = redis.Redis(host=REDIS_HOST, decode_responses=True)
 max_job_retries = int(os.getenv("MAX_JOB_RETRIES", "5"))
 
 
@@ -24,11 +37,11 @@ def log(level, message, **fields):
 
 
 def get_db_connection():
-    return psycopg2.connect(os.getenv("DATABASE_URL"))
+    return psycopg2.connect(DATABASE_URL)
 
 
 def get_token():
-    return jwt.encode({"service": "worker"}, os.getenv("JWT_SECRET"), algorithm="HS256")
+    return jwt.encode({"service": "worker"}, JWT_SECRET, algorithm="HS256")
 
 
 def enqueue_retry(intent_id, retries):
@@ -87,7 +100,7 @@ while True:
                 goal = row[0]
 
         res = requests.post(
-            os.getenv("CORE_URL") + "/run",
+            f"{CORE_URL}/run",
             json={"goal": goal},
             headers={"Authorization": "Bearer " + get_token()},
             timeout=20,

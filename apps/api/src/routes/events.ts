@@ -1,10 +1,11 @@
 // /events/ingest endpoint stores typed events.
 import { Router } from "express";
+import type { Router as ExpressRouter } from "express";
 import { z } from "zod";
 import type { StudioEvent } from "@murmur/shared";
 import { db } from "../core/store.js";
 
-export const eventsRouter = Router();
+export const eventsRouter: ExpressRouter = Router();
 
 const eventSchema = z.object({
   id: z.string().min(1),

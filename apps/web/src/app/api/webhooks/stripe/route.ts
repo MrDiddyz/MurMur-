@@ -167,7 +167,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid Stripe signature' }, { status: 400 });
   }
 
-  const event = JSON.parse(payload) as StripeEvent;
+  let event: StripeEvent;
+  try {
+    event = JSON.parse(payload) as StripeEvent;
+  } catch {
+    return NextResponse.json({ error: 'Invalid Stripe payload' }, { status: 400 });
+  }
+
+  if (!event?.id || !event?.type || !event?.data || typeof event.data.object !== 'object') {
+    return NextResponse.json({ error: 'Invalid Stripe event shape' }, { status: 400 });
+  }
 
   const isNewEvent = await upsertStripeEvent(event.id, event.type, event);
   if (!isNewEvent) {

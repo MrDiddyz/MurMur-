@@ -1,11 +1,19 @@
 from __future__ import annotations
 
-from typing import Any
+import hashlib
+import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
 from backend.audit import log_audit_event
+
+
+def _generate_api_key() -> tuple[str, str]:
+    """Return (raw_key, sha256_hex). Raw key is shown once; only hash is stored."""
+    raw = secrets.token_urlsafe(32)
+    digest = hashlib.sha256(raw.encode()).hexdigest()
+    return raw, digest
 
 router = APIRouter(prefix="/admin/api-keys", tags=["admin-api-keys"])
 
@@ -48,13 +56,15 @@ async def create_api_key(
     db=Depends(get_db),
     admin=Depends(get_admin_actor),
 ):
+    raw_key, key_hash = _generate_api_key()
     row = await db.fetch_one(
         """
-        INSERT INTO api_keys (name, scopes)
-        VALUES ($1, $2)
+        INSERT INTO api_keys (name, key_hash, scopes)
+        VALUES ($1, $2, $3)
         RETURNING id, name, scopes, is_active, created_at, last_used_at, revoked_at
         """,
         payload.name,
+        key_hash,
         payload.scopes,
     )
     await log_audit_event(
@@ -68,7 +78,9 @@ async def create_api_key(
         status_code=201,
         meta={"api_key_id": str(row["id"]), "name": row["name"]},
     )
-    return dict(row)
+    result = dict(row)
+    result["key"] = raw_key  # shown once — not stored
+    return result
 
 
 @router.post("/{key_id}/revoke")

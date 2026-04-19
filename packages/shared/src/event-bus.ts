@@ -12,13 +12,15 @@ type EventMap = {
 type Listener<T extends EventType> = (event: EventMap[T]) => void;
 
 export class TypedEventBus {
-  private listeners: { [K in EventType]?: Listener<K>[] } = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private listeners: Partial<Record<EventType, Listener<any>[]>> = {};
 
   on<T extends EventType>(type: T, listener: Listener<T>): () => void {
-    const stack = (this.listeners[type] ??= [] as Listener<T>[]);
+    const stack: Listener<T>[] = (this.listeners[type] as Listener<T>[] | undefined) ?? [];
+    this.listeners[type] = stack;
     stack.push(listener);
     return () => {
-      this.listeners[type] = stack.filter((item) => item !== listener) as Listener<T>[];
+      this.listeners[type] = stack.filter((item) => item !== listener);
     };
   }
 

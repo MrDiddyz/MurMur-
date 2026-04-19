@@ -37,7 +37,9 @@ def make_decision(
         stress_level: 0-1 stress score from stress_engine.
         edge_score:  Edge estimate from edge_monitor.
     """
-    spread = features["spread"]
+    spread = features.get("spread")
+    if spread is None:
+        raise KeyError("'spread' missing from features dict — check feature_pipeline output")
 
     # Mirror: update our model of "normal" spread from every tick
     _update_spread_ema(spread)

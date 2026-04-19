@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import logging
+import os
 import time
 import uuid
 
 from fastapi import APIRouter, FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -24,20 +26,25 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         request.state.request_id = request_id
 
         started = time.perf_counter()
-        response = await call_next(request)
-        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        response = None
+        try:
+            response = await call_next(request)
+            return response
+        finally:
+            duration_ms = round((time.perf_counter() - started) * 1000, 2)
+            status_code = response.status_code if response is not None else 500
 
-        response.headers["x-request-id"] = request_id
-        response.headers["x-response-time-ms"] = str(duration_ms)
+            if response is not None:
+                response.headers["x-request-id"] = request_id
+                response.headers["x-response-time-ms"] = str(duration_ms)
 
-        logger.info(
-            "%s %s -> %s (%sms)",
-            request.method,
-            request.url.path,
-            response.status_code,
-            duration_ms,
-        )
-        return response
+            logger.info(
+                "%s %s -> %s (%sms)",
+                request.method,
+                request.url.path,
+                status_code,
+                duration_ms,
+            )
 
 
 def _error_payload(request: Request, code: str, message: str) -> dict:
@@ -79,11 +86,31 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
 
 def create_app() -> FastAPI:
+    _is_prod = os.getenv("ENV", "").lower() in ("production", "prod")
+    _cors_origins_raw = os.getenv("CORS_ORIGINS", "")
+    _allowed_origins = [o.strip() for o in _cors_origins_raw.split(",") if o.strip()]
+    if not _allowed_origins and _is_prod:
+        raise RuntimeError("CORS_ORIGINS must be set in production")
+    if not _allowed_origins and not _is_prod:
+        _allowed_origins = ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"]
+
+    if _is_prod and not os.getenv("API_SECRET_KEY"):
+        raise RuntimeError("API_SECRET_KEY must be set in production")
+
     app = FastAPI(
         title="MurMur Boilerplate API",
         version="1.0.0",
-        docs_url="/docs",
-        redoc_url="/redoc",
+        docs_url=None if _is_prod else "/docs",
+        redoc_url=None if _is_prod else "/redoc",
+        openapi_url=None if _is_prod else "/openapi.json",
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_allowed_origins,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Request-Id"],
     )
 
     api_router = APIRouter(prefix="/api/v1")

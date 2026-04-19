@@ -27,21 +27,25 @@ const server = createServer(app);
 const ws = new WebSocketServer({ server, path: "/ws" });
 
 const ticker = setInterval(async () => {
-  if (ws.clients.size === 0 || db.sessions.size === 0) return;
+  try {
+    if (ws.clients.size === 0 || db.sessions.size === 0) return;
 
-  const [session] = [...db.sessions.values()];
-  if (!session) return;
+    const [session] = [...db.sessions.values()];
+    if (!session) return;
 
-  const sessionEvents = db.events.filter((event) => event.sessionId === session.id).slice(-12);
-  if (sessionEvents.length === 0) return;
+    const sessionEvents = db.events.filter((event) => event.sessionId === session.id).slice(-12);
+    if (sessionEvents.length === 0) return;
 
-  const outputs = await evaluateAgents({
-    sessionId: session.id,
-    mode: session.mode,
-    events: sessionEvents
-  });
+    const outputs = await evaluateAgents({
+      sessionId: session.id,
+      mode: session.mode,
+      events: sessionEvents
+    });
 
-  broadcast(ws, { type: "agent-output", sessionId: session.id, outputs, ts: Date.now() });
+    broadcast(ws, { type: "agent-output", sessionId: session.id, outputs, ts: Date.now() });
+  } catch (error) {
+    console.error("ticker evaluation failed", error);
+  }
 }, 1000);
 
 server.on("close", () => clearInterval(ticker));

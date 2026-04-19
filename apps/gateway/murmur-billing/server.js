@@ -4,12 +4,32 @@ import pkg from "pg"
 import Redis from "ioredis"
 import { requireStripeSignature, verifyWebhookSignature } from "./auth.js"
 
+function requireEnv(name) {
+  const value = process.env[name]
+  if (!value || !value.trim()) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+  return value
+}
+
+const STRIPE_KEY = requireEnv("STRIPE_KEY")
+const DATABASE_URL = requireEnv("DATABASE_URL")
+const REDIS_HOST = requireEnv("REDIS_HOST")
+requireEnv("STRIPE_WEBHOOK_SECRET")
+requireEnv("TIKTOK_WEBHOOK_SECRET")
+
 const { Pool } = pkg
 const fastify = Fastify({ logger: true, bodyLimit: 1024 * 1024 })
-const stripe = new Stripe(process.env.STRIPE_KEY)
+const stripe = new Stripe(STRIPE_KEY)
 
-const db = new Pool({ connectionString: process.env.DATABASE_URL })
-const redis = new Redis({ host: process.env.REDIS_HOST })
+const db = new Pool({ connectionString: DATABASE_URL })
+const redis = new Redis({
+  host: REDIS_HOST,
+  maxRetriesPerRequest: 3,
+  enableReadyCheck: true,
+  enableOfflineQueue: true,
+  retryStrategy: (times) => Math.min(times * 100, 3000),
+})
 
 const rateLimitWindowMs = 60_000
 const rateLimitMaxPerIp = 60

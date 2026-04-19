@@ -18,7 +18,7 @@ async def _failed_attempt_count_by_email(db, email: str, cfg: LoginRateLimitConf
             FROM login_attempts
             WHERE email = $1
               AND success = FALSE
-              AND created_at >= NOW() - ($2::text || ' minutes')::interval
+              AND created_at >= NOW() - make_interval(mins => $2)
             """,
             email,
             cfg.window_minutes,
@@ -35,7 +35,7 @@ async def _failed_attempt_count_by_ip(db, ip: str, cfg: LoginRateLimitConfig) ->
             FROM login_attempts
             WHERE ip = $1
               AND success = FALSE
-              AND created_at >= NOW() - ($2::text || ' minutes')::interval
+              AND created_at >= NOW() - make_interval(mins => $2)
             """,
             ip,
             cfg.window_minutes,

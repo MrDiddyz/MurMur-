@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.json && vite build",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "build": "vite build",
+    "typecheck": "tsc -p tsconfig.vite.json --noEmit"
   },
   "dependencies": {
     "@murmur/shared": "file:../../packages/shared",

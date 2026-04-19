@@ -1,11 +1,12 @@
 // /sessions create/get/update endpoints.
 import { Router } from "express";
+import type { Router as ExpressRouter } from "express";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { Session } from "@murmur/shared";
 import { db } from "../core/store.js";
 
-export const sessionsRouter = Router();
+export const sessionsRouter: ExpressRouter = Router();
 
 const modeSchema = z.enum(["ID", "MIRROR", "FREE", "PERFORMANCE_SYNC"]);
 const createSessionSchema = z.object({

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from backend.audit import log_audit_event
 
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/admin/api-keys", tags=["admin-api-keys"])
 
 class CreateApiKeyRequest(BaseModel):
     name: str
-    scopes: list[str] = []
+    scopes: list[str] = Field(default_factory=list)
 
 
 async def get_db():

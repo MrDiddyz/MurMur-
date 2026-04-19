@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "pnpm -r --parallel dev",
     "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "typecheck": "pnpm -r typecheck",
+    "breach:scan": "python scripts/breach_watch.py",
+    "breach:watch": "python scripts/breach_watch.py"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

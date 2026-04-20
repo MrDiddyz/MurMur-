@@ -1,0 +1,226 @@
+services:
+  - type: web
+    name: murmur-web
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: NEXT_TELEMETRY_DISABLED
+        value: 1
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+
+  - type: web
+    name: murmur-api
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: APP_URL
+        sync: false
+      - key: WEB_URL
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: VIPPS_CLIENT_ID
+        sync: false
+      - key: VIPPS_CLIENT_SECRET
+        sync: false
+      - key: VIPPS_SUBSCRIPTION_KEY
+        sync: false
+      - key: VIPPS_MERCHANT_SERIAL_NUMBER
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+
+  - type: worker
+    name: murmur-worker
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./apps/worker/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+
+  - type: worker
+    name: murmur-planner-agent
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./agents/planner-agent/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+
+  - type: worker
+    name: murmur-builder-agent
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./agents/builder-agent/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+
+  - type: worker
+    name: murmur-reviewer-agent
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./agents/reviewer-agent/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+
+  - type: worker
+    name: murmur-optimizer-agent
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./agents/optimizer-agent/Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: murmur-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: murmur-redis
+          property: connectionString
+      - key: API_BASE_URL
+        fromService:
+          type: web
+          name: murmur-api
+          property: hostport
+
+  - type: keyvalue
+    name: murmur-redis
+    region: frankfurt
+    plan: starter
+    ipAllowList: []
+
+databases:
+  - name: murmur-postgres
+    region: frankfurt
+    plan: basic-1gb
+    databaseName: murmur
+    user: murmur

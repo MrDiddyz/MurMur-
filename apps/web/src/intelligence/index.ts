@@ -3,6 +3,7 @@ import { clusterFragments } from "./fragmentClusterer";
 import { detectProjectCandidates } from "./ideaDetector";
 import { synthesizeProjects } from "./projectSynthesizer";
 import {
+  ClassifiedFragment,
   Fragment,
   IntelligenceInsight,
   IntelligenceResult,
@@ -22,7 +23,7 @@ function buildInsights(result: Omit<IntelligenceResult, "insights" | "suggestedA
     });
   }
 
-  const lowConfidenceFragments = result.classifiedFragments.filter((fragment) => fragment.confidence < 0.5).length;
+  const lowConfidenceFragments = result.classifiedFragments.filter((fragment: ClassifiedFragment) => fragment.confidence < 0.5).length;
   if (lowConfidenceFragments > 0) {
     insights.push({
       type: "signal",

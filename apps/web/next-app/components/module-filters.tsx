@@ -3,12 +3,13 @@
 import { useMemo, useState } from 'react';
 import { moduleCategories, modules } from '@/data/modules';
 import { ModuleCard } from '@/components/module-card';
+import type { LearningModule as Module } from '@/lib/types';
 
 export function ModuleFilters() {
   const [active, setActive] = useState<string>('Alle');
 
   const visible = useMemo(
-    () => (active === 'Alle' ? modules : modules.filter((module) => module.category === active)),
+    () => (active === 'Alle' ? modules : modules.filter((module: Module) => module.category === active)),
     [active],
   );
 
@@ -29,7 +30,7 @@ export function ModuleFilters() {
         ))}
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {visible.map((module) => (
+        {visible.map((module: Module) => (
           <ModuleCard key={module.slug} module={module} />
         ))}
       </div>

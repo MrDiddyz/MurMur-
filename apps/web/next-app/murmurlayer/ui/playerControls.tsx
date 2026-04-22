@@ -2,18 +2,19 @@
 
 import { useMemo, useRef } from 'react';
 import { useStateBus } from '../core/stateBus';
+import type { TrackItem } from '../core/stateBus';
 
 export function PlayerControls({ onAudioReady }: { onAudioReady: (audio: HTMLAudioElement | null) => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { tracks, playback, setPlayback, setActiveTrack } = useStateBus();
 
-  const activeTrack = useMemo(() => tracks.find((track) => track.id === playback.activeTrackId) ?? null, [tracks, playback.activeTrackId]);
+  const activeTrack = useMemo(() => tracks.find((track: TrackItem) => track.id === playback.activeTrackId) ?? null, [tracks, playback.activeTrackId]);
 
   const cycleTrack = (direction: 1 | -1) => {
     if (tracks.length === 0 || !playback.activeTrackId) {
       return;
     }
-    const index = tracks.findIndex((track) => track.id === playback.activeTrackId);
+    const index = tracks.findIndex((track: TrackItem) => track.id === playback.activeTrackId);
     const next = (index + direction + tracks.length) % tracks.length;
     setActiveTrack(tracks[next].id);
   };

@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "required": ["title", "start_label", "end_label", "snippet_type", "creator_profile", "on_screen", "caption", "ad_libs", "viral_score", "script", "reasons"],
+  "properties": {
+    "title": {"type": "string"},
+    "start_label": {"type": "string"},
+    "end_label": {"type": "string"},
+    "snippet_type": {"type": "string"},
+    "creator_profile": {"type": "string", "pattern": "^@"},
+    "on_screen": {"type": "string"},
+    "caption": {"type": "string"},
+    "ad_libs": {"type": "array", "items": {"type": "string"}},
+    "viral_score": {"type": "number"},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "script": {
+      "type": "object",
+      "required": ["0_3s", "3_7s", "7_11s", "11_15s"],
+      "properties": {
+        "0_3s": {"type": "string"},
+        "3_7s": {"type": "string"},
+        "7_11s": {"type": "string"},
+        "11_15s": {"type": "string"}
+      }
+    }
+  }
+}

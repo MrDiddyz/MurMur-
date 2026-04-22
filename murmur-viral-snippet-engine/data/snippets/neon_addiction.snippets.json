@@ -1,0 +1,288 @@
+[
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_1_start",
+    "end_label": "candidate_1_end",
+    "snippet_type": "whisper_drop",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 100,
+    "reasons": [
+      "anchor_words:3",
+      "repetition",
+      "whisper_to_drop",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon on my skin tonight",
+      "3_7s": "Heartbeat under city lights",
+      "7_11s": "Neon love, I'm fackd app",
+      "11_15s": "Heartbeat under city lights"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_2_start",
+    "end_label": "candidate_2_end",
+    "snippet_type": "whisper_drop",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 100,
+    "reasons": [
+      "anchor_words:3",
+      "repetition",
+      "whisper_to_drop",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon on my skin tonight",
+      "3_7s": "Heartbeat under city lights",
+      "7_11s": "Neon love, I'm fackd app",
+      "11_15s": "my Heart its not your fart"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_5_start",
+    "end_label": "candidate_5_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 100,
+    "reasons": [
+      "anchor_words:4",
+      "strong_hook_words:3",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Heartbeat under city lights",
+      "3_7s": "Neon love, I'm fackd app",
+      "7_11s": "my Heart its not your fart",
+      "11_15s": "Poison kiss, still I miss it"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_15_start",
+    "end_label": "candidate_15_end",
+    "snippet_type": "whisper_drop",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "heartbeat in the dark",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 100,
+    "reasons": [
+      "anchor_words:3",
+      "whisper_to_drop",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon on my skin tonight",
+      "3_7s": "Heartbeat under city lights",
+      "7_11s": "Heartbeat under city lights",
+      "11_15s": "Heartbeat under city lights"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_3_start",
+    "end_label": "candidate_3_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 91,
+    "reasons": [
+      "anchor_words:3",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Heartbeat under city lights",
+      "3_7s": "Neon love, I'm fackd app",
+      "7_11s": "Neon love, I'm fackd app",
+      "11_15s": "Neon love, I'm fackd app"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_4_start",
+    "end_label": "candidate_4_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 91,
+    "reasons": [
+      "anchor_words:3",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Heartbeat under city lights",
+      "3_7s": "Neon love, I'm fackd app",
+      "7_11s": "my Heart its not your fart",
+      "11_15s": "Neon love, I'm fackd app"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_13_start",
+    "end_label": "candidate_13_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "POISON HEART",
+    "caption": "ghosts still text me",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(heartbeat)",
+      "(danger)"
+    ],
+    "viral_score": 91,
+    "reasons": [
+      "anchor_words:3",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Heartbeat under city lights",
+      "3_7s": "Poison kiss, still I miss it",
+      "7_11s": "Poison kiss, still I miss it",
+      "11_15s": "Poison kiss, still I miss it"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_10_start",
+    "end_label": "candidate_10_end",
+    "snippet_type": "whisper_drop",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "love or addiction",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 85,
+    "reasons": [
+      "anchor_words:1",
+      "whisper_to_drop",
+      "strong_hook_words:1",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon on my skin tonight",
+      "3_7s": "my Heart its not your fart",
+      "7_11s": "my Heart its not your fart",
+      "11_15s": "my Heart its not your fart"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_7_start",
+    "end_label": "candidate_7_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "neon made me weak",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(heartbeat)"
+    ],
+    "viral_score": 84,
+    "reasons": [
+      "anchor_words:2",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon love, I'm fackd app",
+      "3_7s": "my Heart its not your fart",
+      "7_11s": "Poison kiss, still I miss it",
+      "11_15s": "my Heart its not your fart"
+    }
+  },
+  {
+    "title": "Neon Addiction",
+    "start_label": "candidate_11_start",
+    "end_label": "candidate_11_end",
+    "snippet_type": "quote_clip",
+    "creator_profile": "@murmur_artist_001",
+    "on_screen": "NEON LOVE",
+    "caption": "ghosts still text me",
+    "ad_libs": [
+      "(breathe)",
+      "(stay)",
+      "(neon glow)",
+      "(danger)"
+    ],
+    "viral_score": 84,
+    "reasons": [
+      "anchor_words:2",
+      "strong_hook_words:2",
+      "emotional_pull",
+      "short_memorable"
+    ],
+    "script": {
+      "0_3s": "Neon on my skin tonight",
+      "3_7s": "Poison kiss, still I miss it",
+      "7_11s": "Poison kiss, still I miss it",
+      "11_15s": "Poison kiss, still I miss it"
+    }
+  }
+]

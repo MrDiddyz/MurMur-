@@ -1,0 +1,9 @@
+{
+  "name": "MurMur Fractal #014",
+  "description": "Generated within the MurMur Art Engine.",
+  "image": "ipfs://QmX1...",
+  "attributes": [
+    { "trait_type": "Color", "value": "Neon Violet" },
+    { "trait_type": "Pattern", "value": "Recursive" }
+  ]
+}

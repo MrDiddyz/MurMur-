@@ -1,0 +1,2 @@
+-- MurMur Codex Factory schema placeholder
+-- Add DDL statements here.

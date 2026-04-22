@@ -5,7 +5,7 @@ from typing import Any, Dict, Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="Artist Dev Orchestrator", version="0.1.0")
@@ -171,6 +171,7 @@ def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
 # ----------------------------
 
 RUNS: Dict[str, Dict[str, Any]] = {}
+JOBS: Dict[str, Dict[str, Any]] = {}
 
 def save_run(run: Dict[str, Any]) -> None:
     run["updatedAt"] = now_iso()
@@ -181,6 +182,50 @@ def get_run_or_404(run_id: str) -> Dict[str, Any]:
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
+
+
+def get_job_or_404(job_id: str) -> Dict[str, Any]:
+    job = JOBS.get(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail={"code": "JOB_NOT_FOUND", "message": f"Job '{job_id}' not found"})
+    return job
+
+
+class RunJobRequest(BaseModel):
+    input: Dict[str, Any] = Field(default_factory=dict)
+    simulate_failure: bool = False
+    policy_version: Optional[str] = "v1"
+    instance_id: Optional[str] = "local"
+
+
+class RunJobCreateResponse(BaseModel):
+    job_id: str
+
+
+class RunJobResult(BaseModel):
+    status: str
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[Dict[str, Any]] = None
+
+
+def _compute_job_result(payload: RunJobRequest) -> Dict[str, Any]:
+    if payload.simulate_failure:
+        return {
+            "status": "failed",
+            "error": {
+                "code": "AGENT_EXECUTION_FAILED",
+                "message": "Deterministic failure triggered by simulate_failure=true",
+            },
+        }
+
+    llm_unavailable = bool(payload.input.get("force_fallback"))
+    provider = "fallback" if llm_unavailable else "primary"
+    result = {
+        "agent": "orchestrator",
+        "provider": provider,
+        "output": payload.input.get("prompt", ""),
+    }
+    return {"status": "completed", "result": result}
 
 # ----------------------------
 # Minimal transition guards
@@ -278,6 +323,23 @@ def orchestrate_sync(run: Dict[str, Any]) -> None:
 # ----------------------------
 # Routes
 # ----------------------------
+
+
+@app.post("/v1/run", response_model=RunJobCreateResponse)
+def create_agent_run(req: RunJobRequest, response: Response):
+    job_id = str(uuid4())
+    response.headers["X-Run-Id"] = job_id
+    response.headers["X-Instance-Id"] = req.instance_id or "local"
+    response.headers["X-Policy-Version"] = req.policy_version or "v1"
+
+    JOBS[job_id] = _compute_job_result(req)
+    return {"job_id": job_id}
+
+
+@app.get("/v1/jobs/{job_id}", response_model=RunJobResult)
+def get_agent_job(job_id: str):
+    return get_job_or_404(job_id)
+
 
 @app.post("/v1/runs", response_model=RunResponse)
 def create_run(req: CreateRunRequest):

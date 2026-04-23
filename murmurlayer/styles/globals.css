@@ -1,0 +1,144 @@
+@import './leopardTheme.css';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden; /* Prevent scrolling, app is full screen */
+}
+
+.workspace {
+  height: 100vh;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 1rem;
+  position: relative;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.workspace-header p {
+  color: var(--muted-text);
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+}
+
+
+.panel {
+  padding: 1rem;
+}
+
+.panel h2 + * {
+  margin-top: 0.75rem;
+}
+
+.playlist {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.playlist button {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 0.65rem;
+  cursor: pointer;
+  display: grid;
+}
+
+.playlist button small {
+  color: var(--muted-text);
+}
+
+.playlist button.active {
+  border-color: var(--neon-magenta);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.45);
+  background: rgba(255, 0, 255, 0.12);
+}
+
+.visualizer {
+  margin-top: 0.75rem;
+  height: 180px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+.visualizer span {
+  flex: 1;
+  background: linear-gradient(180deg, var(--neon-cyan), transparent);
+  border-radius: 999px;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.5);
+}
+
+.eq-grid {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.eq-band {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.upload-zone {
+  margin-top: 0.75rem;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--glass-border);
+  border-radius: 10px;
+  min-height: 120px;
+  position: relative;
+  color: var(--muted-text);
+}
+
+.upload-zone input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.transport {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.visual-image {
+  width: 100%;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  opacity: 0.8;
+}

@@ -1,14 +1,42 @@
 from __future__ import annotations
 
+import hmac
+import os
+import threading
 from enum import Enum
 from typing import Any, Dict, Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Security, status
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="Artist Dev Orchestrator", version="0.1.0")
+
+# ------------------------------------
+# Optional API-key authentication
+# ------------------------------------
+
+_APP_API_KEY_HEADER = APIKeyHeader(name="X-API-Key", auto_error=False)
+_APP_SECRET_KEY = os.getenv("APP_API_SECRET_KEY")
+
+
+def require_api_key(api_key: str | None = Security(_APP_API_KEY_HEADER)) -> None:
+    """Enforce X-API-Key when APP_API_SECRET_KEY is configured.
+
+    In development (env var not set) all requests are allowed through so that
+    the service can be run locally without additional setup.  In any deployed
+    environment where the variable is present, a missing or wrong key results
+    in a 401 response.
+    """
+    if not _APP_SECRET_KEY:
+        return  # dev / unprotected mode
+    if not api_key or not hmac.compare_digest(api_key, _APP_SECRET_KEY):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API key",
+        )
 
 # ----------------------------
 # State machine
@@ -171,13 +199,16 @@ def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
 # ----------------------------
 
 RUNS: Dict[str, Dict[str, Any]] = {}
+_runs_lock = threading.Lock()
 
 def save_run(run: Dict[str, Any]) -> None:
     run["updatedAt"] = now_iso()
-    RUNS[run["runId"]] = run
+    with _runs_lock:
+        RUNS[run["runId"]] = run
 
 def get_run_or_404(run_id: str) -> Dict[str, Any]:
-    run = RUNS.get(run_id)
+    with _runs_lock:
+        run = RUNS.get(run_id)
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
@@ -279,7 +310,7 @@ def orchestrate_sync(run: Dict[str, Any]) -> None:
 # Routes
 # ----------------------------
 
-@app.post("/v1/runs", response_model=RunResponse)
+@app.post("/v1/runs", response_model=RunResponse, dependencies=[Depends(require_api_key)])
 def create_run(req: CreateRunRequest):
     run_id = str(uuid4())
     run = {
@@ -306,11 +337,11 @@ def create_run(req: CreateRunRequest):
 
     return run
 
-@app.get("/v1/runs/{run_id}", response_model=RunResponse)
+@app.get("/v1/runs/{run_id}", response_model=RunResponse, dependencies=[Depends(require_api_key)])
 def read_run(run_id: str):
     return get_run_or_404(run_id)
 
-@app.post("/v1/runs/{run_id}/approve", response_model=RunResponse)
+@app.post("/v1/runs/{run_id}/approve", response_model=RunResponse, dependencies=[Depends(require_api_key)])
 def approve_run(run_id: str, body: ApproveRequest):
     run = get_run_or_404(run_id)
     if RunState(run["state"]) != RunState.NEEDS_HUMAN_REVIEW:
@@ -323,7 +354,7 @@ def approve_run(run_id: str, body: ApproveRequest):
 
     return run
 
-@app.post("/v1/runs/{run_id}/deny", response_model=RunResponse)
+@app.post("/v1/runs/{run_id}/deny", response_model=RunResponse, dependencies=[Depends(require_api_key)])
 def deny_run(run_id: str, body: DenyRequest):
     run = get_run_or_404(run_id)
     if RunState(run["state"]) != RunState.NEEDS_HUMAN_REVIEW:
@@ -334,7 +365,7 @@ def deny_run(run_id: str, body: DenyRequest):
     save_run(run)
     return run
 
-@app.post("/v1/events")
+@app.post("/v1/events", dependencies=[Depends(require_api_key)])
 def ingest_event(evt: IntegrationEvent):
     # In production: validate signature + tenant boundaries
     if not evt.runId:
@@ -363,7 +394,7 @@ def ingest_event(evt: IntegrationEvent):
     return {"ok": True, "runId": evt.runId, "state": run["state"]}
 
 
-@app.post("/v1/avatar/operate")
+@app.post("/v1/avatar/operate", dependencies=[Depends(require_api_key)])
 def avatar_operate(req: AvatarOperateRequest):
     return run_avatar_operator(req)
 

@@ -90,15 +90,18 @@ async def revoke_api_key(
     db=Depends(get_db),
     admin=Depends(get_admin_actor),
 ):
-    await db.execute(
+    row = await db.fetch_one(
         """
         UPDATE api_keys
         SET is_active = FALSE,
             revoked_at = NOW()
         WHERE id = $1
+        RETURNING id
         """,
         key_id,
     )
+    if row is None:
+        raise HTTPException(status_code=404, detail="API key not found")
     await log_audit_event(
         db=db,
         actor_type="admin",

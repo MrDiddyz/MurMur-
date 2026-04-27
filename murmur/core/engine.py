@@ -26,8 +26,16 @@ def run_murmur(prompt: str) -> str:
                     {"role": "user", "content": prompt},
                 ],
             )
-            message = response.get("message", {})
-            return str(message.get("content", "")).strip()
+            # ollama >= 0.2 returns a ChatResponse object; older versions
+            # returned a plain dict.  Support both so the engine works with
+            # any installed version of the library.
+            if isinstance(response, dict):
+                message = response.get("message", {})
+                content = message.get("content", "")
+            else:
+                message = getattr(response, "message", None)
+                content = getattr(message, "content", "") if message is not None else ""
+            return str(content).strip()
         except Exception as exc:  # noqa: BLE001
             last_error = exc
             if attempt < config.max_retries:

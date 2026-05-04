@@ -50,7 +50,7 @@ jobs:
         - language: python
           build-mode: none
         - language: swift
-          build-mode: autobuild
+          build-mode: manual
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both
@@ -63,11 +63,68 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Add any setup steps before running the `github/codeql-action/init` action.
-    # This includes steps like installing compilers or runtimes (`actions/setup-node`
-    # or others). This is typically only required for manual builds.
-    # - name: Setup runtime (example)
-    #   uses: actions/setup-example@v1
+    # ContentView.swift lives at the repo root with no Xcode project or Package.swift.
+    # We assemble a minimal Swift Package Manager project on-the-fly so CodeQL can
+    # trace a real build instead of relying on the unreliable autobuild heuristic.
+    - name: Setup Swift package for CodeQL
+      if: matrix.language == 'swift'
+      shell: bash
+      run: |
+        mkdir -p Sources/MurMurDrone
+        cp ContentView.swift Sources/MurMurDrone/
+
+        # Stub out the types that ContentView.swift depends on so it compiles.
+        cat > Sources/MurMurDrone/Stubs.swift << 'EOF'
+        import Foundation
+        import CoreVideo
+        import CoreGraphics
+
+        class TelloClient: ObservableObject {
+            @Published var status: String = ""
+            @Published var lastResponse: String = ""
+            func connect() {}
+            func startSDK() {}
+            func takeoff() {}
+            func land() {}
+            func stop() {}
+            func rc(lr: Int, fb: Int, ud: Int, yaw: Int) {}
+        }
+
+        class VideoDecoder {
+            var onFrame: ((CVPixelBuffer) -> Void)?
+        }
+
+        class VideoReceiver: ObservableObject {
+            let decoder = VideoDecoder()
+            func start() throws {}
+        }
+
+        class FollowController {
+            struct RCCommand { var lr = 0, fb = 0, ud = 0, yaw = 0 }
+            func updateTarget(box: CGRect) -> RCCommand { RCCommand() }
+            func lostFailsafe() -> RCCommand { RCCommand() }
+        }
+
+        class VisionPersonFollower {
+            var onTarget: ((CGRect, Float) -> Void)?
+            var onLost: (() -> Void)?
+            func process(pixelBuffer: CVPixelBuffer) {}
+            func reset() {}
+        }
+        EOF
+
+        cat > Package.swift << 'EOF'
+        // swift-tools-version:5.9
+        import PackageDescription
+
+        let package = Package(
+            name: "MurMurDrone",
+            platforms: [.macOS(.v13), .iOS(.v16)],
+            targets: [
+                .target(name: "MurMurDrone", path: "Sources/MurMurDrone")
+            ]
+        )
+        EOF
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -91,13 +148,7 @@ jobs:
     - name: Run manual build steps
       if: matrix.build-mode == 'manual'
       shell: bash
-      run: |
-        echo 'If you are using a "manual" build mode for one or more of the' \
-          'languages you are analyzing, replace this with the commands to build' \
-          'your code, for example:'
-        echo '  make bootstrap'
-        echo '  make release'
-        exit 1
+      run: swift build -c debug
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4

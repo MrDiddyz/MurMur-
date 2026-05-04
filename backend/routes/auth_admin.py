@@ -13,6 +13,16 @@ class AdminLoginRequest(BaseModel):
     password: str
 
 
+def _client_ip(request: Request) -> str:
+    """Return the real client IP.
+
+    ProxyHeadersMiddleware (configured in main.py) rewrites request.client
+    based on X-Forwarded-For only for trusted proxy IPs, so reading
+    request.client.host here is already safe.
+    """
+    return request.client.host if request.client else "unknown"
+
+
 async def get_db():
     raise HTTPException(
         status_code=501,
@@ -29,7 +39,7 @@ async def authenticate_admin(db, email: str, password: str):
 
 @router.post("/login")
 async def admin_login(payload: AdminLoginRequest, request: Request, db=Depends(get_db)):
-    client_ip = request.client.host if request.client else "unknown"
+    client_ip = _client_ip(request)
 
     if await is_rate_limited(db, payload.email, client_ip):
         await record_login_attempt(db, payload.email, client_ip, False)

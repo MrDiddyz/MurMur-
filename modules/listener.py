@@ -2,19 +2,29 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path
 from typing import Any, Dict
 
-from openai import OpenAI
+# Resolve the prompts directory relative to this file so the module works
+# regardless of the process working directory.
+_PROMPTS_DIR = Path(__file__).resolve().parent.parent / "prompts"
 
-client = OpenAI()
+
+def _get_client():
+    """Lazy-initialise the OpenAI client so the API key is only required when
+    the listener is actually called, not at import time."""
+    from openai import OpenAI
+    return OpenAI()
 
 
 def run_listener(user_text: str) -> Dict[str, Any]:
-    with open("prompts/listener.txt", "r", encoding="utf-8") as f:
+    prompt_path = _PROMPTS_DIR / "listener.txt"
+    with prompt_path.open("r", encoding="utf-8") as f:
         prompt = f.read()
 
     niche = _extract_niche(user_text)
 
+    client = _get_client()
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
         temperature=0.2,

@@ -105,6 +105,16 @@ def create_app() -> FastAPI:
         openapi_url=None if _is_prod else "/openapi.json",
     )
 
+    # Rewrite request.client based on X-Forwarded-For when the request arrives
+    # from a trusted reverse proxy. TRUSTED_PROXY_IPS should be set to the
+    # comma-separated list of proxy IPs (e.g. "10.0.0.1,10.0.0.2") in
+    # production. Defaults to "127.0.0.1" for local development.
+    _trusted_proxies_raw = os.getenv("TRUSTED_PROXY_IPS", "127.0.0.1")
+    _trusted_proxies = [ip.strip() for ip in _trusted_proxies_raw.split(",") if ip.strip()]
+
+    from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+    app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=_trusted_proxies)
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_allowed_origins,

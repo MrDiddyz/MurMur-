@@ -4,11 +4,15 @@ from enum import Enum
 from typing import Any, Dict, Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
+import logging
+import threading
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="Artist Dev Orchestrator", version="0.1.0")
+
+logger = logging.getLogger("orchestrator")
 
 # ----------------------------
 # State machine
@@ -48,7 +52,7 @@ class CreateRunRequest(BaseModel):
     userId: str
     orgId: Optional[str] = None
     projectId: Optional[str] = None
-    text: str
+    text: str = Field(..., max_length=32_000)
     locale: Optional[str] = "en"
     attachments: Optional[List[AttachmentRef]] = None
     metadata: Optional[Dict[str, Any]] = None
@@ -171,13 +175,16 @@ def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
 # ----------------------------
 
 RUNS: Dict[str, Dict[str, Any]] = {}
+_RUNS_LOCK = threading.Lock()
 
 def save_run(run: Dict[str, Any]) -> None:
     run["updatedAt"] = now_iso()
-    RUNS[run["runId"]] = run
+    with _RUNS_LOCK:
+        RUNS[run["runId"]] = run
 
 def get_run_or_404(run_id: str) -> Dict[str, Any]:
-    run = RUNS.get(run_id)
+    with _RUNS_LOCK:
+        run = RUNS.get(run_id)
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
@@ -300,8 +307,9 @@ def create_run(req: CreateRunRequest):
     except HTTPException:
         raise
     except Exception as e:
+        logger.exception("Unhandled error during orchestration for run %s", run_id)
         run["state"] = RunState.FAILED.value
-        run["error"] = {"code": "UNHANDLED", "message": str(e)}
+        run["error"] = {"code": "UNHANDLED", "message": "An internal error occurred. Contact support."}
         save_run(run)
 
     return run

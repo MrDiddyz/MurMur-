@@ -1,106 +1,107 @@
-# MurMur SaaS (Marketing + Billing Core)
+# MurMur Signal Audit Generator
 
-Production-ready foundation for **murmurapp.no** with Next.js App Router, Stripe subscriptions, Vipps Startpakke onboarding, Supabase persistence, protected dashboard access, and operational endpoints.
+A production-ready MVP for generating premium local-business signal audits with Next.js App Router, TypeScript, Tailwind CSS, shadcn-style UI components, Supabase auth/database, OpenAI generation, Vercel deployment, and browser-native PDF export.
 
-## Stack
+## Features
 
-- Next.js 14 (App Router) + TypeScript + Tailwind CSS
-- Stripe Checkout / Payment Links + Billing Portal
-- Vipps Startpakke (one-time, NOK 1490) via payment link
-- Supabase Auth + Postgres (customers, subscriptions, events, audit log)
-- Vercel deployment flow from GitHub
+- Apple-style black/gold landing experience
+- Email/password authentication with Supabase
+- Protected dashboard of saved audits
+- Guided audit form for business name, website, industry, and notes
+- OpenAI-powered audit generation API route
+- Structured report sections:
+  - Executive summary
+  - Observations
+  - Narrative diagnosis
+  - Signal leaks
+  - Recommendations
+  - Visibility/trust/conversion/consistency score
+  - 7-day action plan
+- Row-level secured Supabase schema
+- Print-to-PDF export optimized with print styles
 
-## Delivered Modules
+## Tech stack
 
-- Marketing pages (NO + EN): `/` and `/en`
-- Protected customer dashboard: `/dashboard`
-- Stripe webhook endpoint with signature verification + idempotency: `/api/webhooks/stripe`
-- Stripe customer portal endpoint: `/api/billing/portal`
-- Subscription sync cron job endpoint: `/api/jobs/subscription-sync`
-- Health endpoint: `/api/health`
-- Supabase SQL schema: `supabase/schema.sql`
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui-inspired local primitives
+- Supabase Auth + Postgres + RLS
+- OpenAI API
+- Vercel
 
-## Environment Variables
+## Local setup
 
-Copy `.env.example` to `.env.local` and fill values:
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy environment variables:
 
 ```bash
 cp .env.example .env.local
 ```
 
-> `DEV_FALLBACK_USER_ID` is only for local testing and should not be enabled in production.
+3. Fill in `.env.local` with Supabase and OpenAI credentials.
 
-## Local Run
+4. Apply the database migration in Supabase SQL Editor or with Supabase CLI:
 
 ```bash
-npm install
+supabase db push
+```
+
+5. Run the app:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+6. Open `http://localhost:3000`.
 
-## Required Checks
+## Supabase setup
+
+1. Create a Supabase project.
+2. Enable Email authentication in **Authentication → Providers**.
+3. Add local and production redirect URLs:
+   - `http://localhost:3000/auth/callback`
+   - `https://your-vercel-domain.vercel.app/auth/callback`
+4. Run `supabase/migrations/20260506000000_signal_audits.sql`.
+5. Copy the project URL and anon key into `.env.local` and Vercel.
+
+## OpenAI setup
+
+Create an OpenAI API key and set:
 
 ```bash
-npm run lint
-npm run typecheck
-npm run build
+OPENAI_API_KEY=sk-your-openai-key
+OPENAI_MODEL=gpt-4o-mini
 ```
 
-## Stripe Setup
+The generator route lives at `app/api/audits/generate/route.ts` and returns a saved audit id after validating and storing the structured JSON report.
 
-1. Create products/prices:
-   - Starter (€49/month)
-   - Growth (€149/month)
-2. Create Checkout links (or use API) and include `client_reference_id=<supabase_user_id>`.
-3. Configure webhook endpoint:
-   - URL: `https://<your-domain>/api/webhooks/stripe`
-   - Events: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`
-4. Add webhook signing secret to `STRIPE_WEBHOOK_SECRET`.
-5. Enable billing portal in Stripe and keep `BILLING_PORTAL_RETURN_URL` aligned with `/dashboard`.
+## Deploy to Vercel
 
-## Vipps Startpakke Setup
+1. Import this repository into Vercel.
+2. Set the environment variables from `.env.example`.
+3. Ensure Supabase auth redirect URLs include the Vercel production domain.
+4. Deploy.
+5. Run a smoke test: sign up, create an audit, open the report, and click **Export PDF**.
 
-1. Create Vipps payment link for **NOK 1490** (one-time).
-2. Map successful purchases into `subscriptions` with:
-   - `provider = 'vipps'`
-   - `plan_code = 'vipps_startpakke'`
-3. Store customer reference in `customers.vipps_customer_ref`.
+## Project structure
 
-## Supabase Setup
+```text
+app/                    Next.js App Router pages and API routes
+components/             shadcn-style UI primitives and app components
+lib/                    Shared types, validation, utilities, Supabase clients
+supabase/migrations/    Postgres schema, RLS policies, and indexes
+.env.example            Required runtime variables
+```
 
-1. Create project in Supabase.
-2. Run SQL from `supabase/schema.sql` in SQL editor.
-3. Enable RLS policies appropriate for your org (service role is used only server-side for backend routes).
-4. Use Supabase Auth user ID as canonical customer identity (`customers.user_id`).
+## Production notes
 
-
-## Vercel Configuration
-
-The repo now includes `vercel.json` with:
-
-- framework detection for Next.js
-- cron schedule (`*/30 * * * *`) for `/api/jobs/subscription-sync`
-- baseline security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`)
-
-For cron auth, set `CRON_SECRET` in Vercel project environment variables. Vercel will send it as `Authorization: Bearer <CRON_SECRET>` to the job endpoint.
-
-## Deployment (GitHub → Vercel → Domeneshop)
-
-1. Push repository to GitHub.
-2. Import project in Vercel.
-3. Add all environment variables in Vercel Project Settings.
-4. Configure cron call to `POST /api/jobs/subscription-sync` with `Authorization: Bearer <CRON_SECRET>`.
-5. Domeneshop DNS:
-   - `A` record root (`@`) → Vercel IP (as documented by Vercel at setup time)
-   - `CNAME` `www` → cname.vercel-dns.com
-6. Set primary domain to `murmurapp.no` in Vercel.
-
-## Safety / Production Disclaimers
-
-- Never expose `SUPABASE_SERVICE_ROLE_KEY` client-side.
-- Verify Stripe webhook signatures against raw request body only.
-- Keep webhook processing idempotent using unique event keys.
-- Restrict cron endpoint with a strong `CRON_SECRET`.
-- Add rate limiting/WAF and alerting before full production rollout.
-- Regularly audit `audit_log` and failed webhook responses.
+- RLS ensures users can only access their own audits.
+- OpenAI JSON output is validated with Zod before persistence.
+- PDF export uses native print styles to avoid heavyweight server PDF infrastructure in the MVP.
+- For paid plans, add Stripe checkout and audit quotas before public launch.

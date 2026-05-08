@@ -1,0 +1,1 @@
+{"compilerOptions":{"strict":true,"target":"ES2022","module":"ESNext","moduleResolution":"Bundler","jsx":"preserve","resolveJsonModule":true,"esModuleInterop":true,"skipLibCheck":true,"baseUrl":".","paths":{"@murmur/core":["packages/core/src"],"@murmur/intelligence":["packages/intelligence/src"],"@murmur/prompts":["packages/prompts/src"]}}}

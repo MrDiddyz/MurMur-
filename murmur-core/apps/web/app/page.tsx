@@ -1,0 +1,1 @@
+export default function Page(){return <main className="min-h-screen bg-black text-amber-200 p-8"><h1 className="text-5xl font-semibold">MurMur Core</h1><p className="mt-3">Not noise. Signal.</p><p className="mt-4 text-amber-100/80">A Learning Constellation for decoding ideas, audits, narratives and growth signals.</p></main>}

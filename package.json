@@ -1,12 +1,14 @@
 {
-  "name": "murmur-motion-avatar-v0-2",
-  "version": "0.2.0",
+  "name": "murmur-auto-bot-v0-4",
+  "version": "0.4.0",
   "private": true,
   "packageManager": "pnpm@9.12.0",
   "scripts": {
-    "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
-    "typecheck": "pnpm -r typecheck"
+    "dev": "pnpm --filter dashboard dev",
+    "build": "pnpm --filter dashboard build",
+    "lint": "pnpm --filter dashboard lint",
+    "typecheck": "pnpm --filter dashboard typecheck",
+    "py:check": "python -m compileall services"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

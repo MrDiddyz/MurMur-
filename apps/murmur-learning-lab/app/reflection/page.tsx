@@ -12,7 +12,7 @@ export default function ReflectionPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-mirror/80">
           Reflection
         </p>
-        <h1 className="text-3xl font-bold text-white">What&apos;s on your mind?</h1>
+        <h1 className="text-3xl font-bold text-white">{"What's on your mind?"}</h1>
         <p className="text-ink/70">
           Write freely. Your reflection will be mirrored back with insights,
           a next step, and a creative spark — then saved to your constellation.

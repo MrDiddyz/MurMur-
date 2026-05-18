@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 from pathlib import Path
+from typing import Any
 
 import ollama
 
@@ -12,16 +13,15 @@ def _load_prompt(path: Path) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
-def _extract_content(response: object) -> str:
+def _extract_content(response: Any) -> str:
     """Extract message content from either a dict (ollama < 0.2) or a ChatResponse object (ollama >= 0.2)."""
     if isinstance(response, dict):
         message = response.get("message", {})
-        return str(message.get("content", "")).strip()
-    # ollama >= 0.2 returns a ChatResponse object
-    message = getattr(response, "message", None)
-    if message is None:
-        return ""
-    content = getattr(message, "content", None)
+        content = message.get("content", "")
+    else:
+        # ollama >= 0.2 returns a ChatResponse object
+        message = getattr(response, "message", None)
+        content = getattr(message, "content", None) if message is not None else None
     return str(content or "").strip()
 
 

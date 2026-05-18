@@ -21,7 +21,7 @@ A human-centered AI learning and reflection lab built with **Next.js App Router*
 
 ## Stack
 
-- **Next.js 14** App Router (Server Components + Client Components)
+- **Next.js 15** App Router (Server Components + Client Components)
 - **TypeScript** strict mode
 - **Tailwind CSS** with custom dark theme
 - **Supabase** (PostgreSQL + RLS)

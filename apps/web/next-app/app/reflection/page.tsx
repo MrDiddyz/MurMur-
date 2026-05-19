@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { submitReflection } from './actions';
+import { MIN_REFLECTION_LENGTH } from '@/lib/server/learning-lab';
 
 type ReflectionPageProps = {
   searchParams?: { error?: string };
@@ -27,7 +28,7 @@ export default function ReflectionPage({ searchParams }: ReflectionPageProps) {
           id="content"
           name="content"
           rows={10}
-          minLength={20}
+          minLength={MIN_REFLECTION_LENGTH}
           required
           className="w-full rounded-xl border border-white/20 bg-black/20 p-4 text-white outline-none transition focus:border-cyan-300"
           placeholder="What happened, what did you notice, and what feels important now?"

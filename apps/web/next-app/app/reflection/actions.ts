@@ -1,7 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createReflectionAndNode } from '@/lib/server/learning-lab';
+import { createReflectionAndNode, ReflectionValidationError } from '@/lib/server/learning-lab';
 
 export async function submitReflection(formData: FormData) {
   const content = String(formData.get('content') ?? '');
@@ -11,7 +11,7 @@ export async function submitReflection(formData: FormData) {
     redirect(`/review?reflectionId=${reflection.id}`);
   } catch (error) {
     const message =
-      error instanceof Error && error.message.includes('at least')
+      error instanceof ReflectionValidationError
         ? error.message
         : 'Could not process reflection right now. Please try again.';
     redirect(`/reflection?error=${encodeURIComponent(message)}`);

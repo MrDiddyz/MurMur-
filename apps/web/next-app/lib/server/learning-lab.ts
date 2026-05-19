@@ -32,14 +32,16 @@ type AiReflectionResponse = {
 };
 
 const MAX_TITLE_WORDS = 6;
-const MIN_REFLECTION_LENGTH = 20;
+export const MIN_REFLECTION_LENGTH = 20;
 const NEXT_STEP_WINDOW_HOURS = 24;
 const NEXT_STEP_DURATION_MINUTES = 10;
 const DEFAULT_REFLECTION_LIMIT = 6;
 const DEFAULT_NODE_LIMIT = 12;
 const MAX_QUERY_LIMIT = 100;
 const MIN_QUERY_LIMIT = 1;
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_PATTERN = /^[0-9A-F]{8}-[0-9A-F]{4}-[1-5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+
+export class ReflectionValidationError extends Error {}
 
 function getSupabaseConfig() {
   return {
@@ -75,7 +77,7 @@ async function supabaseRequest<T>(path: string, init: RequestInit = {}): Promise
 }
 
 function buildMirror(text: string): string {
-  const first = text.split(/[.!?\n\r]/).find((part) => part.trim().length > 0)?.trim() ?? text.trim();
+  const first = text.split(/[.!?\n\r]/).find((part) => part.trim().length > 0) ?? text.trim();
   return `You are noticing that "${first}" matters deeply to you right now.`;
 }
 
@@ -120,7 +122,9 @@ function makeNodeTitle(content: string): string {
 export async function createReflectionAndNode(rawContent: string): Promise<ReflectionWithNode> {
   const content = rawContent.trim();
   if (content.length < MIN_REFLECTION_LENGTH) {
-    throw new Error(`Please write at least ${MIN_REFLECTION_LENGTH} characters so the reflection has enough context.`);
+    throw new ReflectionValidationError(
+      `Please write at least ${MIN_REFLECTION_LENGTH} characters so the reflection has enough context.`,
+    );
   }
 
   const ai = generateAiReflection(content);

@@ -42,6 +42,8 @@ create table if not exists public.audit_log (
   created_at timestamptz not null default now()
 );
 
+-- MVP data model uses server-side service role writes only.
+-- Add RLS + user-scoped policies before exposing direct client-side table access.
 create table if not exists public.reflections (
   id uuid primary key default gen_random_uuid(),
   content text not null,

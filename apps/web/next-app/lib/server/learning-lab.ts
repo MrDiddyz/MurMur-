@@ -39,7 +39,7 @@ const DEFAULT_REFLECTION_LIMIT = 6;
 const DEFAULT_NODE_LIMIT = 12;
 const MAX_QUERY_LIMIT = 100;
 const MIN_QUERY_LIMIT = 1;
-const UUID_PATTERN = /^[0-9A-F]{8}-[0-9A-F]{4}-[1-5][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export class ReflectionValidationError extends Error {}
 
@@ -77,7 +77,8 @@ async function supabaseRequest<T>(path: string, init: RequestInit = {}): Promise
 }
 
 function buildMirror(text: string): string {
-  const first = text.split(/[.!?\n\r]/).find((part) => part.trim().length > 0) ?? text.trim();
+  const firstCandidate = text.split(/[.!?\n\r]/).find((part) => part.trim().length > 0) ?? text.trim();
+  const first = firstCandidate.trim() || 'this moment';
   return `You are noticing that "${first}" matters deeply to you right now.`;
 }
 

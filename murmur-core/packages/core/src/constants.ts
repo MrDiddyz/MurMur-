@@ -1,0 +1,1 @@
+export const BRAND={name:"MurMur Core",tagline:"Not noise. Signal."};

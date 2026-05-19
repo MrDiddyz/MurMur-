@@ -1,72 +1,45 @@
-# MurMur Core (v0.1)
+# MurMur Core
 
-## 1. Run locally (docker)
-From `infra/`:
-- `docker compose up --build`
-- open `http://localhost:8080/docs`
+**Not noise. Signal.**
 
-## 2. Run goal
-POST `http://localhost:8080/run`
-Body:
-```json
-{"goal":"Lag en content-agent for MurMur som publiserer ukentlig og lærer av metrics"}
-```
+MurMur Core is a premium AI-assisted intelligence MVP for decoding fragments, narratives, and local growth opportunities.
 
+## Why it exists
+Founders drown in notes, chats, and weak signals. MurMur converts raw archive into audit-ready execution signals.
 
-## 2b. Trigger run via Netlify function
-Use this from the browser when deployed with a Netlify function wrapper:
+## Tech stack
+- Next.js 15 + TypeScript + Tailwind
+- Zustand + Zod
+- Turborepo monorepo
+- Supabase-ready SQL (local mock fallback)
 
-```ts
-await fetch("/.netlify/functions/run-agent", {
-  method: "POST",
-  body: JSON.stringify({ goal: "Generate 3 posts this week" })
-});
-```
+## Features
+- Narrative Decode
+- Signal Audit
+- Council Scoring (Trend/Market/Tech/Revenue/Execution)
+- Markdown report generation
+- Dashboard with recent runs and KPIs
 
-## 3. Test
-**Kjør dette lokalt:**
-
+## Local setup
 ```bash
-cd murmur-core/infra
-docker compose up --build
+pnpm install
+pnpm dev
 ```
 
-## 4. Example response (`POST /run`)
-```json
-{
-  "run_id": "9f2b6c9a9b8a4b7f8e7a6f0f8c9d1e2f",
-  "status": "done",
-  "summary": "research:Finn innsikt og avklaringer -> insights, questions | builder:Skisser minimal demo/byggplan -> files, deploy | content:Lag 1 post + 1 CTA -> post | optimizer:Lag A/B hooks + metrics -> ab_tests, metrics | memory:Store run learnings -> stored, note | reflection:Reflect and improve -> reflection, event_count",
-  "events": [
-    {
-      "event_id": "…",
-      "run_id": "…",
-      "ts": "…Z",
-      "role": "orchestrator",
-      "type": "goal_received",
-      "message": "Goal received.",
-      "data": {
-        "goal": "Lag en content-agent som bygger og publiserer 3 posts i uka, måler CTR og forbedrer hooks"
-      }
-    },
-    {
-      "event_id": "…",
-      "role": "orchestrator",
-      "type": "plan_created",
-      "message": "Plan created.",
-      "data": {
-        "steps": [
-          "Finn innsikt og avklaringer",
-          "Skisser minimal demo/byggplan",
-          "Lag 1 post + 1 CTA",
-          "Lag A/B hooks + metrics"
-        ]
-      }
-    }
-  ]
-}
-```
+## Env vars
+Copy `.env.example` to `.env.local`.
 
-## 5. Verification log
-- ✅ `sed -n '1,320p' murmur-core/README.md`
-- ✅ `git commit -m "Document example /run response payload in README"`
+## API routes
+- `POST /api/decode/run`
+- `POST /api/audit/run`
+- `POST /api/council/run`
+- `POST /api/reports/generate`
+
+## Deployment (Vercel)
+1. Import repo to Vercel.
+2. Set root to `apps/web`.
+3. Add env vars.
+4. Deploy.
+
+## Supabase future setup
+SQL is prebuilt in `database/`. Switch storage adapter from mock store to Supabase repository layer.

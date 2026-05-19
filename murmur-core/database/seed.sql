@@ -1,0 +1,1 @@
+insert into agent_weights(agent,weight) values ('Trend',1),('Market',1),('Tech',1),('Revenue',1),('Execution',1) on conflict do nothing;

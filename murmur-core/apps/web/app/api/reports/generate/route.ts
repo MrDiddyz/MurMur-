@@ -1,0 +1,1 @@
+import { NextResponse } from "next/server"; export async function POST(){return NextResponse.json({markdown:"# MurMur Report\nGenerated from mock deterministic data."});}

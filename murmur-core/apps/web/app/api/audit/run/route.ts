@@ -1,0 +1,1 @@
+import { NextResponse } from "next/server"; import { inputSchema } from "@murmur/core/schemas"; import { runAudit } from "../../../../../agents/audit/audit-engine"; export async function POST(req:Request){try{const b=inputSchema.parse(await req.json());return NextResponse.json(runAudit(b.text));}catch{return NextResponse.json({error:"Invalid input"},{status:400});}}

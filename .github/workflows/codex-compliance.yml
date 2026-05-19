@@ -1,0 +1,38 @@
+name: Codex Compliance
+
+on:
+  pull_request:
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
+
+jobs:
+  codex-compliance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Export PR body
+        if: github.event_name == 'pull_request'
+        run: |
+          node -e "const fs=require('node:fs'); const event=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, 'utf8')); fs.writeFileSync(process.env.RUNNER_TEMP + '/codex-pr-body.md', event.pull_request?.body || '');"
+
+      - name: Check changed files and PR response contract
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+          node scripts/check-codex-compliance.mjs --changed "origin/${{ github.base_ref }}...HEAD" --response-file "$RUNNER_TEMP/codex-pr-body.md"
+
+      - name: Check ruleset
+        if: github.event_name != 'pull_request'
+        run: node scripts/check-codex-compliance.mjs

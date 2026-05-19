@@ -31,6 +31,9 @@ type AiReflectionResponse = {
   creativeSuggestion: string;
 };
 
+const MAX_TITLE_WORDS = 6;
+const MIN_REFLECTION_LENGTH = 20;
+
 function getSupabaseConfig() {
   return {
     supabaseUrl: getEnv('SUPABASE_URL'),
@@ -65,7 +68,7 @@ async function supabaseRequest<T>(path: string, init: RequestInit = {}): Promise
 }
 
 function buildMirror(text: string): string {
-  const first = text.split(/[\n.!?]/).find((part) => part.trim().length > 0)?.trim() ?? text.trim();
+  const first = text.split(/[.!?\n\r]/).find((part) => part.trim().length > 0)?.trim() ?? text.trim();
   return `You are noticing that "${first}" matters deeply to you right now.`;
 }
 
@@ -101,14 +104,14 @@ function generateAiReflection(text: string): AiReflectionResponse {
 }
 
 function makeNodeTitle(content: string): string {
-  const words = content.trim().split(/\s+/).filter(Boolean).slice(0, 6);
+  const words = content.trim().split(/\s+/).filter(Boolean).slice(0, MAX_TITLE_WORDS);
   return words.length > 0 ? words.join(' ') : 'Untitled reflection';
 }
 
 export async function createReflectionAndNode(rawContent: string): Promise<ReflectionWithNode> {
   const content = rawContent.trim();
-  if (content.length < 20) {
-    throw new Error('Please write at least 20 characters so the reflection has enough context.');
+  if (content.length < MIN_REFLECTION_LENGTH) {
+    throw new Error(`Please write at least ${MIN_REFLECTION_LENGTH} characters so the reflection has enough context.`);
   }
 
   const ai = generateAiReflection(content);

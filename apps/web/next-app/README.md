@@ -1,14 +1,61 @@
-# Next App Area
+# Murmur Learning Lab (MVP)
 
-This folder contains the isolated Next.js-oriented code moved out of `apps/web/src`.
+A minimal, production-ready learning and reflection lab.
 
-Structure:
+## Stack
 
-- `app/`: Next App Router routes and handlers
-- `components/`: UI/components used by Next routes
-- `lib/`: Next/server-side helpers and domain helpers
-- `data/`: Next route content data
-- `murmurlayer/`: Next route feature module
-- `styles/`: Next-only stylesheet assets
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Supabase (Postgres via REST API)
 
-This separation keeps Vite deployment builds focused on `apps/web/src/main.tsx` and `apps/web/src/App.tsx`.
+## Core flow
+
+1. User writes a reflection on `/reflection`.
+2. AI response is generated with:
+   - mirror
+   - insight
+   - next step
+   - creative suggestion
+3. Reflection is saved to Supabase (`public.reflections`).
+4. Learning node is created from the reflection (`public.learning_nodes`).
+5. Dashboard (`/`) shows recent reflections and nodes.
+
+## Routes
+
+- `/` Dashboard
+- `/reflection` Reflection input
+- `/constellation` Learning nodes list
+- `/review` Reflection response review
+
+## Required environment variables
+
+Set these in `.env.local`:
+
+```bash
+SUPABASE_URL=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
+
+## Database schema
+
+Apply `supabase/schema.sql` to your Supabase project.  
+MVP tables used by this app:
+
+- `public.reflections`
+- `public.learning_nodes`
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+## Verification
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```

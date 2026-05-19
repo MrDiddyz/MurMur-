@@ -42,9 +42,31 @@ create table if not exists public.audit_log (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.reflections (
+  id uuid primary key default gen_random_uuid(),
+  content text not null,
+  mirror text not null,
+  insight text not null,
+  next_step text not null,
+  creative_suggestion text not null,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.learning_nodes (
+  id uuid primary key default gen_random_uuid(),
+  reflection_id uuid not null references public.reflections(id) on delete cascade,
+  title text not null,
+  summary text not null,
+  next_action text not null,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists idx_customers_user_id on public.customers(user_id);
 create index if not exists idx_customers_stripe_customer_id on public.customers(stripe_customer_id);
 create index if not exists idx_subscriptions_customer_id on public.subscriptions(customer_id);
 create index if not exists idx_subscriptions_status on public.subscriptions(status);
 create index if not exists idx_events_provider_event_id on public.events(provider, provider_event_id);
 create index if not exists idx_audit_log_created_at on public.audit_log(created_at desc);
+create index if not exists idx_reflections_created_at on public.reflections(created_at desc);
+create index if not exists idx_learning_nodes_created_at on public.learning_nodes(created_at desc);
+create index if not exists idx_learning_nodes_reflection_id on public.learning_nodes(reflection_id);

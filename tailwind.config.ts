@@ -1,20 +1,20 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
-        night: '#070B14',
-        ink: '#B7C2D9',
-        accent: '#7C9BFF',
-      },
-      boxShadow: {
-        glow: '0 0 0 1px rgba(124,155,255,0.2), 0 8px 30px rgba(5,10,25,0.5)',
-      },
-    },
+        murmur: {
+          black: "#090909",
+          graphite: "#141414",
+          gold: "#C7A96B",
+          copper: "#A87745"
+        }
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 };
 
 export default config;

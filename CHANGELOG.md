@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Documented CourseForge v1.0 as the current internal evolution version, including the self-evolutionary learning loop, 12-point performance review, permanent knowledge structure, forbidden patterns, outcome-first course architecture, AI-native curriculum strategy, and monetization-aware module design.
+
 ## [0.2.0] - 2026-03-05
 
 ### Added

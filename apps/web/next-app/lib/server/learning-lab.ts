@@ -33,6 +33,13 @@ type AiReflectionResponse = {
 
 const MAX_TITLE_WORDS = 6;
 const MIN_REFLECTION_LENGTH = 20;
+const NEXT_STEP_WINDOW_HOURS = 24;
+const NEXT_STEP_DURATION_MINUTES = 10;
+const DEFAULT_REFLECTION_LIMIT = 6;
+const DEFAULT_NODE_LIMIT = 12;
+const MAX_QUERY_LIMIT = 100;
+const MIN_QUERY_LIMIT = 1;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function getSupabaseConfig() {
   return {
@@ -86,7 +93,9 @@ function buildInsight(text: string): string {
 function buildNextStep(text: string): string {
   const words = text.trim().split(/\s+/).filter(Boolean);
   const anchor = words.slice(0, 4).join(' ');
-  return `In the next 24 hours, take 10 focused minutes to act on "${anchor || 'this reflection'}" and write what changed.`;
+  return `In the next ${NEXT_STEP_WINDOW_HOURS} hours, take ${NEXT_STEP_DURATION_MINUTES} focused minutes to act on "${
+    anchor || 'this reflection'
+  }" and write what changed.`;
 }
 
 function buildCreativeSuggestion(text: string): string {
@@ -144,23 +153,43 @@ export async function createReflectionAndNode(rawContent: string): Promise<Refle
   return { reflection, node: nodeRows[0] ?? null };
 }
 
-export async function listRecentReflections(limit = 6): Promise<ReflectionRecord[]> {
+function normalizeLimit(limit: number, fallback: number): number {
+  if (!Number.isFinite(limit)) {
+    return fallback;
+  }
+
+  const normalized = Math.trunc(limit);
+  if (normalized < MIN_QUERY_LIMIT) {
+    return MIN_QUERY_LIMIT;
+  }
+
+  if (normalized > MAX_QUERY_LIMIT) {
+    return MAX_QUERY_LIMIT;
+  }
+
+  return normalized;
+}
+
+export async function listRecentReflections(limit = DEFAULT_REFLECTION_LIMIT): Promise<ReflectionRecord[]> {
+  const safeLimit = normalizeLimit(limit, DEFAULT_REFLECTION_LIMIT);
   return supabaseRequest<ReflectionRecord[]>(
-    `reflections?select=*&order=created_at.desc&limit=${encodeURIComponent(String(limit))}`,
+    `reflections?select=*&order=created_at.desc&limit=${encodeURIComponent(String(safeLimit))}`,
     { headers: { Prefer: 'return=representation' } },
   );
 }
 
-export async function listRecentNodes(limit = 12): Promise<LearningNodeRecord[]> {
+export async function listRecentNodes(limit = DEFAULT_NODE_LIMIT): Promise<LearningNodeRecord[]> {
+  const safeLimit = normalizeLimit(limit, DEFAULT_NODE_LIMIT);
   return supabaseRequest<LearningNodeRecord[]>(
-    `learning_nodes?select=*&order=created_at.desc&limit=${encodeURIComponent(String(limit))}`,
+    `learning_nodes?select=*&order=created_at.desc&limit=${encodeURIComponent(String(safeLimit))}`,
     { headers: { Prefer: 'return=representation' } },
   );
 }
 
 export async function getReviewSnapshot(reflectionId?: string): Promise<ReflectionWithNode | null> {
-  const query = reflectionId
-    ? `reflections?id=eq.${encodeURIComponent(reflectionId)}&select=*&limit=1`
+  const validReflectionId = reflectionId && UUID_PATTERN.test(reflectionId) ? reflectionId : undefined;
+  const query = validReflectionId
+    ? `reflections?id=eq.${encodeURIComponent(validReflectionId)}&select=*&limit=1`
     : 'reflections?select=*&order=created_at.desc&limit=1';
 
   const reflections = await supabaseRequest<ReflectionRecord[]>(query, { headers: { Prefer: 'return=representation' } });

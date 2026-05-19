@@ -10,7 +10,10 @@ export async function submitReflection(formData: FormData) {
     const { reflection } = await createReflectionAndNode(content);
     redirect(`/review?reflectionId=${reflection.id}`);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Could not process reflection. Please try again.';
+    const message =
+      error instanceof Error && error.message.includes('at least')
+        ? error.message
+        : 'Could not process reflection right now. Please try again.';
     redirect(`/reflection?error=${encodeURIComponent(message)}`);
   }
 }

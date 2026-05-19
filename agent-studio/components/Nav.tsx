@@ -6,6 +6,7 @@ export default function Nav() {
         <a href="/scenarios">Scenarier</a>
         <a href="/baselines">Baselines</a>
         <a href="/settings">Settings</a>
+        <a href="/opportunity-scanner">Opportunity Scanner</a>
       </div>
       <form action="/auth/signout" method="post">
         <button className="rounded bg-zinc-800 px-3 py-1 text-sm hover:bg-zinc-700">Logout</button>

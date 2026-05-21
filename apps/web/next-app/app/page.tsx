@@ -1,51 +1,61 @@
 import Link from 'next/link';
+import { listRecentNodes, listRecentReflections } from '@/lib/server/learning-lab';
 
-const plans = [
-  {
-    name: 'Starter',
-    price: '€49 / mnd',
-    description: 'For små team som trenger trygg AI-automatisering og rapportering.',
-  },
-  {
-    name: 'Growth',
-    price: '€149 / mnd',
-    description: 'For selskaper som trenger integrasjoner, prioritet og avansert innsikt.',
-  },
-  {
-    name: 'Vipps Startpakke',
-    price: 'NOK 1490 (engang)',
-    description: 'Lav terskel onboarding med oppsett, kvalitetssikring og første sprint.',
-  },
-];
+export const dynamic = 'force-dynamic';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [reflections, nodes] = await Promise.all([listRecentReflections(5), listRecentNodes(5)]);
+
   return (
-    <div className="mx-auto max-w-5xl space-y-16 px-4 py-14">
-      <header className="space-y-6 rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">MurMur SaaS</p>
-        <h1 className="text-4xl font-semibold text-slate-900 md:text-5xl">Automatiser kundeoppfølging med trygg AI</h1>
-        <p className="max-w-3xl text-lg text-slate-600">
-          MurMur kombinerer markedsføringsside, Stripe-abonnement, Vipps Startpakke og et beskyttet dashboard med
-          abonnementskontroll.
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 py-12">
+      <header className="card space-y-4">
+        <p className="text-sm uppercase tracking-[0.2em] text-cyan-200">Murmur Learning Lab</p>
+        <h1 className="text-4xl font-semibold text-white">Human-centered AI learning and reflection lab</h1>
+        <p className="max-w-3xl text-ink">
+          Write reflections, receive AI guidance, and track your growth through connected learning nodes.
         </p>
         <div className="flex flex-wrap gap-3">
-          <Link className="rounded-lg bg-slate-900 px-4 py-2 font-medium text-white" href="/dashboard">
-            Gå til dashboard
+          <Link className="rounded-lg bg-cyan-300 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-cyan-200" href="/reflection">
+            New reflection
           </Link>
-          <Link className="rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-900" href="/en">
-            English version
+          <Link className="rounded-lg border border-white/25 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10" href="/constellation">
+            View constellation
           </Link>
         </div>
       </header>
 
-      <section className="grid gap-6 md:grid-cols-3">
-        {plans.map((plan) => (
-          <article key={plan.name} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-slate-900">{plan.name}</h2>
-            <p className="mt-2 text-lg font-medium text-slate-700">{plan.price}</p>
-            <p className="mt-3 text-sm text-slate-600">{plan.description}</p>
-          </article>
-        ))}
+      <section className="grid gap-6 md:grid-cols-2">
+        <article className="card space-y-3">
+          <h2 className="text-xl font-semibold text-white">Recent reflections</h2>
+          {reflections.length === 0 ? (
+            <p className="text-sm text-ink">No reflections yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {reflections.map((reflection) => (
+                <li key={reflection.id} className="rounded-lg border border-white/15 p-3">
+                  <p className="line-clamp-3 text-sm text-ink">{reflection.content}</p>
+                  <p className="mt-2 text-xs text-ink/90">{new Date(reflection.created_at).toLocaleString()}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+
+        <article className="card space-y-3">
+          <h2 className="text-xl font-semibold text-white">Recent nodes</h2>
+          {nodes.length === 0 ? (
+            <p className="text-sm text-ink">No nodes yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {nodes.map((node) => (
+                <li key={node.id} className="rounded-lg border border-white/15 p-3">
+                  <p className="font-medium text-cyan-100">{node.title}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-ink">{node.summary}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
       </section>
     </div>
   );

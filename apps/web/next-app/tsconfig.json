@@ -12,6 +12,9 @@
         "../../../core/*"
       ]
     },
+    "types": [
+      "node"
+    ],
     "lib": [
       "dom",
       "dom.iterable",

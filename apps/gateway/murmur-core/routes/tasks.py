@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from auth import require_api_key_with_scope
-from queue import enqueue_task
+from task_queue import enqueue_task
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 

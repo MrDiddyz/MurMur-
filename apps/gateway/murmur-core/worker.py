@@ -2,7 +2,7 @@ import logging
 import os
 
 from logging_config import setup_json_logging
-from queue import pop_task
+from task_queue import pop_task
 
 
 logger = logging.getLogger("worker")

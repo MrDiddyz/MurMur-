@@ -31,6 +31,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
       QUEUE_NAME: ${QUEUE_NAME:-tasks}
+    links:
+      - postgres
+      - redis
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,6 +48,9 @@ services:
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       TIKTOK_WEBHOOK_SECRET: ${TIKTOK_WEBHOOK_SECRET}
       REDIS_HOST: ${REDIS_HOST}
+    links:
+      - postgres
+      - redis
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,6 +69,10 @@ services:
       SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
       WORKER_SERVICE_NAME: ${WORKER_SERVICE_NAME:-murmur-worker}
       QUEUE_NAME: ${QUEUE_NAME:-tasks}
+    links:
+      - postgres
+      - redis
+      - core
     depends_on:
       redis:
         condition: service_healthy

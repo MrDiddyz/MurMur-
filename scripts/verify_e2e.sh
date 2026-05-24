@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-COMPOSE_FILE="${COMPOSE_FILE:-murmur-stronghold/docker-compose.yml}"
+COMPOSE_FILE="${COMPOSE_FILE:-apps/gateway/docker-compose.yml}"
 HEALTH_URL="${HEALTH_URL:-http://localhost:3001/health}"
 E2E_TIMEOUT_SECONDS="${E2E_TIMEOUT_SECONDS:-120}"
 POLL_INTERVAL_SECONDS="${POLL_INTERVAL_SECONDS:-3}"
@@ -11,6 +11,7 @@ export JWT_SECRET="${JWT_SECRET:-dev-jwt-secret}"
 export STRIPE_KEY="${STRIPE_KEY:-sk_test_placeholder}"
 export STRIPE_WEBHOOK_SECRET="${STRIPE_WEBHOOK_SECRET:-whsec_placeholder}"
 export REDIS_HOST="${REDIS_HOST:-redis}"
+export REDIS_URL="${REDIS_URL:-redis://redis:6379/0}"
 export CORE_URL="${CORE_URL:-http://core:8000}"
 export TIKTOK_WEBHOOK_SECRET="${TIKTOK_WEBHOOK_SECRET:-dev-tiktok-webhook-secret}"
 

@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: murmur
+      POSTGRES_DB: murmur
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murmur -d murmur"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  node-registry:
+    build:
+      context: .
+      dockerfile: apps/node-registry/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://murmur:murmur@postgres:5432/murmur
+      JWT_SECRET: change-me
+      NODE_ENV: development
+      PORT: 8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["sh", "-lc", "npm run prisma:migrate -w @murmur/node-registry && npm run seed -w @murmur/node-registry && npm run start -w @murmur/node-registry"]
+    ports:
+      - "8081:8081"
+
+  session-image:
+    build:
+      context: .
+      dockerfile: docker/session.Dockerfile
+    image: murmur-session
+    command: ["bash", "-lc", "echo session image ready && sleep infinity"]
+
+  server:
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    environment:
+      JWT_SECRET: change-me
+      MURMUR_API: http://node-registry:8081
+      NODE_ENV: development
+      PORT: 8080
+      SESSION_IMAGE: murmur-session
+    depends_on:
+      - node-registry
+      - session-image
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      NODE_ENV: development
+    depends_on:
+      - server
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:

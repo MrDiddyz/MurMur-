@@ -1,0 +1,19 @@
+{
+  "name": "murmur-terminal",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w @murmur/web",
+    "dev:server": "npm run dev -w @murmur/server",
+    "dev:registry": "npm run dev -w @murmur/node-registry",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "prisma:generate": "npm run prisma:generate -w @murmur/node-registry",
+    "prisma:migrate": "npm run prisma:migrate -w @murmur/node-registry",
+    "seed": "npm run seed -w @murmur/node-registry"
+  }
+}

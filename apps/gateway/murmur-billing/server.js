@@ -15,6 +15,7 @@ function requireEnv(name) {
 const STRIPE_KEY = requireEnv("STRIPE_KEY")
 const DATABASE_URL = requireEnv("DATABASE_URL")
 const REDIS_HOST = requireEnv("REDIS_HOST")
+const QUEUE_NAME = process.env.QUEUE_NAME?.trim() || "agent_queue"
 requireEnv("STRIPE_WEBHOOK_SECRET")
 requireEnv("TIKTOK_WEBHOOK_SECRET")
 
@@ -208,7 +209,7 @@ fastify.post("/webhook", async (req, res) => {
 
   if (shouldEnqueue) {
     try {
-      await redis.lpush("agent_queue", String(intentId))
+      await redis.lpush(QUEUE_NAME, String(intentId))
     } catch (error) {
       req.log.error({ err: error, intentId }, "failed enqueueing job after DB commit")
       await db.query("UPDATE jobs SET status='queue_error' WHERE intent_id=$1", [intentId])

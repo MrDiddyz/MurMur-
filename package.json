@@ -18,7 +18,7 @@
     "verify:web": "npm --workspace @murmur/web run build && npm --prefix apps/web/next-app ci && npm --prefix apps/web/next-app run verify",
     "verify": "npm run build && npm --prefix apps/web/next-app ci && npm --prefix apps/web/next-app run verify",
     "verify:e2e": "bash scripts/verify_e2e.sh",
-    "verify:webhook": "node scripts/send_test_webhook.js",
+    "verify:webhook": "bash scripts/verify_webhook.sh",
     "verify:ml": "node scripts/ml_sanity.js",
     "breach:scan": "python scripts/breach_watch.py",
     "breach:watch": "python scripts/breach_watch.py"

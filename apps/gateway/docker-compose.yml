@@ -7,6 +7,9 @@ services:
       POSTGRES_DB: murmur
     volumes:
       - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.10
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U murmur"]
       interval: 10s
@@ -16,6 +19,9 @@ services:
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.11
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -25,12 +31,15 @@ services:
   core:
     build: ./murmur-core
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${GATEWAY_DATABASE_URL:-postgresql://murmur:murmur@172.31.240.10:5432/murmur}
       JWT_SECRET: ${JWT_SECRET}
-      REDIS_URL: ${REDIS_URL}
+      REDIS_URL: ${GATEWAY_REDIS_URL:-redis://172.31.240.11:6379/0}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
-      QUEUE_NAME: ${QUEUE_NAME:-tasks}
+      QUEUE_NAME: ${QUEUE_NAME:-agent_queue}
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.12
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,11 +49,15 @@ services:
   billing:
     build: ./murmur-billing
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${GATEWAY_DATABASE_URL:-postgresql://murmur:murmur@172.31.240.10:5432/murmur}
       STRIPE_KEY: ${STRIPE_KEY}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       TIKTOK_WEBHOOK_SECRET: ${TIKTOK_WEBHOOK_SECRET}
-      REDIS_HOST: ${REDIS_HOST}
+      REDIS_HOST: ${GATEWAY_REDIS_HOST:-172.31.240.11}
+      QUEUE_NAME: ${QUEUE_NAME:-agent_queue}
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.13
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,16 +67,21 @@ services:
       - "3001:3001"
 
   worker:
-    build: ./murmur-core
-    command: ["python", "-m", "worker"]
+    build: ./murmur-worker
     environment:
-      REDIS_URL: ${REDIS_URL}
+      DATABASE_URL: ${GATEWAY_DATABASE_URL:-postgresql://murmur:murmur@172.31.240.10:5432/murmur}
+      REDIS_HOST: ${GATEWAY_REDIS_HOST:-172.31.240.11}
+      CORE_URL: ${GATEWAY_CORE_URL:-http://172.31.240.12:8000}
       JWT_SECRET: ${JWT_SECRET}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      SERVICE_NAME: ${SERVICE_NAME:-murmur-api}
-      WORKER_SERVICE_NAME: ${WORKER_SERVICE_NAME:-murmur-worker}
-      QUEUE_NAME: ${QUEUE_NAME:-tasks}
+      QUEUE_NAME: ${QUEUE_NAME:-agent_queue}
+      DEAD_LETTER_QUEUE: ${DEAD_LETTER_QUEUE:-agent_queue_dead}
+      MAX_JOB_RETRIES: ${MAX_JOB_RETRIES:-5}
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.14
     depends_on:
+      core:
+        condition: service_started
       redis:
         condition: service_healthy
       postgres:
@@ -71,5 +89,15 @@ services:
 
   web:
     build: ./murmur-web
+    networks:
+      gateway_net:
+        ipv4_address: 172.31.240.15
     ports:
       - "3000:3000"
+
+networks:
+  gateway_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.240.0/24

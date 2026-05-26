@@ -2,7 +2,6 @@
 set -euo pipefail
 
 COMPOSE_FILE="${COMPOSE_FILE:-apps/gateway/docker-compose.yml}"
-HEALTH_URL="${HEALTH_URL:-http://localhost:3001/health}"
 E2E_TIMEOUT_SECONDS="${E2E_TIMEOUT_SECONDS:-120}"
 POLL_INTERVAL_SECONDS="${POLL_INTERVAL_SECONDS:-3}"
 
@@ -14,16 +13,22 @@ export REDIS_HOST="${REDIS_HOST:-redis}"
 export REDIS_URL="${REDIS_URL:-redis://redis:6379/0}"
 export CORE_URL="${CORE_URL:-http://core:8000}"
 export TIKTOK_WEBHOOK_SECRET="${TIKTOK_WEBHOOK_SECRET:-dev-tiktok-webhook-secret}"
+export QUEUE_NAME="${QUEUE_NAME:-agent_queue}"
 
 log() { printf '[verify:e2e] %s\n' "$*"; }
 fail() { printf '[verify:e2e] FAIL: %s\n' "$*" >&2; exit 1; }
 
-log "Starting required services via docker compose"
-docker compose -f "$COMPOSE_FILE" up -d postgres redis core billing worker >/dev/null
+log "Resetting verification stack"
+docker compose -f "$COMPOSE_FILE" down -v --remove-orphans >/dev/null 2>&1 || true
 
-log "Waiting for billing health endpoint: $HEALTH_URL"
+log "Starting required services via docker compose"
+docker compose -f "$COMPOSE_FILE" up --build -d postgres redis core billing worker >/dev/null
+
+log "Waiting for billing health endpoint inside container"
 deadline=$(( $(date +%s) + E2E_TIMEOUT_SECONDS ))
-until curl -fsS "$HEALTH_URL" >/dev/null 2>&1; do
+until docker compose -f "$COMPOSE_FILE" exec -T billing \
+  node --input-type=module -e "const res = await fetch('http://127.0.0.1:3001/health'); if (!res.ok) process.exit(1);" \
+  >/dev/null 2>&1; do
   if (( $(date +%s) >= deadline )); then
     docker compose -f "$COMPOSE_FILE" ps || true
     fail "Billing health check timed out after ${E2E_TIMEOUT_SECONDS}s"
@@ -37,7 +42,7 @@ intent_id="$({
   docker compose -f "$COMPOSE_FILE" exec -T postgres \
     psql -U murmur -d murmur -t -A -v ON_ERROR_STOP=1 \
     -c "INSERT INTO payment_intents(email, goal, status) VALUES ('verify@example.com', '${intent_goal}', 'queued') RETURNING id;"
-} | tr -d '[:space:]')"
+} | head -n 1 | tr -d '[:space:]')"
 
 [[ -n "$intent_id" ]] || fail "Failed to create payment_intents row"
 
@@ -46,7 +51,7 @@ docker compose -f "$COMPOSE_FILE" exec -T postgres \
   -c "INSERT INTO jobs(intent_id, status, retries) VALUES (${intent_id}, 'queued', 0) ON CONFLICT (intent_id) DO UPDATE SET status='queued';" >/dev/null
 
 log "Enqueueing intent ${intent_id} on Redis"
-docker compose -f "$COMPOSE_FILE" exec -T redis redis-cli LPUSH agent_queue "$intent_id" >/dev/null
+docker compose -f "$COMPOSE_FILE" exec -T redis redis-cli LPUSH "$QUEUE_NAME" "$intent_id" >/dev/null
 
 log "Polling job + intent state"
 terminal=""

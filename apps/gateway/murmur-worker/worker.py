@@ -20,6 +20,8 @@ DATABASE_URL = require_env("DATABASE_URL")
 REDIS_HOST = require_env("REDIS_HOST")
 CORE_URL = require_env("CORE_URL").rstrip("/")
 JWT_SECRET = require_env("JWT_SECRET")
+QUEUE_NAME = os.getenv("QUEUE_NAME", "agent_queue").strip() or "agent_queue"
+DEAD_LETTER_QUEUE = os.getenv("DEAD_LETTER_QUEUE", f"{QUEUE_NAME}_dead").strip() or f"{QUEUE_NAME}_dead"
 
 r = redis.Redis(host=REDIS_HOST, decode_responses=True)
 max_job_retries = int(os.getenv("MAX_JOB_RETRIES", "5"))
@@ -46,12 +48,12 @@ def get_token():
 
 def enqueue_retry(intent_id, retries):
     payload = json.dumps({"intent_id": intent_id, "retries": retries})
-    r.lpush("agent_queue", payload)
+    r.lpush(QUEUE_NAME, payload)
 
 
 def move_to_dead_letter(intent_id, retries):
     payload = json.dumps({"intent_id": intent_id, "retries": retries})
-    r.lpush("agent_queue_dead", payload)
+    r.lpush(DEAD_LETTER_QUEUE, payload)
 
 
 def parse_job_payload(payload):
@@ -78,7 +80,7 @@ def update_job_state(intent_id, job_status, intent_status=None, increment_retry=
 
 
 while True:
-    job = r.brpop("agent_queue", timeout=5)
+    job = r.brpop(QUEUE_NAME, timeout=5)
     if not job:
         continue
 

@@ -9,7 +9,7 @@ def get_redis_client() -> Redis:
 
 
 def get_queue_name() -> str:
-    return os.getenv("QUEUE_NAME", "tasks")
+    return os.getenv("QUEUE_NAME", "agent_queue")
 
 
 def enqueue_task(task: dict):

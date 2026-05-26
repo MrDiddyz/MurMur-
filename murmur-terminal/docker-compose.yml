@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: murmur
+      POSTGRES_USER: murmur
+      POSTGRES_PASSWORD: murmur
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U murmur -d murmur"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  node-registry:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -lc "npm install && npm run db:generate && npm run db:migrate && npm run dev -w @murmur/node-registry"
+    environment:
+      DATABASE_URL: postgresql://murmur:murmur@postgres:5432/murmur
+      JWT_SECRET: dev-secret-change-me
+      NODE_ENV: development
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  server:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logs:/app/logs
+    command: sh -lc "npm install && npm run dev -w @murmur/server"
+    environment:
+      JWT_SECRET: dev-secret-change-me
+      NODE_ENV: development
+      AUDIT_LOG_PATH: /app/logs/gateway-audit.log
+    ports:
+      - "8080:8080"
+    depends_on:
+      - node-registry
+
+  web:
+    image: node:20-bookworm-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -lc "npm install && npm run dev -w @murmur/web"
+    environment:
+      NODE_ENV: development
+      MURMUR_API: http://node-registry:8081
+      JWT_SECRET: dev-secret-change-me
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
+
+volumes:
+  postgres-data:

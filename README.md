@@ -69,10 +69,16 @@ npm run build
 
 ## Supabase Setup
 
-1. Create project in Supabase.
-2. Run SQL from `supabase/schema.sql` in SQL editor.
-3. Enable RLS policies appropriate for your org (service role is used only server-side for backend routes).
-4. Use Supabase Auth user ID as canonical customer identity (`customers.user_id`).
+
+## Codex bootstrap + PR workflow
+
+To support autonomous execution in this repository:
+
+1. `make bootstrap` brings up a validated local baseline (dependency install + lint + typecheck).
+2. `make codex-pr-loop` runs a safe PR loop for Codex (migration visibility, script tests, and the standard validation loop).
+3. In GitHub PRs, you can request an automated review with `@codex review` (when enabled in Codex settings).
+
+## Security
 
 
 ## Vercel Configuration

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE score-partwise PUBLIC
+ "-//Recordare//DTD MusicXML 3.1 Partwise//EN"
+ "http://www.musicxml.org/dtds/partwise.dtd">
+
+<score-partwise version="3.1">
+
+  <work>
+    <work-title>Orbit Choir – Film Suite</work-title>
+  </work>
+
+  <identification>
+    <encoding>
+      <software>MurMur Composer OS</software>
+    </encoding>
+  </identification>
+
+  <part-list>
+    <score-part id="P1">
+      <part-name>Violin I</part-name>
+    </score-part>
+    <score-part id="P2">
+      <part-name>Cello</part-name>
+    </score-part>
+    <score-part id="P3">
+      <part-name>Choir</part-name>
+    </score-part>
+  </part-list>
+
+  <!-- Violin I -->
+  <part id="P1">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <key>
+          <fifths>0</fifths>
+          <mode>minor</mode>
+        </key>
+        <time>
+          <beats>4</beats>
+          <beat-type>4</beat-type>
+        </time>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+
+      <note>
+        <pitch><step>E</step><octave>5</octave></pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
+
+      <note>
+        <pitch><step>G</step><octave>5</octave></pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
+
+      <note>
+        <pitch><step>B</step><octave>5</octave></pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
+
+      <note>
+        <pitch><step>A</step><octave>5</octave></pitch>
+        <duration>1</duration>
+        <voice>1</voice>
+        <type>quarter</type>
+      </note>
+
+    </measure>
+  </part>
+
+  <!-- Cello -->
+  <part id="P2">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <clef>
+          <sign>F</sign>
+          <line>4</line>
+        </clef>
+      </attributes>
+
+      <note>
+        <pitch><step>E</step><octave>2</octave></pitch>
+        <duration>2</duration>
+        <voice>1</voice>
+        <type>half</type>
+      </note>
+
+      <note>
+        <pitch><step>B</step><octave>2</octave></pitch>
+        <duration>2</duration>
+        <voice>1</voice>
+        <type>half</type>
+      </note>
+
+    </measure>
+  </part>
+
+  <!-- Choir -->
+  <part id="P3">
+    <measure number="1">
+      <attributes>
+        <divisions>1</divisions>
+        <clef>
+          <sign>G</sign>
+          <line>2</line>
+        </clef>
+      </attributes>
+
+      <note>
+        <pitch><step>E</step><octave>4</octave></pitch>
+        <duration>2</duration>
+        <type>half</type>
+        <lyric>
+          <text>Mur</text>
+        </lyric>
+      </note>
+
+      <note>
+        <pitch><step>G</step><octave>4</octave></pitch>
+        <duration>2</duration>
+        <type>half</type>
+        <lyric>
+          <text>MurMur</text>
+        </lyric>
+      </note>
+
+    </measure>
+  </part>
+
+</score-partwise>

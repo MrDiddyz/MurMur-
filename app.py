@@ -6,9 +6,13 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="Artist Dev Orchestrator", version="0.1.0")
+
+INSTANCE_ID = "local-dev"
+POLICY_VERSION = "2026-01-01"
 
 # ----------------------------
 # State machine
@@ -166,11 +170,37 @@ def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
 
     return payload
 
+
+class JobStatus(str, Enum):
+    QUEUED = "queued"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class RunJobRequest(BaseModel):
+    prompt: str
+    agent: str = "default-agent"
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    simulate_llm_unavailable: bool = False
+    simulate_agent_error: bool = False
+
+
+class RunJobCreateResponse(BaseModel):
+    job_id: str
+
+
+class JobResponse(BaseModel):
+    job_id: str
+    status: JobStatus
+    result: Optional[Dict[str, Any]] = None
+    error: Optional[Dict[str, Any]] = None
+
 # ----------------------------
 # In-memory "DB" (swap later)
 # ----------------------------
 
 RUNS: Dict[str, Dict[str, Any]] = {}
+JOBS: Dict[str, Dict[str, Any]] = {}
 
 def save_run(run: Dict[str, Any]) -> None:
     run["updatedAt"] = now_iso()
@@ -181,6 +211,54 @@ def get_run_or_404(run_id: str) -> Dict[str, Any]:
     if not run:
         raise HTTPException(status_code=404, detail="Run not found")
     return run
+
+
+def _trace_headers(run_id: str) -> Dict[str, str]:
+    return {
+        "X-Run-Id": run_id,
+        "X-Instance-Id": INSTANCE_ID,
+        "X-Policy-Version": POLICY_VERSION,
+    }
+
+
+def _generate_agent_result(req: RunJobRequest) -> Dict[str, Any]:
+    if req.simulate_llm_unavailable:
+        raise RuntimeError("optional_llm_unavailable")
+    return {
+        "agent": req.agent,
+        "output": f"Processed prompt: {req.prompt}",
+        "provider": "llm",
+        "fallback": False,
+    }
+
+
+def _execute_job(job: Dict[str, Any], req: RunJobRequest) -> None:
+    if req.simulate_agent_error:
+        job["status"] = JobStatus.FAILED.value
+        job["error"] = {
+            "code": "AGENT_EXECUTION_ERROR",
+            "message": "Simulated deterministic agent failure.",
+        }
+        return
+
+    try:
+        result = _generate_agent_result(req)
+        job["status"] = JobStatus.COMPLETED.value
+        job["result"] = result
+        return
+    except RuntimeError as exc:
+        if str(exc) != "optional_llm_unavailable":
+            job["status"] = JobStatus.FAILED.value
+            job["error"] = {"code": "AGENT_EXECUTION_ERROR", "message": str(exc)}
+            return
+
+    job["status"] = JobStatus.COMPLETED.value
+    job["result"] = {
+        "agent": req.agent,
+        "output": f"Fallback output for prompt: {req.prompt}",
+        "provider": "rule_based_fallback",
+        "fallback": True,
+    }
 
 # ----------------------------
 # Minimal transition guards
@@ -305,6 +383,40 @@ def create_run(req: CreateRunRequest):
         save_run(run)
 
     return run
+
+
+@app.post("/v1/run", response_model=RunJobCreateResponse)
+def create_agent_run(req: RunJobRequest):
+    job_id = str(uuid4())
+    job = {
+        "job_id": job_id,
+        "status": JobStatus.QUEUED.value,
+        "result": None,
+        "error": None,
+        "request": req.model_dump(),
+    }
+    JOBS[job_id] = job
+    _execute_job(job, req)
+
+    return JSONResponse(status_code=202, content={"job_id": job_id}, headers=_trace_headers(job_id))
+
+
+@app.get("/v1/jobs/{job_id}", response_model=JobResponse)
+def get_job(job_id: str):
+    job = JOBS.get(job_id)
+    if not job:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "JOB_NOT_FOUND", "message": "No job exists for the requested job_id."},
+        )
+
+    response = {
+        "job_id": job_id,
+        "status": job["status"],
+        "result": job.get("result"),
+        "error": job.get("error"),
+    }
+    return JSONResponse(status_code=200, content=response, headers=_trace_headers(job_id))
 
 @app.get("/v1/runs/{run_id}", response_model=RunResponse)
 def read_run(run_id: str):

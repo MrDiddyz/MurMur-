@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MurMur NFT Mint Console</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ruby-watermark" aria-hidden="true"></div>
+    <main class="panel">
+      <h1>MurMur Unique URI NFT</h1>
+      <p class="subtitle">Exclusive black & gold mint console.</p>
+
+      <form id="mint-form" class="mint-form">
+        <label>
+          Receiver Address
+          <input id="to" type="text" placeholder="0x..." required />
+        </label>
+        <label>
+          Token URI
+          <input id="uri" type="url" placeholder="ipfs://..." required />
+        </label>
+        <button type="submit" class="gold-btn">Mint NFT</button>
+      </form>
+
+      <section class="actions">
+        <button id="fee-btn" class="gold-btn">Set Mint Fee</button>
+        <button id="withdraw-btn" class="gold-btn">Withdraw</button>
+      </section>
+
+      <pre id="status" class="status">Ready.</pre>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

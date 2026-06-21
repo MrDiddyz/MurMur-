@@ -1,0 +1,17 @@
+[
+  {
+    "id": "job_1",
+    "name": "Generate onboarding checklist",
+    "agent": "planner",
+    "status": "completed",
+    "createdAt": "2026-01-18T10:00:00.000Z",
+    "summary": "Created a 7-step onboarding checklist for new engineers."
+  },
+  {
+    "id": "job_2",
+    "name": "Refactor API route handlers",
+    "agent": "coder",
+    "status": "running",
+    "createdAt": "2026-01-18T10:05:00.000Z"
+  }
+]

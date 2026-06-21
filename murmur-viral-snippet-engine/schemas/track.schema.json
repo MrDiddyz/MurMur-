@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "required": ["id", "title", "artist", "bpm", "key", "anchor_words", "lyrics"],
+  "properties": {
+    "id": {"type": "string"},
+    "title": {"type": "string"},
+    "artist": {"type": "string"},
+    "bpm": {"type": "number"},
+    "key": {"type": "string"},
+    "genre": {"type": "array", "items": {"type": "string"}},
+    "tiktok_profile": {"type": "string", "pattern": "^@"},
+    "anchor_words": {"type": "array", "items": {"type": "string"}},
+    "lyrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["section", "text", "cue"],
+        "properties": {
+          "section": {"type": "string"},
+          "text": {"type": "string"},
+          "cue": {"type": "string"}
+        }
+      }
+    }
+  }
+}

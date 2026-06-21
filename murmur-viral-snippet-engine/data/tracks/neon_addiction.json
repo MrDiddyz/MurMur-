@@ -1,0 +1,50 @@
+{
+  "id": "track_001",
+  "title": "Neon Addiction",
+  "artist": "Horror-Seksult Mad",
+  "bpm": 172,
+  "key": "F# minor",
+  "genre": [
+    "dark RnB",
+    "rap",
+    "minimal techno"
+  ],
+  "anchor_words": [
+    "neon",
+    "heartbeat",
+    "poison",
+    "ghost",
+    "fire",
+    "dark love",
+    "addiction",
+    "city lights"
+  ],
+  "lyrics": [
+    {
+      "section": "intro",
+      "text": "Neon on my skin tonight",
+      "cue": "whisper, close-mic, airy, pads only"
+    },
+    {
+      "section": "intro",
+      "text": "Heartbeat under city lights",
+      "cue": "heartbeat kick fades in, low sub"
+    },
+    {
+      "section": "hook",
+      "text": "Neon love, I'm fackd app",
+      "cue": "breathy hook, stacked harmony"
+    },
+    {
+      "section": "hook",
+      "text": "my Heart its not your fart",
+      "cue": "kick pulse stronger, 808 round"
+    },
+    {
+      "section": "hook",
+      "text": "Poison kiss, still I miss it",
+      "cue": "echo tail, ghost layer -3st"
+    }
+  ],
+  "tiktok_profile": "@murmur_artist_001"
+}

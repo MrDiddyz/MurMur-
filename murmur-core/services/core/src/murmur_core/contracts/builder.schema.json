@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["files", "deploy"],
+  "properties": {
+    "files": {
+      "type": "array",
+      "items": {"type": "object", "required": ["path", "desc"], "properties": {"path": {"type": "string"}, "desc": {"type": "string"}}}
+    },
+    "deploy": {"type": "array", "items": {"type": "string"}}
+  }
+}

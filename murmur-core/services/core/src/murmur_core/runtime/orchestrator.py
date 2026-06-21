@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from murmur_core.runtime.agents import (
     BuilderAgent,
     ContentAgent,
@@ -8,8 +10,11 @@ from murmur_core.runtime.agents import (
     ReflectionAgent,
     ResearchAgent,
 )
-from murmur_core.runtime.models import Event, Run, Task
+from murmur_core.runtime.contracts import validate_contract
+from murmur_core.runtime.models import Event, EventType, Role, Run, Task
+from murmur_core.runtime.policies import enforce_no_claim_without_evidence
 from murmur_core.runtime.store import Store
+from murmur_core.runtime.tracing import TraceSpan
 
 
 class Orchestrator:
@@ -25,7 +30,13 @@ class Orchestrator:
         }
 
     def _emit(self, run: Run, role: str, typ: str, message: str, data: dict | None = None):
-        e = Event(run_id=run.run_id, role=role, type=typ, message=message, data=data or {})
+        e = Event(
+            run_id=run.run_id,
+            role=cast(Role, role),
+            type=cast(EventType, typ),
+            message=message,
+            data=data or {},
+        )
         run.events.append(e)
         self.store.add_event(e)
 
@@ -33,6 +44,7 @@ class Orchestrator:
         run = Run(goal=goal)
         self.store.upsert_run(run)
 
+        root_span = TraceSpan(run_id=run.run_id, name="run")
         self._emit(run, "orchestrator", "goal_received", "Goal received.", {"goal": goal})
 
         plan = [
@@ -44,7 +56,13 @@ class Orchestrator:
         self._emit(run, "orchestrator", "plan_created", "Plan created.", {"steps": [p[1] for p in plan]})
 
         for role, title, inp in plan:
-            task = Task(run_id=run.run_id, role=role, title=title, input=inp)
+            span = TraceSpan(
+                run_id=run.run_id,
+                name=f"task:{role}",
+                parent_span_id=root_span.span_id,
+                meta={"title": title},
+            )
+            task = Task(run_id=run.run_id, role=cast(Role, role), title=title, input=inp)
             run.tasks.append(task)
             self.store.add_task(task)
             self._emit(run, "orchestrator", "task_created", f"Task queued: {title}", {"role": role})
@@ -52,19 +70,32 @@ class Orchestrator:
             agent = self.agents[role]
             try:
                 task, extra_events = agent.handle(task)
+                if role == "research":
+                    enforce_no_claim_without_evidence(task.output)
+                    validate_contract("research", task.output)
+                if role == "builder":
+                    validate_contract("builder", task.output)
                 self.store.update_task(task)
                 for ev in extra_events:
                     self.store.add_event(ev)
                     run.events.append(ev)
-                self._emit(run, role, "task_done", f"Task done: {title}", {"output_keys": list(task.output.keys())})
+                self._emit(
+                    run,
+                    role,
+                    "task_done",
+                    f"Task done: {title}",
+                    {"output_keys": list(task.output.keys()), "latency_ms": span.finish().latency_ms},
+                )
             except Exception as ex:
                 task.status = "failed"
                 task.error = str(ex)
                 self.store.update_task(task)
                 run.status = "failed"
                 self._emit(run, role, "task_done", f"Task failed: {title}", {"error": str(ex)})
+                self.store.add_span(span.finish().as_record())
                 self.store.upsert_run(run)
                 return run
+            self.store.add_span(span.finish().as_record())
 
         memory_items = []
         for t in run.tasks:
@@ -91,6 +122,7 @@ class Orchestrator:
         run.status = "done"
         run.summary = self._make_summary(run)
         self._emit(run, "orchestrator", "summary", "Run complete.", {"summary": run.summary})
+        self.store.add_span(root_span.finish().as_record())
         self.store.upsert_run(run)
         return run
 

@@ -59,6 +59,24 @@ class Store:
               error TEXT
             )"""
             )
+            c.execute(
+                """
+            CREATE TABLE IF NOT EXISTS spans(
+              span_id TEXT PRIMARY KEY,
+              run_id TEXT NOT NULL,
+              name TEXT NOT NULL,
+              latency_ms REAL,
+              parent_span_id TEXT,
+              meta TEXT NOT NULL
+            )"""
+            )
+            c.execute(
+                """
+            CREATE TABLE IF NOT EXISTS used_nonces(
+              nonce TEXT PRIMARY KEY,
+              ts INTEGER NOT NULL
+            )"""
+            )
 
     def upsert_run(self, run: Run) -> None:
         blob = run.model_dump_json()
@@ -113,6 +131,49 @@ class Store:
             """,
                 (task.status, json.dumps(task.input), json.dumps(task.output), task.error, task.task_id),
             )
+
+    def add_span(self, span: dict) -> None:
+        with self._conn() as c:
+            c.execute(
+                """
+            INSERT OR REPLACE INTO spans(span_id, run_id, name, latency_ms, parent_span_id, meta)
+            VALUES(?,?,?,?,?,?)
+            """,
+                (
+                    span["span_id"],
+                    span["run_id"],
+                    span["name"],
+                    span.get("latency_ms"),
+                    span.get("parent_span_id"),
+                    json.dumps(span.get("meta", {})),
+                ),
+            )
+
+    def spans_for_run(self, run_id: str) -> list[dict]:
+        with self._conn() as c:
+            rows = c.execute(
+                "SELECT span_id, run_id, name, latency_ms, parent_span_id, meta FROM spans WHERE run_id=?",
+                (run_id,),
+            ).fetchall()
+        return [
+            {
+                "span_id": s,
+                "run_id": rid,
+                "name": name,
+                "latency_ms": latency,
+                "parent_span_id": parent,
+                "meta": json.loads(meta or "{}"),
+            }
+            for s, rid, name, latency, parent, meta in rows
+        ]
+
+    def mark_nonce_used(self, nonce: str, ts: int) -> bool:
+        with self._conn() as c:
+            row = c.execute("SELECT nonce FROM used_nonces WHERE nonce=?", (nonce,)).fetchone()
+            if row:
+                return False
+            c.execute("INSERT INTO used_nonces(nonce, ts) VALUES(?,?)", (nonce, ts))
+            return True
 
     def get_run(self, run_id: str) -> Optional[Run]:
         with self._conn() as c:

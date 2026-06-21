@@ -1,0 +1,130 @@
+services:
+  - type: redis
+    name: murmur-redis
+    plan: starter
+    ipAllowList: []
+
+  - type: web
+    name: murmur-web
+    runtime: docker
+    dockerfilePath: ./infra/docker/web.Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: SERVICE_NAME
+        value: web
+      - key: PORT
+        value: "3000"
+      - key: API_URL
+        fromService:
+          name: murmur-api
+          type: web
+          property: host
+
+  - type: web
+    name: murmur-api
+    runtime: docker
+    dockerfilePath: ./infra/docker/api.Dockerfile
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: SERVICE_NAME
+        value: api
+      - key: PORT
+        value: "3001"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: murmur-worker
+    runtime: docker
+    dockerfilePath: ./infra/docker/worker.Dockerfile
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: SERVICE_NAME
+        value: worker
+      - key: PORT
+        value: "3002"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: murmur-planner-agent
+    runtime: docker
+    dockerfilePath: ./infra/docker/agent.Dockerfile
+    dockerCommand: node agents/planner-agent/server.js
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: SERVICE_NAME
+        value: planner-agent
+      - key: PORT
+        value: "4001"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: murmur-builder-agent
+    runtime: docker
+    dockerfilePath: ./infra/docker/agent.Dockerfile
+    dockerCommand: node agents/builder-agent/server.js
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: SERVICE_NAME
+        value: builder-agent
+      - key: PORT
+        value: "4002"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: murmur-reviewer-agent
+    runtime: docker
+    dockerfilePath: ./infra/docker/agent.Dockerfile
+    dockerCommand: node agents/reviewer-agent/server.js
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: SERVICE_NAME
+        value: reviewer-agent
+      - key: PORT
+        value: "4003"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString
+
+  - type: worker
+    name: murmur-optimizer-agent
+    runtime: docker
+    dockerfilePath: ./infra/docker/agent.Dockerfile
+    dockerCommand: node agents/optimizer-agent/server.js
+    plan: starter
+    autoDeploy: true
+    envVars:
+      - key: SERVICE_NAME
+        value: optimizer-agent
+      - key: PORT
+        value: "4004"
+      - key: REDIS_URL
+        fromService:
+          name: murmur-redis
+          type: redis
+          property: connectionString

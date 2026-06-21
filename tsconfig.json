@@ -28,6 +28,12 @@
       ],
       "@core/*": [
         "./packages/core/src/*"
+      ],
+      "@murmur/blockchain": [
+        "./src/murmur/blockchain"
+      ],
+      "@murmur/ipfs": [
+        "./src/murmur/ipfs"
       ]
     }
   },

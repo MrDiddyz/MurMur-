@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -26,4 +28,25 @@ class MurmurLogger:
                 history = []
 
         history.append(entry)
-        self.log_file.write_text(json.dumps(history, indent=2), encoding="utf-8")
+        payload = json.dumps(history, indent=2)
+
+        # Write atomically: write to a temp file in the same directory, then
+        # rename into place so a concurrent reader never sees a partial file.
+        dir_path = self.log_file.parent
+        dir_path.mkdir(parents=True, exist_ok=True)
+        fd, tmp_path = tempfile.mkstemp(dir=dir_path, suffix=".tmp")
+        try:
+            try:
+                fh = os.fdopen(fd, "w", encoding="utf-8")
+            except Exception:
+                os.close(fd)
+                raise
+            with fh:
+                fh.write(payload)
+            os.replace(tmp_path, self.log_file)
+        except Exception:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+            raise

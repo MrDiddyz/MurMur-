@@ -47,6 +47,19 @@ class MemoryStateTests(unittest.TestCase):
             self.assertEqual(state.top_goals[0], "Goal A")
             self.assertEqual(state.top_obstacles, ["Obs1", "Obs2"])
 
+    def test_load_state_returns_default_for_non_object_payload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "runtime-state.json"
+            state_path.write_text(json.dumps(["not", "an", "object"]), encoding="utf-8")
+
+            with patch.object(memory, "STATE_PATH", state_path):
+                state = memory.load_state()
+
+            self.assertEqual(state.interactions, memory.DEFAULT_STATE.interactions)
+            self.assertEqual(state.niche, memory.DEFAULT_STATE.niche)
+            self.assertEqual(state.top_goals, memory.DEFAULT_STATE.top_goals)
+            self.assertEqual(state.top_obstacles, memory.DEFAULT_STATE.top_obstacles)
+
     def test_update_from_listener_limits_saved_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             state_path = Path(tmpdir) / "runtime-state.json"
@@ -79,6 +92,33 @@ class MemoryStateTests(unittest.TestCase):
             self.assertIn("New Obstacle", state.top_obstacles)
             self.assertNotIn("Old Goal 0", state.top_goals)
             self.assertNotIn("Old Obstacle 0", state.top_obstacles)
+
+    def test_update_from_listener_strips_items_and_keeps_case_variants(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            state_path = Path(tmpdir) / "runtime-state.json"
+            state_path.write_text(
+                json.dumps(
+                    {
+                        "interactions": 2,
+                        "niche": "test",
+                        "top_goals": ["Goal A"],
+                        "top_obstacles": ["Obstacle A"],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            listener_output = {
+                "goals": [" Goal A ", "goal a", " Goal B "],
+                "obstacles": ["Obstacle A", " obstacle a ", "Obstacle B"],
+            }
+
+            with patch.object(memory, "STATE_PATH", state_path):
+                state = memory.update_from_listener(listener_output)
+
+            self.assertEqual(state.interactions, 3)
+            self.assertEqual(state.top_goals, ["Goal A", "goal a", "Goal B"])
+            self.assertEqual(state.top_obstacles, ["Obstacle A", "obstacle a", "Obstacle B"])
 
 
 if __name__ == "__main__":

@@ -24,6 +24,19 @@ input.bindTouchControls({
 const game = new Game(ui, input, sprites);
 ui.onRestart(() => game.reset());
 
+const engine = {
+  sceneManager: {
+    loadRoom(room) {
+      if (room === 'battle') {
+        game.reset();
+      }
+    },
+  },
+};
+
+const room = 'battle';
+engine.sceneManager.loadRoom(room);
+
 let lastTime = performance.now();
 
 function frame(now) {

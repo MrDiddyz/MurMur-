@@ -66,6 +66,16 @@ export interface AnalyticsSnapshot {
   created_at: string;
 }
 
+export type Mint = {
+  id: string;
+  metadataId: string;
+  walletAddress: string;
+  txHash: string;
+  tokenId: string;
+  status: "pending" | "confirmed" | "failed";
+  createdAt: string;
+};
+
 export interface ScheduledJob {
   id: string;
   campaign_id: string;

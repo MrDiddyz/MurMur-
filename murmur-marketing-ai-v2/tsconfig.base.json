@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@murmur/types": ["packages/types/src"],
+      "@murmur/config": ["packages/config/src"],
+      "@murmur/agents": ["packages/agents/src"],
+      "@murmur/engine": ["packages/engine/src"]
+    }
+  }
+}

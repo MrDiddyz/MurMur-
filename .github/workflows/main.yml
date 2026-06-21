@@ -53,3 +53,35 @@ jobs:
 
       - name: Build
         run: npm run build --if-present
+
+  python-validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Install test dependencies
+        run: pip install pytest
+
+      - name: Install murmur dependencies
+        run: pip install -r murmur/requirements.txt
+
+      - name: Install project root (editable)
+        # Attempt an editable install so local packages resolve correctly.
+        # This step is best-effort: not all repo layouts expose a setup.py/pyproject.toml.
+        run: pip install -e . --no-deps || true
+
+      - name: Run Python tests
+        run: pytest tests/ -v

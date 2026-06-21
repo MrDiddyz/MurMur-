@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
 from backend.audit import log_audit_event
@@ -90,15 +90,21 @@ async def revoke_api_key(
     db=Depends(get_db),
     admin=Depends(get_admin_actor),
 ):
-    await db.execute(
+    row = await db.fetch_one(
         """
         UPDATE api_keys
         SET is_active = FALSE,
             revoked_at = NOW()
         WHERE id = $1
+        RETURNING id
         """,
         key_id,
     )
+    if row is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="API key not found",
+        )
     await log_audit_event(
         db=db,
         actor_type="admin",

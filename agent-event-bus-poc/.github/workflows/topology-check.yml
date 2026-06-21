@@ -1,0 +1,54 @@
+name: topology-check
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_type:
+        description: Event type that triggered the check
+        required: false
+        type: string
+      module_id:
+        description: Optional module id from payload
+        required: false
+        type: string
+      severity:
+        description: Optional severity from payload
+        required: false
+        type: string
+      topo_version:
+        description: Optional topology version from payload
+        required: false
+        type: string
+  pull_request:
+    paths:
+      - 'agent-event-bus-poc/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'agent-event-bus-poc/**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agent-event-bus-poc
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Show trigger context
+        run: |
+          echo "event_type: ${{ github.event.inputs.event_type || '' }}"
+          echo "module_id: ${{ github.event.inputs.module_id || '' }}"
+          echo "severity: ${{ github.event.inputs.severity || '' }}"
+          echo "topo_version: ${{ github.event.inputs.topo_version || '' }}"
+
+      - name: Run topology invariant checks
+        run: npm run check:topology

@@ -1,0 +1,44 @@
+name: Event Bus Listener
+
+on:
+  repository_dispatch:
+    types:
+      - module.health.v1
+      - topology.changed.v1
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show received event
+        run: |
+          echo "event_type: ${{ github.event.action }}"
+          echo "client_payload:"
+          echo '${{ toJson(github.event.client_payload) }}'
+
+      - name: Decide follow-up
+        run: |
+          if [ "${{ github.event.action }}" = "module.health.v1" ]; then
+            echo "Routing: module health event -> run topology check workflow"
+          else
+            echo "Routing: topology changed event -> run topology check workflow"
+          fi
+
+      # Minimal: we just kick off a second workflow that performs invariant checks.
+      - name: Trigger topology check workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ref = context.payload.client_payload?.ref || "main";
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "topology-check.yml",
+              ref,
+              inputs: {
+                event_type: context.payload.action,
+                module_id: context.payload.client_payload?.module_id || "",
+                severity: context.payload.client_payload?.severity || "",
+                topo_version: context.payload.client_payload?.topology_version || ""
+              }
+            });

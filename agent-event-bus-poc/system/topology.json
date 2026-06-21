@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "gateway",
+      "dependsOn": ["orchestrator", "observability"]
+    },
+    {
+      "id": "orchestrator",
+      "dependsOn": ["event-bus"]
+    },
+    {
+      "id": "observability",
+      "dependsOn": ["event-bus"]
+    },
+    {
+      "id": "event-bus",
+      "dependsOn": []
+    }
+  ]
+}

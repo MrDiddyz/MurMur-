@@ -40,3 +40,7 @@ Redirect aliases in `netlify.toml`:
 
 - `POST /api/run`
 - `GET /api/health`
+
+## Domain migration best practices
+
+To keep your site/app running smoothly while you migrate your domain, check out this blog post on [Migrating a domain to Netlify](https://www.netlify.com/blog/2021/04/06/migrating-dns-for-a-production-site-we-made-you-a-site-migration-checklist/).

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MurMur – A Learning Constellation</title>
+    <style>
+        :root {
+            --bg: #101820;
+            --card: #1a2633;
+            --accent: #f2aa4c;
+            --text: #fff;
+            --muted: #b0b8c1;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 32px 48px;
+            background: var(--card);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 56px;
+            margin-right: 18px;
+        }
+
+        .logo-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .logo-sub {
+            font-size: 1.1rem;
+            color: var(--muted);
+            margin-left: 8px;
+        }
+
+        nav a {
+            color: var(--text);
+            text-decoration: none;
+            margin: 0 18px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px 40px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--muted);
+        }
+
+        .section {
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--card);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        }
+
+        .section h2 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin-bottom: 18px;
+        }
+
+        .section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .section li {
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--muted);
+            background: var(--card);
+            margin-top: 48px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="MurMur-logo" />
+            <span class="logo-title">MurMur</span>
+            <span class="logo-sub">A Learning Constellation</span>
+        </div>
+        <nav>
+            <a href="#hjem">Hjem</a>
+            <a href="#omrader">Områder</a>
+            <a href="#kontakt">Kontakt</a>
+        </nav>
+    </header>
+
+    <div id="hjem" class="hero">
+        <h1>Velkommen til MurMur</h1>
+        <p>En læringskonstellasjon for bevegelse, rytme, pust, refleksjon og studioarbeid.</p>
+    </div>
+
+    <div id="omrader" class="section">
+        <h2>Våre hovedområder</h2>
+        <ul>
+            <li>Embodied Movement</li>
+            <li>Rhythmic Production</li>
+            <li>Breath &amp; Voice</li>
+            <li>Reflective Learning</li>
+            <li>Studio Practice</li>
+        </ul>
+    </div>
+
+    <div id="kontakt" class="section">
+        <h2>Kontakt</h2>
+        <p>E-post: dinmail@epost.no</p>
+    </div>
+
+    <footer>© 2026 MurMur – A Learning Constellation</footer>
+</body>
+</html>

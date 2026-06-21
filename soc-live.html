@@ -116,6 +116,13 @@ MurMur Core requires voluntary testing.
 
 <script>
 
+/* ===== DEMO PROFILES ===== */
+localStorage.setItem('profiles', JSON.stringify([
+  { name: "Ola", bio: "Digital kunstner fra Oslo", image: "https://source.unsplash.com/200x200/?artist,portrait" },
+  { name: "Kari", bio: "Eksperimentell kunstner", image: "https://source.unsplash.com/200x200/?artist,portrait" },
+  { name: "Jens", bio: "Illustrator og grafisk designer", image: "https://source.unsplash.com/200x200/?artist,portrait" }
+]));
+
 /* ===== STARFIELD ===== */
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");

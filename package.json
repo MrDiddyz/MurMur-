@@ -1,26 +1,30 @@
 {
-  "name": "murmur-motion-avatar-v0-2",
-  "version": "0.2.0",
+  "name": "murmur-signal-audit-generator",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "npm@10.8.2",
-  "workspaces": [
-    "apps/api",
-    "apps/web",
-    "packages/agents",
-    "packages/cognitive-core",
-    "packages/motion-planner",
-    "packages/shared"
-  ],
   "scripts": {
-    "dev": "npm --workspaces run dev",
-    "build": "npm --workspaces run build",
-    "typecheck": "npm --workspaces run typecheck",
-    "verify:web": "npm --workspace @murmur/web run build && npm --prefix apps/web/next-app run lint && npm --prefix apps/web/next-app run typecheck && npm --prefix apps/web/next-app run build",
-    "verify": "npm run build && npm --prefix apps/web/next-app run lint && npm --prefix apps/web/next-app run typecheck && npm --prefix apps/web/next-app run build",
-    "breach:scan": "python scripts/breach_watch.py",
-    "breach:watch": "python scripts/breach_watch.py"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.105.3",
+    "next": "15.5.16",
+    "openai": "^4.104.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.6.3"
   }
 }

@@ -48,6 +48,12 @@
       ],
       "@murmur/engine": [
         "packages/engine/src/index.ts"
+      ],
+      "@murmur/blockchain": [
+        "packages/blockchain/src/index.ts"
+      ],
+      "@murmur/nft-pipeline": [
+        "packages/nft-pipeline/src/index.ts"
       ]
     }
   }

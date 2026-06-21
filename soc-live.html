@@ -1,185 +1,1014 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>MurMur</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MurMur — Generate Better AI Music Prompts for Suno & Udio</title>
+  <meta
+    name="description"
+    content="MurMur helps AI music creators generate better prompts for Suno and Udio with prompt intelligence, remixing, and instant enhancement."
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+  <style>
+    :root {
+      --bg: #07040b;
+      --bg-soft: #0d0813;
+      --panel: rgba(255, 255, 255, 0.04);
+      --panel-strong: rgba(255, 255, 255, 0.06);
+      --text: #f7f1ff;
+      --muted: rgba(235, 226, 245, 0.72);
+      --gold: #ffd86e;
+      --gold-soft: rgba(255, 216, 110, 0.16);
+      --gold-mid: rgba(255, 216, 110, 0.28);
+      --purple: #a855f7;
+      --green: #86efac;
+      --border: rgba(255, 216, 110, 0.14);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
+      --radius: 24px;
+    }
 
-<style>
-body{
-margin:0;
-background:black;
-overflow:hidden;
-font-family:Arial, sans-serif;
-color:white;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-/* ===== STAR FIELD ===== */
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
 
-/* ===== CENTER CORE ===== */
-.center{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
-}
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(120, 55, 170, 0.16), transparent 25%),
+        radial-gradient(circle at top right, rgba(255, 216, 110, 0.06), transparent 20%),
+        linear-gradient(180deg, #07040b 0%, #0b0611 100%);
+      color: var(--text);
+    }
 
-/* ===== IMPOSSIBLE CUBE ===== */
-.cube{
-width:200px;
-height:200px;
-transform-style:preserve-3d;
-animation:rotateCube 12s infinite linear;
-margin:auto;
-cursor:pointer;
-}
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
 
-.face{
-position:absolute;
-width:200px;
-height:200px;
-background:rgba(0,255,255,0.08);
-border:1px solid rgba(0,255,255,0.6);
-display:flex;
-align-items:center;
-justify-content:center;
-backdrop-filter:blur(5px);
-}
+    .section-shell {
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      background:
+        linear-gradient(180deg, rgba(29, 18, 40, 0.88), rgba(10, 6, 17, 0.96));
+      box-shadow: var(--shadow);
+    }
 
-.front{transform:translateZ(100px);}
-.back{transform:rotateY(180deg) translateZ(100px);}
-.right{transform:rotateY(90deg) translateZ(100px);}
-.left{transform:rotateY(-90deg) translateZ(100px);}
-.top{transform:rotateX(90deg) translateZ(100px);}
-.bottom{transform:rotateX(-90deg) translateZ(100px);}
+    .gold-text {
+      color: var(--gold);
+    }
 
-@keyframes rotateCube{
-0%{transform:rotateX(0deg) rotateY(0deg);}
-100%{transform:rotateX(360deg) rotateY(360deg);}
-}
+    .muted {
+      color: var(--muted);
+    }
 
-/* ===== UI BUTTON ===== */
-button{
-margin-top:25px;
-padding:12px 30px;
-background:transparent;
-border:1px solid cyan;
-color:white;
-cursor:pointer;
-}
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 2rem;
+      align-items: center;
+    }
 
-/* ===== HIDDEN MODULE ===== */
-.module{
-margin-top:20px;
-display:none;
-font-size:18px;
-color:#00ffff;
-}
-</style>
+    .section-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .examples-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .cta-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .murmur-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: 0.2s ease;
+      cursor: pointer;
+      background: linear-gradient(180deg, rgba(49, 25, 64, 0.96), rgba(16, 9, 23, 0.98));
+      color: var(--text);
+      min-height: 48px;
+    }
+
+    .murmur-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--gold-mid);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.26);
+    }
+
+    .murmur-btn-primary {
+      background:
+        radial-gradient(circle at top, rgba(255, 216, 110, 0.15), transparent 55%),
+        linear-gradient(180deg, rgba(88, 49, 10, 0.96), rgba(40, 25, 10, 0.98));
+      color: #fff4cc;
+      border-color: rgba(255, 216, 110, 0.24);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.035);
+      padding: 0.55rem 0.85rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--gold);
+      padding: 0.5rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-title {
+      font-size: clamp(2.6rem, 6vw, 5.1rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin: 0;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 60ch;
+    }
+
+    .demo-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(180deg, rgba(27, 16, 38, 0.95), rgba(10, 6, 17, 0.98));
+      box-shadow: var(--shadow);
+    }
+
+    .demo-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1rem 0.9rem;
+      border-bottom: 1px solid rgba(255, 216, 110, 0.08);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .demo-badge {
+      border-radius: 999px;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid rgba(134, 239, 172, 0.18);
+      background: rgba(134, 239, 172, 0.08);
+      color: var(--green);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .panel-box {
+      border: 1px solid rgba(255, 216, 110, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1.1rem;
+    }
+
+    textarea,
+    input {
+      width: 100%;
+      border: 1px solid rgba(255, 216, 110, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      border-radius: 1rem;
+      padding: 0.95rem 1rem;
+      font: inherit;
+      outline: none;
+      transition: 0.18s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 132px;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: rgba(247, 241, 255, 0.42);
+    }
+
+    textarea:focus,
+    input:focus {
+      border-color: var(--gold-mid);
+      box-shadow: 0 0 0 3px rgba(255, 216, 110, 0.1);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .output-box {
+      min-height: 144px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: var(--text);
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 216, 110, 0.16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.03));
+    }
+
+    .remix-chip {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 216, 110, 0.14);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 0.6rem 0.9rem;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .remix-chip:hover,
+    .remix-chip.active {
+      border-color: var(--gold-mid);
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .stat-card {
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 216, 110, 0.1);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem;
+    }
+
+    .icon-card {
+      border-radius: 1.25rem;
+      padding: 1.1rem;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      height: 100%;
+    }
+
+    .icon-wrap {
+      width: 3rem;
+      height: 3rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 216, 110, 0.18);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .code-box {
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 216, 110, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      color: #f5edff;
+      min-height: 180px;
+      white-space: pre-wrap;
+    }
+
+    .quote-card {
+      border-radius: 1.2rem;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1.1rem;
+    }
+
+    .footer-link {
+      color: var(--muted);
+      text-decoration: none;
+      transition: 0.18s ease;
+    }
+
+    .footer-link:hover {
+      color: var(--gold);
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .cta-grid,
+      .feature-grid,
+      .examples-grid,
+      .section-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-stack {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <header class="w-full px-4 md:px-6 lg:px-8 pt-5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <a href="#" class="flex items-center gap-3 no-underline text-white">
+        <div class="w-11 h-11 rounded-full border border-[rgba(255,216,110,0.18)] bg-[rgba(255,255,255,0.04)] flex items-center justify-center text-[#ffd86e] text-lg">
+          <i class="fas fa-wave-square"></i>
+        </div>
+        <div>
+          <div class="font-extrabold tracking-tight text-lg">MurMur</div>
+          <div class="text-sm muted -mt-0.5">AI Music Prompt Studio</div>
+        </div>
+      </a>
 
-<canvas id="stars"></canvas>
+      <nav class="flex flex-wrap items-center gap-3 text-sm">
+        <a href="#demo" class="footer-link">Demo</a>
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#examples" class="footer-link">Examples</a>
+        <a href="#cta" class="murmur-btn">Launch MurMur</a>
+      </nav>
+    </div>
+  </header>
 
-<div class="center">
+  <main>
+    <section class="px-4 md:px-6 lg:px-8 pt-10 md:pt-16 pb-8">
+      <div class="max-w-7xl mx-auto hero-grid">
+        <div>
+          <div class="eyebrow">
+            <i class="fas fa-bolt"></i>
+            Generate 10 AI music prompts in seconds
+          </div>
 
-<h1>MurMur</h1>
-<p>The Living Intelligence Constellation</p>
+          <h1 class="hero-title mt-5">
+            Generate Better <span class="gold-text">AI Music Prompts</span> for Suno &amp; Udio in Seconds
+          </h1>
 
-<div class="cube" onclick="unlockModule()">
-<div class="face front">Module</div>
-<div class="face back">AI</div>
-<div class="face right">Core</div>
-<div class="face left">Access</div>
-<div class="face top">Evolution</div>
-<div class="face bottom">∞</div>
-</div>
+          <p class="hero-subtitle mt-5">
+            MurMur helps AI music creators turn rough ideas into structured, production-rich prompts with instant enhancement, remixing, and prompt intelligence built for modern music models.
+          </p>
 
-<button onclick="simulatePayment()">Unlock Module</button>
+          <div class="flex flex-wrap gap-3 mt-8">
+            <a href="#demo" class="murmur-btn murmur-btn-primary">
+              <i class="fas fa-magic"></i>
+              Try Interactive Demo
+            </a>
+            <a href="#examples" class="murmur-btn">
+              <i class="fas fa-layer-group"></i>
+              View Prompt Packs
+            </a>
+          </div>
 
-<div class="module" id="module">
-Module Activated
-<br><br>
-Access Path Opened
-<br><br>
-MurMur Core requires voluntary testing.
-</div>
+          <div class="flex flex-wrap gap-3 mt-7">
+            <div class="pill"><i class="fas fa-brain gold-text"></i> Prompt Intelligence</div>
+            <div class="pill"><i class="fas fa-random gold-text"></i> Prompt Remix</div>
+            <div class="pill"><i class="fas fa-music gold-text"></i> Suno / Udio Ready</div>
+          </div>
+        </div>
 
-</div>
+        <div class="demo-card">
+          <div class="demo-toolbar">
+            <div>
+              <div class="font-extrabold gold-text">Before → After</div>
+              <div class="text-sm muted">See the transformation instantly</div>
+            </div>
+            <div class="demo-badge">Live Demo</div>
+          </div>
 
-<script>
+          <div class="p-5">
+            <div class="grid gap-4">
+              <div class="panel-box p-4">
+                <div class="text-sm font-bold mb-2">Before</div>
+                <div class="code-box !min-h-[110px]">atmospheric hip hop</div>
+              </div>
 
-/* ===== STARFIELD ===== */
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+              <div class="flex justify-center text-[#ffd86e] text-xl">
+                <i class="fas fa-arrow-down"></i>
+              </div>
 
-let stars=[];
-for(let i=0;i<200;i++){
-stars.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-r:Math.random()*2
-});
-}
+              <div class="panel-box p-4">
+                <div class="text-sm font-bold mb-2">After (MurMur Enhanced)</div>
+                <div class="code-box !min-h-[150px]">dark velvet hip-hop with slow burn bass motion,
+shadow-lit ambience, warm drum pocket,
+filtered transitions, and late-night noir texture</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-function drawStars(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="white";
-stars.forEach(s=>{
-ctx.beginPath();
-ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-ctx.fill();
-});
-requestAnimationFrame(drawStars);
-}
-drawStars();
+    <section id="demo" class="px-4 md:px-6 lg:px-8 py-8 md:py-14">
+      <div class="max-w-7xl mx-auto section-shell p-5 md:p-7">
+        <div class="max-w-3xl mb-8">
+          <div class="eyebrow">
+            <i class="fas fa-sliders-h"></i>
+            Interactive Demo
+          </div>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Turn a Basic Prompt Into a Powerful One</h2>
+          <p class="muted mt-3 leading-7">
+            Type any rough AI music prompt. MurMur enhances it instantly and lets you remix it into new directions.
+          </p>
+        </div>
 
-/* ===== SHOOTING STAR LOOP ===== */
-function shootingStar(){
-let x=Math.random()*canvas.width;
-let y=0;
+        <div class="grid lg:grid-cols-2 gap-5">
+          <div class="panel-box p-4 md:p-5">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <label for="demoInput" class="font-bold">Your Prompt</label>
+              <span class="text-sm muted">Try simple inputs like “lofi rainy music”</span>
+            </div>
 
-let interval=setInterval(()=>{
-ctx.strokeStyle="white";
-ctx.beginPath();
-ctx.moveTo(x,y);
-ctx.lineTo(x+80,y+20);
-ctx.stroke();
-x+=15;
-y+=5;
-if(y>canvas.height) clearInterval(interval);
-},20);
-}
+            <textarea id="demoInput" placeholder="lofi rainy music" aria-label="Enter your AI music prompt"></textarea>
 
-setInterval(shootingStar,10000);
+            <div class="flex flex-wrap gap-3 mt-4 mobile-stack">
+              <button id="enhanceBtn" type="button" class="murmur-btn murmur-btn-primary">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                Enhance Prompt
+              </button>
+              <button id="randomBtn" type="button" class="murmur-btn">
+                <i class="fas fa-dice"></i>
+                Random Example
+              </button>
+              <button id="copyBtn" type="button" class="murmur-btn">
+                <i class="fas fa-copy"></i>
+                Copy Output
+              </button>
+            </div>
 
-/* ===== PAYMENT SIM ===== */
-let paid=false;
+            <div class="mt-4">
+              <div class="text-sm font-bold mb-2">Remix Styles</div>
+              <div class="flex flex-wrap gap-2 mobile-stack">
+                <button class="remix-chip active" type="button" data-remix="default">Original Enhance</button>
+                <button class="remix-chip" type="button" data-remix="ambient">Ambient</button>
+                <button class="remix-chip" type="button" data-remix="trap">Trap</button>
+                <button class="remix-chip" type="button" data-remix="triphop">Trip-Hop</button>
+                <button class="remix-chip" type="button" data-remix="cinematic">Cinematic</button>
+              </div>
+            </div>
+          </div>
 
-function simulatePayment(){
-paid=true;
-alert("Payment Confirmed — Module Path Opening");
-}
+          <div class="panel-box p-4 md:p-5">
+            <div class="flex items-center justify-between gap-3 mb-3">
+              <div class="font-bold">MurMur Output</div>
+              <span id="statusBadge" class="demo-badge">Live Enhance</span>
+            </div>
 
-/* ===== MODULE UNLOCK ===== */
-function unlockModule(){
-if(!paid){
-alert("Module locked — complete payment first");
-return;
-}
-document.getElementById("module").style.display="block";
-}
+            <div id="demoOutput" class="output-box" aria-live="polite"></div>
 
-</script>
+            <div class="grid md:grid-cols-3 gap-3 mt-4">
+              <div class="stat-card">
+                <div class="text-xs uppercase tracking-[0.12em] muted">Genre</div>
+                <div id="statGenre" class="font-extrabold mt-2">Detected: —</div>
+              </div>
+              <div class="stat-card">
+                <div class="text-xs uppercase tracking-[0.12em] muted">Mood</div>
+                <div id="statMood" class="font-extrabold mt-2">Mood: —</div>
+              </div>
+              <div class="stat-card">
+                <div class="text-xs uppercase tracking-[0.12em] muted">Energy</div>
+                <div id="statEnergy" class="font-extrabold mt-2">Energy: —</div>
+              </div>
+            </div>
 
+            <div class="mt-4 text-sm muted">
+              Example workflow: rough idea → enhanced prompt → remix into new directions.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 md:px-6 lg:px-8 py-6 md:py-10">
+      <div class="max-w-7xl mx-auto">
+        <div class="section-grid">
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Prompt Intelligence</h3>
+            <p class="muted mt-2 leading-7">
+              MurMur analyzes genre clarity, structure, production detail, MurMur DNA, bass motion, and technical signal so creators understand what makes a prompt strong.
+            </p>
+          </div>
+
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-random"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Prompt Remix</h3>
+            <p class="muted mt-2 leading-7">
+              Turn one prompt into multiple styles instantly. Explore ambient, trap, trip-hop, and cinematic versions without rewriting everything from scratch.
+            </p>
+          </div>
+
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-layer-group"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Prompt Packs</h3>
+            <p class="muted mt-2 leading-7">
+              Generate multiple ready-to-use prompts for Suno, Udio, and similar music tools so you can move from idea to experimentation much faster.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="px-4 md:px-6 lg:px-8 py-8 md:py-14">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-8">
+          <div class="eyebrow">
+            <i class="fas fa-star"></i>
+            Features
+          </div>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Everything You Need to Craft Better AI Music Prompts</h2>
+          <p class="muted mt-3 leading-7">
+            Designed for creators who want better outputs, faster iteration, and more musical control.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-pen-fancy"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">AI Prompt Architect</h3>
+            <p class="muted mt-2 leading-7">
+              Start with just genre, mood, energy, and theme. MurMur turns that into a complete, production-aware prompt with stronger musical language.
+            </p>
+            <div class="code-box mt-4">Genre: Trip-Hop
+Mood: Noir
+Energy: Slow burn
+Theme: Midnight city loneliness</div>
+          </div>
+
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Prompt Intelligence Radar</h3>
+            <p class="muted mt-2 leading-7">
+              Visualize prompt quality across genre, structure, production depth, MurMur DNA, technical detail, and bass/transitions.
+            </p>
+            <div class="code-box mt-4">Genre clarity
+Structure
+Production depth
+MurMur DNA
+Technical detail
+Bass motion</div>
+          </div>
+
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-code-branch"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Versioning & Compare</h3>
+            <p class="muted mt-2 leading-7">
+              Save prompt versions, compare refinements, and track how your ideas evolve over time like a real creative workflow.
+            </p>
+            <div class="code-box mt-4">v1  Basic prompt
+v2  Added BPM
+v3  Added MurMur DNA
+v4  Enhanced production</div>
+          </div>
+
+          <div class="icon-card">
+            <div class="icon-wrap">
+              <i class="fas fa-file-export"></i>
+            </div>
+            <h3 class="text-xl font-extrabold">Suno / Udio Export</h3>
+            <p class="muted mt-2 leading-7">
+              Export prompts in clean, structured formats optimized for AI music workflows instead of rewriting prompt syntax manually every time.
+            </p>
+            <div class="code-box mt-4">STYLE: trip-hop noir
+TEMPO: 82 BPM
+MOOD: shadow-lit
+STRUCTURE:
+Intro
+Verse
+Chorus
+Bridge
+Outro</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="examples" class="px-4 md:px-6 lg:px-8 py-8 md:py-14">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-8">
+          <div class="eyebrow">
+            <i class="fas fa-layer-group"></i>
+            Examples
+          </div>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Example Prompt Packs</h2>
+          <p class="muted mt-3 leading-7">
+            Ready-made directions creators can copy, remix, and use immediately.
+          </p>
+        </div>
+
+        <div class="examples-grid">
+          <div class="icon-card">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h3 class="text-xl font-extrabold">Trip-Hop Noir Pack</h3>
+              <span class="pill !text-xs">Pack</span>
+            </div>
+            <div class="code-box">dusty breakbeat trip-hop
+shadow-lit ambience
+warm sub bass groove
+vinyl saturation
+late-night city mood</div>
+            <button class="murmur-btn mt-4 w-full copy-pack-btn" type="button" data-pack="dusty breakbeat trip-hop
+shadow-lit ambience
+warm sub bass groove
+vinyl saturation
+late-night city mood">
+              <i class="fas fa-copy"></i>
+              Copy Prompt
+            </button>
+          </div>
+
+          <div class="icon-card">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h3 class="text-xl font-extrabold">Dark Trap Pack</h3>
+              <span class="pill !text-xs">Pack</span>
+            </div>
+            <div class="code-box">heavy 808 bass pressure
+dark cinematic pads
+slow burn rhythm
+sharp hat detail
+noir low-end atmosphere</div>
+            <button class="murmur-btn mt-4 w-full copy-pack-btn" type="button" data-pack="heavy 808 bass pressure
+dark cinematic pads
+slow burn rhythm
+sharp hat detail
+noir low-end atmosphere">
+              <i class="fas fa-copy"></i>
+              Copy Prompt
+            </button>
+          </div>
+
+          <div class="icon-card">
+            <div class="flex items-center justify-between gap-3 mb-4">
+              <h3 class="text-xl font-extrabold">Ambient Cinematic Pack</h3>
+              <span class="pill !text-xs">Pack</span>
+            </div>
+            <div class="code-box">evolving atmospheric pads
+deep sub bass drone
+long reverb textures
+slow emotional transitions
+widescreen nocturnal mood</div>
+            <button class="murmur-btn mt-4 w-full copy-pack-btn" type="button" data-pack="evolving atmospheric pads
+deep sub bass drone
+long reverb textures
+slow emotional transitions
+widescreen nocturnal mood">
+              <i class="fas fa-copy"></i>
+              Copy Prompt
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-4 md:px-6 lg:px-8 py-8 md:py-14">
+      <div class="max-w-7xl mx-auto">
+        <div class="max-w-3xl mb-8">
+          <div class="eyebrow">
+            <i class="fas fa-users"></i>
+            Social Proof
+          </div>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-4">Built for AI Music Creators</h2>
+          <p class="muted mt-3 leading-7">
+            MurMur is designed for creators working with Suno, Udio, and other generative music tools who want better prompts and faster iteration.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="quote-card">
+            <div class="gold-text text-lg"><i class="fas fa-quote-left"></i></div>
+            <p class="leading-7 mt-3">MurMur helped me turn vague ideas into prompts that actually feel musical and intentional.</p>
+            <div class="mt-4 text-sm muted">AI music creator</div>
+          </div>
+
+          <div class="quote-card">
+            <div class="gold-text text-lg"><i class="fas fa-quote-left"></i></div>
+            <p class="leading-7 mt-3">The remix workflow is the fastest way I’ve found to explore multiple moods from one concept.</p>
+            <div class="mt-4 text-sm muted">Suno workflow user</div>
+          </div>
+
+          <div class="quote-card">
+            <div class="gold-text text-lg"><i class="fas fa-quote-left"></i></div>
+            <p class="leading-7 mt-3">Prompt packs are huge for experimentation. I can test several directions without rewriting everything.</p>
+            <div class="mt-4 text-sm muted">Udio creator</div>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3 mt-6">
+          <div class="pill">Used in Suno workflows</div>
+          <div class="pill">Great for Udio iteration</div>
+          <div class="pill">Built for modern AI music models</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cta" class="px-4 md:px-6 lg:px-8 py-10 md:py-16">
+      <div class="max-w-7xl mx-auto section-shell p-6 md:p-8">
+        <div class="cta-grid">
+          <div>
+            <div class="eyebrow">
+              <i class="fas fa-rocket"></i>
+              Start now
+            </div>
+            <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight mt-4">
+              Start Creating Better AI Music Prompts Today
+            </h2>
+            <p class="muted mt-4 leading-8 max-w-2xl">
+              Generate, remix, and optimize prompts in seconds. MurMur helps creators move faster from rough concept to stronger musical direction.
+            </p>
+
+            <div class="flex flex-wrap gap-3 mt-7">
+              <a href="#demo" class="murmur-btn murmur-btn-primary">
+                <i class="fas fa-play"></i>
+                Launch MurMur Demo
+              </a>
+              <a href="#examples" class="murmur-btn">
+                <i class="fas fa-layer-group"></i>
+                Browse Prompt Packs
+              </a>
+            </div>
+          </div>
+
+          <div class="icon-card">
+            <h3 class="text-xl font-extrabold">What you get</h3>
+            <div class="grid gap-3 mt-4">
+              <div class="pill"><i class="fas fa-check gold-text"></i> Instant prompt enhancement</div>
+              <div class="pill"><i class="fas fa-check gold-text"></i> Genre-aware remixing</div>
+              <div class="pill"><i class="fas fa-check gold-text"></i> Better prompt structure</div>
+              <div class="pill"><i class="fas fa-check gold-text"></i> Production-rich language</div>
+              <div class="pill"><i class="fas fa-check gold-text"></i> Suno / Udio friendly workflows</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="px-4 md:px-6 lg:px-8 pt-4 pb-10">
+    <div class="max-w-7xl mx-auto border-t border-[rgba(255,216,110,0.1)] pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div>
+        <div class="font-extrabold">MurMur</div>
+        <div class="text-sm muted">Generate better AI music prompts for Suno &amp; Udio.</div>
+      </div>
+
+      <div class="flex flex-wrap gap-4 text-sm">
+        <a href="#demo" class="footer-link">Demo</a>
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#examples" class="footer-link">Examples</a>
+        <a href="#cta" class="footer-link">Launch</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const input = document.getElementById("demoInput");
+      const output = document.getElementById("demoOutput");
+      const statusBadge = document.getElementById("statusBadge");
+      const statGenre = document.getElementById("statGenre");
+      const statMood = document.getElementById("statMood");
+      const statEnergy = document.getElementById("statEnergy");
+
+      const enhanceBtn = document.getElementById("enhanceBtn");
+      const randomBtn = document.getElementById("randomBtn");
+      const copyBtn = document.getElementById("copyBtn");
+      const remixButtons = Array.from(document.querySelectorAll("[data-remix]"));
+      const packButtons = Array.from(document.querySelectorAll(".copy-pack-btn"));
+
+      const demoPrompts = [
+        "lofi rainy music",
+        "atmospheric hip hop",
+        "dark trip hop",
+        "night drive synthwave",
+        "sad cinematic ambient"
+      ];
+
+      const genreRules = [
+        { test: /lofi|chillhop/i, genre: "Lo-fi", additions: ["vinyl crackle", "soft piano motif", "warm bass groove", "rain ambience"] },
+        { test: /trap|808/i, genre: "Trap", additions: ["heavy 808 pressure", "dark bell textures", "sharp hat detail", "shadow-lit low end"] },
+        { test: /trip[\s-]?hop/i, genre: "Trip-Hop", additions: ["dusty breakbeat", "warm sub bass", "vinyl saturation", "smoky nocturnal texture"] },
+        { test: /ambient/i, genre: "Ambient", additions: ["evolving pads", "sub bass drone", "long reverb tails", "slow spatial movement"] },
+        { test: /synthwave|night drive/i, genre: "Synthwave", additions: ["retro pulse bass", "analog synth glow", "neon night texture", "driving arpeggios"] },
+        { test: /cinematic|score/i, genre: "Cinematic", additions: ["wide atmospheric layers", "dramatic transitions", "subtle orchestral tension", "slow rising dynamics"] },
+        { test: /hip[ -]?hop/i, genre: "Hip-Hop", additions: ["warm drum pocket", "dark velvet bass motion", "filtered transitions", "late-night mood"] }
+      ];
+
+      const remixProfiles = {
+        default: {
+          label: "Live Enhance",
+          mood: "shadow-lit",
+          energy: "medium",
+          inject: ["dark velvet", "slow burn rhythm", "filtered transitions"]
+        },
+        ambient: {
+          label: "Ambient Remix",
+          mood: "floating",
+          energy: "low",
+          inject: ["evolving pads", "sub bass drone", "wide reverb atmosphere", "slow spatial transitions"]
+        },
+        trap: {
+          label: "Trap Remix",
+          mood: "noir",
+          energy: "high",
+          inject: ["heavy 808 bass", "dark bell motif", "sharp percussion detail", "shadow-lit aggression"]
+        },
+        triphop: {
+          label: "Trip-Hop Remix",
+          mood: "smoky",
+          energy: "low-medium",
+          inject: ["dusty breakbeat", "warm sub bass", "vinyl texture", "late-night urban atmosphere"]
+        },
+        cinematic: {
+          label: "Cinematic Remix",
+          mood: "dramatic",
+          energy: "medium",
+          inject: ["cinematic pads", "slow build tension", "widescreen transitions", "emotional low-end movement"]
+        }
+      };
+
+      let currentRemix = "default";
+
+      function detectGenre(text) {
+        for (const rule of genreRules) {
+          if (rule.test.test(text)) return rule;
+        }
+        return {
+          genre: "Atmospheric",
+          additions: ["moody pads", "warm sub movement", "soft texture layers", "slow transition details"]
+        };
+      }
+
+      function detectMood(text, remixKey) {
+        const lowered = text.toLowerCase();
+        if (/dark|noir|midnight|shadow|night/.test(lowered)) return "noir";
+        if (/sad|melancholy|lonely|blue/.test(lowered)) return "melancholic";
+        if (/dream|float|air|ambient/.test(lowered)) return "dreamy";
+        if (/rain|lofi|soft|cozy/.test(lowered)) return "cozy";
+        return remixProfiles[remixKey].mood;
+      }
+
+      function detectEnergy(text, remixKey) {
+        const lowered = text.toLowerCase();
+        if (/club|dance|hard|fast|aggressive|trap/.test(lowered)) return "high";
+        if (/ambient|soft|slow|rain|dream/.test(lowered)) return "low";
+        return remixProfiles[remixKey].energy;
+      }
+
+      function uniqueParts(parts) {
+        return [...new Set(parts.map((item) => (item || "").trim()).filter(Boolean))];
+      }
+
+      function buildPrompt(sourceText, remixKey) {
+        const trimmed = sourceText.trim() || "lofi rainy music";
+        const genreInfo = detectGenre(trimmed);
+        const remix = remixProfiles[remixKey];
+        const mood = detectMood(trimmed, remixKey);
+        const energy = detectEnergy(trimmed, remixKey);
+
+        const baseParts = trimmed
+          .replace(/\s+/g, " ")
+          .split(",")
+          .map((part) => part.trim())
+          .filter(Boolean);
+
+        const descriptors = uniqueParts([
+          ...baseParts,
+          genreInfo.genre.toLowerCase(),
+          mood + " atmosphere",
+          ...genreInfo.additions,
+          ...remix.inject
+        ]);
+
+        const firstLine = descriptors.slice(0, 2).join(", ");
+        const secondLine = descriptors.slice(2).join(", ");
+
+        return {
+          text: firstLine + ",\n" + secondLine,
+          genre: genreInfo.genre,
+          mood: mood.charAt(0).toUpperCase() + mood.slice(1),
+          energy: energy.charAt(0).toUpperCase() + energy.slice(1),
+          status: remix.label
+        };
+      }
+
+      function renderPrompt() {
+        const built = buildPrompt(input.value, currentRemix);
+        output.textContent = built.text;
+        statusBadge.textContent = built.status;
+        statGenre.textContent = "Detected: " + built.genre;
+        statMood.textContent = "Mood: " + built.mood;
+        statEnergy.textContent = "Energy: " + built.energy;
+      }
+
+      function setRemix(key) {
+        currentRemix = key;
+        remixButtons.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.remix === key);
+        });
+        renderPrompt();
+      }
+
+      async function copyText(text, buttonEl, defaultLabel) {
+        try {
+          await navigator.clipboard.writeText(text);
+          const oldHtml = buttonEl.innerHTML;
+          buttonEl.innerHTML = '<i class="fas fa-check"></i> Copied';
+          setTimeout(() => {
+            buttonEl.innerHTML = oldHtml || defaultLabel;
+          }, 1200);
+        } catch {
+          const oldHtml = buttonEl.innerHTML;
+          buttonEl.innerHTML = '<i class="fas fa-times"></i> Copy Failed';
+          setTimeout(() => {
+            buttonEl.innerHTML = oldHtml || defaultLabel;
+          }, 1200);
+        }
+      }
+
+      function fillRandomPrompt() {
+        input.value = demoPrompts[Math.floor(Math.random() * demoPrompts.length)];
+        renderPrompt();
+      }
+
+      function typeDemo(text, speed) {
+        input.value = "";
+        let i = 0;
+        const timer = setInterval(() => {
+          input.value = text.slice(0, i + 1);
+          renderPrompt();
+          i += 1;
+          if (i >= text.length) clearInterval(timer);
+        }, speed);
+      }
+
+      input.addEventListener("input", renderPrompt);
+      enhanceBtn.addEventListener("click", renderPrompt);
+      randomBtn.addEventListener("click", fillRandomPrompt);
+      copyBtn.addEventListener("click", () => copyText(output.textContent.trim(), copyBtn, "Copy Output"));
+
+      remixButtons.forEach((btn) => {
+        btn.addEventListener("click", () => setRemix(btn.dataset.remix));
+      });
+
+      packButtons.forEach((btn) => {
+        btn.addEventListener("click", () => copyText(btn.dataset.pack, btn, "Copy Prompt"));
+      });
+
+      setRemix("default");
+      renderPrompt();
+
+      setTimeout(() => {
+        typeDemo("lofi rainy music", 65);
+      }, 300);
+    })();
+  </script>
 </body>
 </html>

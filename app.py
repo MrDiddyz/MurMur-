@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Set
 from datetime import datetime, timezone
 from uuid import uuid4
 
@@ -75,6 +75,39 @@ class IntegrationEvent(BaseModel):
     occurredAt: Optional[str] = None
     runId: Optional[str] = None
     payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ArchitectureAgent(BaseModel):
+    role: str
+    model: str
+    memory: str
+
+
+class ArchitectureLoops(BaseModel):
+    self_reflection: bool = False
+    max_iterations: int = Field(ge=1, le=10)
+
+
+class ArchitectureVoting(BaseModel):
+    enabled: bool = False
+
+
+class ArchitectureSpec(BaseModel):
+    id: str
+    topology: str
+    agents: List[ArchitectureAgent]
+    routing: List[List[str]]
+    loops: ArchitectureLoops
+    voting: ArchitectureVoting
+
+
+class ArchitectureCompileResponse(BaseModel):
+    id: str
+    topology: str
+    execution_stages: List[Dict[str, str]]
+    max_iterations: int
+    self_reflection: bool
+    voting_enabled: bool
 
 
 class AvatarTask(str, Enum):
@@ -165,6 +198,40 @@ def run_avatar_operator(req: AvatarOperateRequest) -> Dict[str, Any]:
         _avatar_daily_operator(payload)
 
     return payload
+
+
+def compile_architecture(spec: ArchitectureSpec) -> ArchitectureCompileResponse:
+    if spec.topology != "hierarchical":
+        raise HTTPException(status_code=400, detail="Only hierarchical topology is currently supported")
+
+    agent_roles: Set[str] = {agent.role for agent in spec.agents}
+    if len(agent_roles) != len(spec.agents):
+        raise HTTPException(status_code=400, detail="Agent roles must be unique")
+
+    for edge in spec.routing:
+        if len(edge) != 2:
+            raise HTTPException(status_code=400, detail="Each routing edge must contain exactly two roles")
+        src, dst = edge
+        if src not in agent_roles or dst not in agent_roles:
+            raise HTTPException(status_code=400, detail=f"Unknown routing role in edge: {edge}")
+
+    destination_roles = {edge[1] for edge in spec.routing}
+    root_roles = sorted(agent_roles - destination_roles)
+    if len(root_roles) != 1:
+        raise HTTPException(status_code=400, detail="Hierarchical topology requires exactly one root agent")
+
+    execution_stages: List[Dict[str, str]] = []
+    for src, dst in spec.routing:
+        execution_stages.append({"from": src, "to": dst})
+
+    return ArchitectureCompileResponse(
+        id=spec.id,
+        topology=spec.topology,
+        execution_stages=execution_stages,
+        max_iterations=spec.loops.max_iterations,
+        self_reflection=spec.loops.self_reflection,
+        voting_enabled=spec.voting.enabled,
+    )
 
 # ----------------------------
 # In-memory "DB" (swap later)
@@ -366,5 +433,10 @@ def ingest_event(evt: IntegrationEvent):
 @app.post("/v1/avatar/operate")
 def avatar_operate(req: AvatarOperateRequest):
     return run_avatar_operator(req)
+
+
+@app.post("/v1/architectures/compile", response_model=ArchitectureCompileResponse)
+def architecture_compile(req: ArchitectureSpec):
+    return compile_architecture(req)
 
 # Run: uvicorn app:app --reload

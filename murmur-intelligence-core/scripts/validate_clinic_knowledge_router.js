@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const Ajv = require('ajv');
+const { validateNoClaimWithoutEvidence } = require('./clinic_policy');
 
 const ROOT = path.resolve(__dirname, '..');
 const schemaPath = path.join(ROOT, 'schemas', 'clinic-ai-knowledge-router.schema.json');
@@ -17,11 +18,22 @@ const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 
 const ajv = new Ajv({ allErrors: true, jsonPointers: true });
 const validate = ajv.compile(schema);
-const valid = validate(data);
+const schemaValid = validate(data);
+const policyErrors = validateNoClaimWithoutEvidence(data);
 
-if (!valid) {
+if (!schemaValid || policyErrors.length > 0) {
   console.error('Clinic knowledge-router validation failed.');
-  console.error(JSON.stringify(validate.errors, null, 2));
+
+  if (!schemaValid) {
+    console.error('Schema errors:');
+    console.error(JSON.stringify(validate.errors, null, 2));
+  }
+
+  if (policyErrors.length > 0) {
+    console.error('Policy errors:');
+    console.error(JSON.stringify(policyErrors, null, 2));
+  }
+
   process.exit(1);
 }
 

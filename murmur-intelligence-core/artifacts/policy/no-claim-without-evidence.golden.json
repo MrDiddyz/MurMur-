@@ -1,0 +1,10 @@
+[
+  {
+    "path": "/knowledge_base/service/description",
+    "message": "Found medical/guarantee claim without required evidence marker."
+  },
+  {
+    "path": "/knowledge_base/faq/0/a",
+    "message": "Found medical/guarantee claim without required evidence marker."
+  }
+]

@@ -3,34 +3,72 @@
   "$id": "https://murmur.local/schema/clinic-ai-knowledge-router.schema.json",
   "title": "Clinic AI KnowledgeBase + Router Rules",
   "type": "object",
-  "required": ["meta", "safety_policy", "routing", "knowledge_base"],
+  "required": [
+    "meta",
+    "safety_policy",
+    "routing",
+    "knowledge_base"
+  ],
   "additionalProperties": false,
   "properties": {
     "meta": {
       "type": "object",
-      "required": ["brand", "locale", "timezone", "version", "updated_at"],
+      "required": [
+        "brand",
+        "locale",
+        "timezone",
+        "version",
+        "updated_at"
+      ],
       "additionalProperties": false,
       "properties": {
-        "brand": { "type": "string", "minLength": 1 },
-        "locale": { "type": "string", "default": "nb-NO" },
-        "timezone": { "type": "string", "default": "Europe/Oslo" },
-        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
-        "updated_at": { "type": "string", "format": "date-time" },
+        "brand": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locale": {
+          "type": "string",
+          "default": "nb-NO"
+        },
+        "timezone": {
+          "type": "string",
+          "default": "Europe/Oslo"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "owner_contact": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "name": { "type": "string" },
-            "email": { "type": "string", "format": "email" },
-            "phone": { "type": "string" }
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "phone": {
+              "type": "string"
+            }
           }
         }
       }
     },
-
     "safety_policy": {
       "type": "object",
-      "required": ["disclaimer", "disallowed_content", "red_flags", "data_minimization"],
+      "required": [
+        "disclaimer",
+        "disallowed_content",
+        "red_flags",
+        "data_minimization",
+        "no_claim_without_evidence"
+      ],
       "additionalProperties": false,
       "properties": {
         "disclaimer": {
@@ -40,31 +78,53 @@
         },
         "disallowed_content": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "minItems": 1,
           "description": "Things the assistant must not do (diagnose, prescribe, dosage, etc.)."
         },
         "red_flags": {
           "type": "object",
-          "required": ["message", "triggers"],
+          "required": [
+            "message",
+            "triggers"
+          ],
           "additionalProperties": false,
           "properties": {
-            "message": { "type": "string", "minLength": 10 },
+            "message": {
+              "type": "string",
+              "minLength": 10
+            },
             "triggers": {
               "type": "array",
               "minItems": 1,
               "items": {
                 "type": "object",
-                "required": ["id", "pattern", "severity"],
+                "required": [
+                  "id",
+                  "pattern",
+                  "severity"
+                ],
                 "additionalProperties": false,
                 "properties": {
-                  "id": { "type": "string", "minLength": 1 },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "pattern": {
                     "type": "string",
                     "minLength": 3,
                     "description": "Simple keyword/regex-ish pattern (implementation-defined)."
                   },
-                  "severity": { "type": "string", "enum": ["low", "medium", "high"] }
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ]
+                  }
                 }
               }
             }
@@ -72,27 +132,57 @@
         },
         "data_minimization": {
           "type": "object",
-          "required": ["do_not_collect", "allowed_fields"],
+          "required": [
+            "do_not_collect",
+            "allowed_fields"
+          ],
           "additionalProperties": false,
           "properties": {
             "do_not_collect": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "description": "E.g., diagnosis details, medication lists, journal data."
             },
             "allowed_fields": {
               "type": "array",
-              "items": { "type": "string" },
+              "items": {
+                "type": "string"
+              },
               "description": "E.g., topic category, preferred contact method."
+            }
+          }
+        },
+        "no_claim_without_evidence": {
+          "type": "object",
+          "required": [
+            "enabled",
+            "evidence_marker_prefix"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "const": true,
+              "description": "When true, claim-like text must include an inline evidence marker."
+            },
+            "evidence_marker_prefix": {
+              "type": "string",
+              "minLength": 3,
+              "description": "Required marker prefix for evidence references, e.g. [kilde: ...]."
             }
           }
         }
       }
     },
-
     "routing": {
       "type": "object",
-      "required": ["intents", "router_rules", "fallback"],
+      "required": [
+        "intents",
+        "router_rules",
+        "fallback"
+      ],
       "additionalProperties": false,
       "properties": {
         "intents": {
@@ -100,15 +190,28 @@
           "minItems": 3,
           "items": {
             "type": "object",
-            "required": ["id", "description", "examples", "module"],
+            "required": [
+              "id",
+              "description",
+              "examples",
+              "module"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "description": { "type": "string", "minLength": 5 },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "description": {
+                "type": "string",
+                "minLength": 5
+              },
               "examples": {
                 "type": "array",
                 "minItems": 1,
-                "items": { "type": "string" }
+                "items": {
+                  "type": "string"
+                }
               },
               "module": {
                 "type": "string",
@@ -122,7 +225,12 @@
                   "handoff_human"
                 ]
               },
-              "priority": { "type": "integer", "minimum": 1, "maximum": 100, "default": 50 },
+              "priority": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100,
+                "default": 50
+              },
               "confidence_threshold": {
                 "type": "number",
                 "minimum": 0,
@@ -132,30 +240,53 @@
             }
           }
         },
-
         "router_rules": {
           "type": "array",
           "minItems": 3,
           "description": "Deterministic overrides before/after intent classification.",
           "items": {
             "type": "object",
-            "required": ["id", "when", "then"],
+            "required": [
+              "id",
+              "when",
+              "then"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "type": "string", "minLength": 1 },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
               "when": {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "contains_any": { "type": "array", "items": { "type": "string" } },
-                  "contains_all": { "type": "array", "items": { "type": "string" } },
-                  "matches_pattern": { "type": "string" },
-                  "language": { "type": "string", "default": "nb" }
+                  "contains_any": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "contains_all": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "matches_pattern": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string",
+                    "default": "nb"
+                  }
                 }
               },
               "then": {
                 "type": "object",
-                "required": ["route_to"],
+                "required": [
+                  "route_to"
+                ],
                 "additionalProperties": false,
                 "properties": {
                   "route_to": {
@@ -173,135 +304,247 @@
                   },
                   "set_flags": {
                     "type": "array",
-                    "items": { "type": "string" }
+                    "items": {
+                      "type": "string"
+                    }
                   },
-                  "prepend_disclaimer": { "type": "boolean", "default": false }
+                  "prepend_disclaimer": {
+                    "type": "boolean",
+                    "default": false
+                  }
                 }
               }
             }
           }
         },
-
         "fallback": {
           "type": "object",
-          "required": ["route_to", "message"],
+          "required": [
+            "route_to",
+            "message"
+          ],
           "additionalProperties": false,
           "properties": {
             "route_to": {
               "type": "string",
-              "enum": ["faq", "service_overview", "handoff_human"]
+              "enum": [
+                "faq",
+                "service_overview",
+                "handoff_human"
+              ]
             },
-            "message": { "type": "string", "minLength": 5 }
+            "message": {
+              "type": "string",
+              "minLength": 5
+            }
           }
         }
       }
     },
-
     "knowledge_base": {
       "type": "object",
-      "required": ["service", "offers", "links", "faq", "tone_snippets"],
+      "required": [
+        "service",
+        "offers",
+        "links",
+        "faq",
+        "tone_snippets"
+      ],
       "additionalProperties": false,
       "properties": {
         "service": {
           "type": "object",
-          "required": ["name", "description", "what_happens", "deliverable_after"],
+          "required": [
+            "name",
+            "description",
+            "what_happens",
+            "deliverable_after"
+          ],
           "additionalProperties": false,
           "properties": {
-            "name": { "type": "string", "minLength": 1 },
-            "description": { "type": "string", "minLength": 20 },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 20
+            },
             "what_happens": {
               "type": "array",
               "minItems": 2,
-              "items": { "type": "string" }
+              "items": {
+                "type": "string"
+              }
             },
-            "deliverable_after": { "type": "string", "minLength": 10 },
+            "deliverable_after": {
+              "type": "string",
+              "minLength": 10
+            },
             "helps_with": {
               "type": "array",
-              "items": { "type": "string" }
+              "items": {
+                "type": "string"
+              }
             }
           }
         },
-
         "offers": {
           "type": "object",
-          "required": ["intro_price", "regular_price", "vat_note"],
+          "required": [
+            "intro_price",
+            "regular_price",
+            "vat_note"
+          ],
           "additionalProperties": false,
           "properties": {
             "intro_price": {
               "type": "object",
-              "required": ["amount", "currency", "vat_included"],
+              "required": [
+                "amount",
+                "currency",
+                "vat_included"
+              ],
               "additionalProperties": false,
               "properties": {
-                "amount": { "type": "number", "minimum": 0 },
-                "currency": { "type": "string", "default": "NOK" },
-                "vat_included": { "type": "boolean" },
-                "amount_with_vat": { "type": "number", "minimum": 0 }
+                "amount": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "default": "NOK"
+                },
+                "vat_included": {
+                  "type": "boolean"
+                },
+                "amount_with_vat": {
+                  "type": "number",
+                  "minimum": 0
+                }
               }
             },
             "regular_price": {
               "type": "object",
-              "required": ["amount", "currency"],
+              "required": [
+                "amount",
+                "currency"
+              ],
               "additionalProperties": false,
               "properties": {
-                "amount": { "type": "number", "minimum": 0 },
-                "currency": { "type": "string", "default": "NOK" }
+                "amount": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "currency": {
+                  "type": "string",
+                  "default": "NOK"
+                }
               }
             },
-            "vat_note": { "type": "string" },
+            "vat_note": {
+              "type": "string"
+            },
             "price_note": {
               "type": "string",
               "description": "E.g., intro price will increase later."
             }
           }
         },
-
         "links": {
           "type": "object",
-          "required": ["booking_url", "website_url"],
+          "required": [
+            "booking_url",
+            "website_url"
+          ],
           "additionalProperties": false,
           "properties": {
-            "booking_url": { "type": "string", "format": "uri" },
-            "website_url": { "type": "string", "format": "uri" },
-            "contact_message_prompt": { "type": "string" }
+            "booking_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "website_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "contact_message_prompt": {
+              "type": "string"
+            }
           }
         },
-
         "faq": {
           "type": "array",
           "minItems": 5,
           "items": {
             "type": "object",
-            "required": ["id", "q", "a", "tags"],
+            "required": [
+              "id",
+              "q",
+              "a",
+              "tags"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "q": { "type": "string", "minLength": 5 },
-              "a": { "type": "string", "minLength": 10 },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "q": {
+                "type": "string",
+                "minLength": 5
+              },
+              "a": {
+                "type": "string",
+                "minLength": 10
+              },
               "tags": {
                 "type": "array",
-                "items": { "type": "string" }
+                "items": {
+                  "type": "string"
+                }
               },
               "cta": {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "type": { "type": "string", "enum": ["book", "message", "read_more"] },
-                  "label": { "type": "string" },
-                  "url": { "type": "string", "format": "uri" }
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "book",
+                      "message",
+                      "read_more"
+                    ]
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
                 }
               }
             }
           }
         },
-
         "tone_snippets": {
           "type": "object",
-          "required": ["greeting", "closing", "book_cta"],
+          "required": [
+            "greeting",
+            "closing",
+            "book_cta"
+          ],
           "additionalProperties": false,
           "properties": {
-            "greeting": { "type": "string" },
-            "closing": { "type": "string" },
-            "book_cta": { "type": "string" }
+            "greeting": {
+              "type": "string"
+            },
+            "closing": {
+              "type": "string"
+            },
+            "book_cta": {
+              "type": "string"
+            }
           }
         }
       }
